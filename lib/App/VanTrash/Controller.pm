@@ -21,9 +21,15 @@ sub handle_request {
         [ qr{^/zones$} => \&zones_html ],
         [ qr{^/zones\.txt$} => \&zones_txt ],
         [ qr{^/zones\.json$} => \&zones_json ],
-        [ qr{^/zones/([^/]+)$} => \&zone_html ],
-        [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days ],
-        [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup ],
+        [ qr{^/zones/([^./]+)$} => \&zone_html ],
+        [ qr{^/zones/([^/]+)\.txt$} => \&zone_txt ],
+        [ qr{^/zones/([^/]+)\.json$} => \&zone_json ],
+        [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days_html ],
+        [ qr{^/zones/([^/]+)/pickupdays\.txt$} => \&zone_days_txt ],
+        [ qr{^/zones/([^/]+)/pickupdays\.json$} => \&zone_days_json ],
+        [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
+        [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
+        [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
     );
     for my $match (@func_map) {
         my ($regex, $todo) = @$match;
@@ -48,7 +54,6 @@ sub zones_html {
 sub zones_txt {
     my $self = shift;
     my $body = join("\n", @{ $self->model->zones });
-    my $res = HTTP::Engine::Response->new(body => $body);
     return $self->response('text/plain' => $body);
 }
 
@@ -70,27 +75,78 @@ sub zone_html {
     return $self->process_template('zone.html', \%param);
 }
 
-sub zone_days {
+sub zone_txt {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = $zone;
+    return $self->response('text/plain' => $body);
+}
+
+sub zone_json {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = encode_json { name => $zone };
+    return $self->response('application/json' => $body);
+}
+
+sub zone_days_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
     my %param = (
         zone => $zone,
+        zone_uri => "/zones/$zone",
         days => $self->model->days($zone),
     );
     return $self->process_template('zone_days.html', \%param);
 }
 
-sub zone_next_pickup {
+sub zone_days_txt {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = join "\n", @{ $self->model->days($zone) };
+    return $self->response('text/plain' => $body);
+}
+
+sub zone_days_json {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = encode_json $self->model->days($zone);
+    return $self->response('application/json' => $body);
+}
+
+sub zone_next_pickup_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
     my %param = (
         zone => $zone,
+        zone_uri => "/zones/$zone",
         day => $self->model->next_pickup($zone),
     );
     return $self->process_template('zone_next_pickup.html', \%param);
 }
+
+sub zone_next_pickup_txt {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = $self->model->next_pickup($zone);
+    return $self->response('text/plain' => $body);
+}
+
+sub zone_next_pickup_json {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = encode_json { next => $self->model->next_pickup($zone) };
+    return $self->response('application/json' => $body);
+}
+
 
 sub response {
     my $self = shift;
