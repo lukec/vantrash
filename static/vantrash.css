@@ -1,0 +1,22 @@
+body {
+    background-image:url('images/bg.jpg');
+    background-repeat:repeat-y;
+    background-attachment:fixed;
+    background-position: 50% 0%;
+    text-align: center;
+    font-size: 180%;
+}
+
+div.content {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 70%;
+    text-align: left;
+}
+
+div.example {
+    padding: 10px;
+    font-size: 120%;
+}
+

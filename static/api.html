@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>VanTrash API</title>
+        <link href="/vantrash.css" rel="stylesheet" type="text/css" media="screen">
+    </head
+    <body>
+      <h1>VanTrash API</h1>
+      This page defines the simple REST API that exposes collection times data.
+
+      <div class="content">
+        <h2>List of Zones</h2>
+        The zones are defined on the Vancouver city website. There are 2 zones: <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm">North</a> and <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm">South</a>.  The API lists the available zones at:
+        <ul>
+            <li><a href="/zones">/zones</a> - <code>text/html</code></li>
+            <li><a href="/zones.txt">/zones.txt</a> - <code>text/plain</code></li>
+            <li><a href="/zones.json">/zones.json</a> - <code>application/json</code></li>
+        </ul>
+        <h2>Zone Data</h2>
+        <p>
+        Each zone has it's own resource page. Right now it is very simple, but more data could be added.<br />
+        The zone names are listed at <a href="/zones">/zones</a>, and the URL will look like: <br />
+        <div class="example"><a href="/zones/north-blue">/zones/north-blue</a></div>
+        This data is also available as <a href="/zones/north-blue.txt"><code>text/plain</code></a> 
+        and <a href="/zones/north-blue.json"><code>application/json</code></a>.
+        </p>
+
+        <p>
+        Each zone has 2 pieces of data available:
+        <ul>
+            <li><a href="/zones/north-blue/pickupdays">Pickup Days</a> - The list of pickup days for the zone</li>
+            <li><a href="/zones/north-blue/nextpickup">Next Pickup</a> - The next pickup day for this zone</li>
+        </ul>
+        This data is also has text and JSON representations:
+        <ul>
+            <li>Pickup Days: <a href="/zones/north-blue/pickupdays.txt"><code>text/plain</code></a>, 
+                <a href="/zones/north-blue/pickupdays.json"><code>application/json</code></a></li>
+            <li>Next Pickup: <a href="/zones/north-blue/nextpickup.txt"><code>text/plain</code></a>, 
+                <a href="/zones/north-blue/nextpickup.json"><code>application/json</code></a></li>
+        </ul>
+      </div>
+    </body>
+</html>

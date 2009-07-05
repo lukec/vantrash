@@ -6,10 +6,12 @@ use Template;
 use FindBin;
 use App::VanTrash::Model;
 use JSON qw/encode_json/;
+use MIME::Types;
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
 has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
+has 'mimetypes' => (is => 'ro', lazy_build => 1);
 
 sub handle_request {
     my $self = shift;
@@ -37,7 +39,10 @@ sub handle_request {
             if (ref $todo) {
                 return $todo->($self, $req, $1, $2, $3, $4);
             }
-            return _static_file('index.html');
+            return $self->_static_file('index.html');
+        }
+        if ($path =~ m{^/(images/.+|.+\.(css|html))$}) {
+            return $self->_static_file($1);
         }
     }
     return HTTP::Engine::Response->new(body => "Unknown - $path");
@@ -196,9 +201,15 @@ sub process_template {
 }
 
 sub _static_file {
-    my $file = "$FindBin::Bin/../html/" . shift;
+    my $self = shift;
+    my $file = "$FindBin::Bin/../static/" . shift;
     open(my $fh, $file);
-    return HTTP::Engine::Response->new(body => $fh);
+    my $resp = HTTP::Engine::Response->new(body => $fh);
+    my $ctype = $self->mimetypes->mimeTypeOf($file) || 'text/plain';
+    $resp->headers->header('Content-Type' => $ctype);
+    return $resp;
 }
+
+sub _build_mimetypes { MIME::Types->new }
 
 1;
