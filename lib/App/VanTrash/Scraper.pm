@@ -51,13 +51,13 @@ sub scrape_zone {
                 }
 
                 my $month_num = _month_to_num($month);
-                push @dates, "$year-$month_num-$day";
+                push @dates, sprintf '%4d-%02d-%02d', $year,$month_num,$day;
                 $i++;
             }
         }
 
     }
-    $zone->{dates} = \@dates;
+    $zone->{dates} = [ sort @dates ];
 }
 
 
