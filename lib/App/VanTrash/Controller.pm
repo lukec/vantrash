@@ -23,6 +23,7 @@ sub handle_request {
         [ qr{^/zones\.json$} => \&zones_json ],
         [ qr{^/zones/([^/]+)$} => \&zone_html ],
         [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days ],
+        [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup ],
     );
     for my $match (@func_map) {
         my ($regex, $todo) = @$match;
@@ -78,6 +79,17 @@ sub zone_days {
         days => $self->model->days($zone),
     );
     return $self->process_template('zone_days.html', \%param);
+}
+
+sub zone_next_pickup {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my %param = (
+        zone => $zone,
+        day => $self->model->next_pickup($zone),
+    );
+    return $self->process_template('zone_next_pickup.html', \%param);
 }
 
 sub response {
