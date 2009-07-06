@@ -1,0 +1,8 @@
+GET /zones/:zoneid/reminders
+* json/txt
+PUT /zones/:zoneid/reminders JSON
+POST /zones/:zoneid/reminders?action=put JSON
+DELETE /zones/:zoneid/reminders?id=blah;password=blah
+POST /zones/:zoneid/reminders?action=delete
+
+Only LoadFile if it is newer
