@@ -34,6 +34,8 @@ sub handle_request {
         [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
         [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
         [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
+
+        [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders ],
     );
     for my $match (@func_map) {
         my ($regex, $todo) = @$match;
@@ -155,6 +157,18 @@ sub zone_next_pickup_json {
     return $self->response('application/json' => $body);
 }
 
+sub get_reminders {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+
+    my %param = (
+        zone => $zone,
+        zone_uri => "/zones/$zone/reminders",
+        reminders => $self->model->reminders($zone),
+    );
+    return $self->process_template('reminders.html', \%param);
+}
 
 sub response {
     my $self = shift;
