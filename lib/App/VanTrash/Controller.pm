@@ -54,6 +54,7 @@ sub zones_html {
     my $self = shift;
     my %param = (
         zones => $self->model->zones,
+        zone_uri => "/zones",
     );
     return $self->process_template('zones.html', \%param);
 }
@@ -104,7 +105,7 @@ sub zone_days_html {
     my $zone = shift;
     my %param = (
         zone => $zone,
-        zone_uri => "/zones/$zone",
+        zone_uri => "/zones/$zone/pickupdays",
         days => $self->model->days($zone),
     );
     return $self->process_template('zone_days.html', \%param);
@@ -132,7 +133,7 @@ sub zone_next_pickup_html {
     my $zone = shift;
     my %param = (
         zone => $zone,
-        zone_uri => "/zones/$zone",
+        zone_uri => "/zones/$zone/nextpickup",
         day => $self->model->next_pickup($zone),
     );
     return $self->process_template('zone_next_pickup.html', \%param);

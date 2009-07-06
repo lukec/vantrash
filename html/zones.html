@@ -1,13 +1,8 @@
-<html>
-<body>
+[% WRAPPER wrapper.html %]
 <h1>Zones</h1>
 <ul>
 [% FOREACH zone IN zones %]
   <li><a href="/zones/[% zone %]">[% zone %]</a></li>
 [% END %]
 </ul>
-<hr />
-<a href="/zones.txt">text/plain</a> | 
-<a href="/zones.json">application/json</a>
-</body>
-</html>
+[% END %]
