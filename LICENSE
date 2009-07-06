@@ -1,0 +1,6 @@
+All of the trash pickup data is scraped from the City of Vancouver's website:
+
+  http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm
+  http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm
+
+The scraping codes and the reminder system codes are licensed under the Perl Artistic License.
