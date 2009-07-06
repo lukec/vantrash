@@ -64,43 +64,43 @@ sub scrape_zone {
 sub _build_zones {
     return [
         {
-            name => 'north-purple',
+            name => 'vancouver-north-purple',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-purple.htm',
         },
         {
-            name => 'north-red',
+            name => 'vancouver-north-red',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-red.htm',
         },
         {
-            name => 'north-blue',
+            name => 'vancouver-north-blue',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-blue.htm',
         },
         {
-            name => 'north-green',
+            name => 'vancouver-north-green',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-green.htm',
         },
         {
-            name => 'north-yellow',
+            name => 'vancouver-north-yellow',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-yellow.htm',
         },
         {
-            name => 'south-purple',
+            name => 'vancouver-south-purple',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-purple.htm',
         },
         {
-            name => 'south-red',
+            name => 'vancouver-south-red',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-red.htm',
         },
         {
-            name => 'south-blue',
+            name => 'vancouver-south-blue',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-blue.htm',
         },
         {
-            name => 'south-green',
+            name => 'vancouver-south-green',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-green.htm',
         },
         {
-            name => 'south-yellow',
+            name => 'vancouver-south-yellow',
             uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-yellow.htm',
         },
     ];
