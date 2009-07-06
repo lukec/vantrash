@@ -3,7 +3,6 @@ use Moose;
 use HTTP::Engine;
 use Fatal qw/open/;
 use Template;
-use FindBin;
 use App::VanTrash::Model;
 use JSON qw/encode_json/;
 use MIME::Types;
@@ -12,6 +11,9 @@ has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
 has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
 has 'mimetypes' => (is => 'ro', lazy_build => 1);
+has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
+has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
+has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
 
 sub handle_request {
     my $self = shift;
@@ -164,8 +166,9 @@ sub response {
 }
 
 sub _build_template {
+    my $self = shift;
     return Template->new(
-        { INCLUDE_PATH => "$FindBin::Bin/../html" },
+        { INCLUDE_PATH => $self->base_path . "/html" },
     );
 }
 
@@ -173,22 +176,17 @@ sub _build_engine {
     my $self = shift;
     return HTTP::Engine->new(
       interface => {
-          module => 'ServerSimple',
-          args   => {
-              host => 'localhost',
-              port =>  2009,
-              net_server => 'Net::Server::PreForkSimple',
-              net_server_configure => {
-                  max_servers  => 5,
-                  max_requests => 100,
-              },
-          },
+          module => $self->http_module,
+          args   => $self->http_args,
           request_handler => sub { $self->handle_request(@_) },
       },
     );
 }
 
-sub _build_model { App::VanTrash::Model->new }
+sub _build_model {
+    my $self = shift;
+    return App::VanTrash::Model->new( base_path => $self->base_path );
+}
 
 sub process_template {
     my $self = shift;
@@ -202,7 +200,7 @@ sub process_template {
 
 sub _static_file {
     my $self = shift;
-    my $file = "$FindBin::Bin/../static/" . shift;
+    my $file = $self->base_path . "/static/" . shift;
     open(my $fh, $file);
     my $resp = HTTP::Engine::Response->new(body => $fh);
     my $ctype = $self->mimetypes->mimeTypeOf($file) || 'text/plain';

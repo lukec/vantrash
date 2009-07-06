@@ -3,7 +3,8 @@ use Moose;
 use YAML qw/LoadFile/;
 use DateTime;
 
-has 'file' => (is => 'ro', isa => 'Str', default => 'trash-zone-times.yaml');
+has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
+has 'file' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'zones' => (is => 'ro', lazy_build => 1);
 has 'hash' => (is => 'ro', isa => 'HashRef', lazy_build => 1);
 
@@ -36,6 +37,11 @@ sub _build_zones {
 sub _build_hash {
     my $self = shift;
     return LoadFile($self->file);
+}
+
+sub _build_file {
+    my $self = shift;
+    return $self->base_path . "/trash-zone-times.yaml";
 }
 
 1;
