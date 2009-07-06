@@ -49,7 +49,11 @@ sub handle_request {
             return $self->_static_file($1);
         }
     }
-    return HTTP::Engine::Response->new(body => "Unknown - $path");
+    
+    return HTTP::Engine::Response->new(
+        status => 404,
+        body => "Sorry, that path doesn't exist!",
+    );
 }
 
 sub zones_html {
