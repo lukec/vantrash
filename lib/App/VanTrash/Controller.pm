@@ -35,7 +35,9 @@ sub handle_request {
         [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
         [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
 
-        [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders ],
+        [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders_html ],
+        [ qr{^/zones/([^/]+)/reminders\.txt$} => \&get_reminders_txt ],
+        [ qr{^/zones/([^/]+)/reminders\.json$} => \&get_reminders_json ],
     );
     for my $match (@func_map) {
         my ($regex, $todo) = @$match;
@@ -161,7 +163,7 @@ sub zone_next_pickup_json {
     return $self->response('application/json' => $body);
 }
 
-sub get_reminders {
+sub get_reminders_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
@@ -172,6 +174,22 @@ sub get_reminders {
         reminders => $self->model->reminders($zone),
     );
     return $self->process_template('reminders.html', \%param);
+}
+
+sub get_reminders_txt {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = join "\n", @{ $self->model->reminders($zone) };
+    return $self->response('text/plain' => $body);
+}
+
+sub get_reminders_json {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = encode_json { next => $self->model->reminders($zone) };
+    return $self->response('application/json' => $body);
 }
 
 sub response {

@@ -1,0 +1,8 @@
+[% WRAPPER wrapper.html %]
+<h1>[% zone %] Reminders</h1>
+<ul>
+  [% FOREACH r IN reminders %]
+    <li><a href="[% zone_uri %]/[% r.id %]">[% r.id %]</a></li>
+  [% END %]
+</ul>
+[% END %]
