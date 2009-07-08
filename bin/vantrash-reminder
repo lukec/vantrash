@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use LWP::UserAgent;
+use Getopt::Long;
+use JSON::XS 'encode_json';
+
+my $zone;
+my $id;
+my $password;
+my $email;
+my $offset;
+GetOptions(
+    'z|zone=s'     => \$zone,
+    'i|id=s'       => \$id,
+    'p|password=s' => \$password,
+    'e|email=s'    => \$email,
+    'o|offset=s'   => \$offset,
+) or usage();
+
+usage() unless $zone and $id and $email;
+
+
+my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders";
+my $ua = LWP::UserAgent->new;
+my $req = HTTP::Request->new('PUT', $uri);
+$req->content( encode_json( {
+            id => $id,
+            email => $email,
+            ($password ? (password => $password) : ()),
+            ($offset   ? (offset   => $offset  ) : ()),
+        }
+    )
+);
+
+my $resp = $ua->request($req);
+print $resp->status_line, "\n";
+
+exit;
+
+sub usage {
+    die <<EOT
+USAGE: $0 <options>
+
+WHERE options are:
+  --zone=foo        (mandatory)
+  --id=foo          (mandatory)
+  --email=foo       (mandatory)
+  --password=foo
+  --offset=foo
+EOT
+}
