@@ -20,26 +20,30 @@ sub handle_request {
     my $req = shift;
 
     my $path = $req->request_uri;
-    my @func_map = (
-        [ qr{^/$} => 'index.html' ],
-        [ qr{^/zones$} => \&zones_html ],
-        [ qr{^/zones\.txt$} => \&zones_txt ],
-        [ qr{^/zones\.json$} => \&zones_json ],
-        [ qr{^/zones/([^./]+)$} => \&zone_html ],
-        [ qr{^/zones/([^/]+)\.txt$} => \&zone_txt ],
-        [ qr{^/zones/([^/]+)\.json$} => \&zone_json ],
-        [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days_html ],
-        [ qr{^/zones/([^/]+)/pickupdays\.txt$} => \&zone_days_txt ],
-        [ qr{^/zones/([^/]+)/pickupdays\.json$} => \&zone_days_json ],
-        [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
-        [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
-        [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
+    my %func_map = (
+        GET => [
+            [ qr{^/$} => 'index.html' ],
+            [ qr{^/zones$} => \&zones_html ],
+            [ qr{^/zones\.txt$} => \&zones_txt ],
+            [ qr{^/zones\.json$} => \&zones_json ],
+            [ qr{^/zones/([^./]+)$} => \&zone_html ],
+            [ qr{^/zones/([^/]+)\.txt$} => \&zone_txt ],
+            [ qr{^/zones/([^/]+)\.json$} => \&zone_json ],
+            [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days_html ],
+            [ qr{^/zones/([^/]+)/pickupdays\.txt$} => \&zone_days_txt ],
+            [ qr{^/zones/([^/]+)/pickupdays\.json$} => \&zone_days_json ],
+            [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
+            [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
+            [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
 
-        [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders_html ],
-        [ qr{^/zones/([^/]+)/reminders\.txt$} => \&get_reminders_txt ],
-        [ qr{^/zones/([^/]+)/reminders\.json$} => \&get_reminders_json ],
+            [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders_html ],
+            [ qr{^/zones/([^/]+)/reminders\.txt$} => \&get_reminders_txt ],
+            [ qr{^/zones/([^/]+)/reminders\.json$} => \&get_reminders_json ],
+        ],
     );
-    for my $match (@func_map) {
+    
+    my $method = $req->method;
+    for my $match (@{ $func_map{$method}}) {
         my ($regex, $todo) = @$match;
         if ($path =~ $regex) {
             if (ref $todo) {
