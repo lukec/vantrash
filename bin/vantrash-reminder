@@ -10,33 +10,51 @@ my $id;
 my $password;
 my $email;
 my $offset;
+my $delete;
 GetOptions(
     'z|zone=s'     => \$zone,
     'i|id=s'       => \$id,
     'p|password=s' => \$password,
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
+    'delete'       => \$delete,
 ) or usage();
 
-usage() unless $zone and $id and $email;
-
-
-my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders";
-my $ua = LWP::UserAgent->new;
-my $req = HTTP::Request->new('PUT', $uri);
-$req->content( encode_json( {
-            id => $id,
-            email => $email,
-            ($password ? (password => $password) : ()),
-            ($offset   ? (offset   => $offset  ) : ()),
-        }
-    )
-);
-
-my $resp = $ua->request($req);
-print $resp->status_line, "\n";
-
+if ($delete) {
+    usage() unless $zone and $id;
+    delete_reminder();
+}
+else {
+    usage() unless $zone and $id and $email;
+    add_reminder();
+}
 exit;
+
+sub delete_reminder {
+    my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders/$id";
+    my $ua = LWP::UserAgent->new;
+    my $req = HTTP::Request->new('DELETE', $uri);
+    my $resp = $ua->request($req);
+    print $resp->status_line, "\n";
+}
+
+sub add_reminder {
+    my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders";
+    my $ua = LWP::UserAgent->new;
+    my $req = HTTP::Request->new('PUT', $uri);
+    $req->content( encode_json( {
+                id => $id,
+                email => $email,
+                ($password ? (password => $password) : ()),
+                ($offset   ? (offset   => $offset  ) : ()),
+            }
+        )
+    );
+
+    my $resp = $ua->request($req);
+    print $resp->status_line, "\n";
+}
+
 
 sub usage {
     die <<EOT

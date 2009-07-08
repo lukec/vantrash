@@ -10,7 +10,7 @@ has 'zonefile'     => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'reminderfile' => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'zones'        => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
 has 'zonehash'     => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
-has 'reminderhash' => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
+has '_reminderhash' => (is => 'rw', isa => 'HashRef', lazy_build => 1);
 
 sub days {
     my $self = shift;
@@ -51,7 +51,23 @@ sub add_reminder {
     my $self = shift;
     my $zone = shift;
     my $rem  = shift;
+
     $self->reminderhash->{$zone}{$rem->{id}} = $rem;
+    $self->save_reminderhash;
+}
+
+sub delete_reminder {
+    my $self = shift;
+    my $zone = shift;
+    my $id   = shift;
+
+    return unless $self->get_reminder($zone, $id);
+    delete $self->reminderhash->{$zone}{$id};
+    $self->save_reminderhash;
+}
+
+sub save_reminderhash {
+    my $self = shift;
     my $tmp = $self->reminderfile . ".tmp";
     DumpFile($tmp, $self->reminderhash);
     rename $tmp => $self->reminderfile;
@@ -62,14 +78,25 @@ sub _build_zones {
     return [sort {$a cmp $b} keys %{ $self->zonehash }];
 }
 
-sub _build_zonehash     { shift->_load_file('zone') }
-sub _build_reminderhash { shift->_load_file('reminder') }
+sub _build_zonehash      { shift->_load_file('zone') }
+sub _build__reminderhash { shift->_load_file('reminder') }
+
+sub reminderhash {
+    my $self = shift;
+
+    my $file = $self->reminderfile;
+    if ($self->{_modified}{$file} < (stat($file))[9]) {
+        $self->_reminderhash( $self->_load_file('reminder') );
+    }
+    return $self->_reminderhash;
+}
 
 sub _load_file {
     my $self = shift;
     my $name = $_[0] . 'file';
     my $file = $self->$name;
     return {} unless -e $file;
+    $self->{_modified}{$file} = (stat($file))[9];
     return LoadFile($file);
 }
 

@@ -43,6 +43,9 @@ sub handle_request {
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
         ],
+        DELETE => [
+            [ qr{^/zones/([^/]+)/reminders/(.+)$} => \&delete_reminder ],
+        ],
     );
     
     my $method = $req->method;
@@ -205,20 +208,33 @@ sub put_reminder {
     my $zone = shift;
     
     my $rem = eval { decode_json $req->raw_body };
-    return HTTP::Engine::Response->new( code => 400, body => "Bad JSON" ) if $@;
+    return HTTP::Engine::Response->new( status => 400, body => "Bad JSON" ) if $@;
 
     unless ($rem->{id} and $rem->{email}) {
-        return HTTP::Engine::Response->new(code => 400,
+        return HTTP::Engine::Response->new(status => 400,
             body => "Reminder id and email fields are mandatory!");
     }
 
     if ($self->model->get_reminder($zone, $rem->{id})) {
-        return HTTP::Engine::Response->new(code => 400,
+        return HTTP::Engine::Response->new(status => 400,
             body => "Reminder id already exists! '$rem->{id}'");
     }
 
     $self->model->add_reminder($zone, $rem);
-    return HTTP::Engine::Response->new( code => 201 );
+    return HTTP::Engine::Response->new( status => 201 );
+}
+
+sub delete_reminder {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $id   = shift;
+
+    if ($self->model->delete_reminder($zone, $id)) {
+        return HTTP::Engine::Response->new( status => 204 );
+    }
+
+    return HTTP::Engine::Response->new( status => 400 );
 }
 
 sub response {
