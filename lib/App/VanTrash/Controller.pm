@@ -4,7 +4,7 @@ use HTTP::Engine;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
-use JSON qw/encode_json/;
+use JSON qw/encode_json decode_json/;
 use MIME::Types;
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
@@ -39,6 +39,9 @@ sub handle_request {
             [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders_html ],
             [ qr{^/zones/([^/]+)/reminders\.txt$} => \&get_reminders_txt ],
             [ qr{^/zones/([^/]+)/reminders\.json$} => \&get_reminders_json ],
+        ],
+        PUT => [
+            [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
         ],
     );
     
@@ -194,6 +197,28 @@ sub get_reminders_json {
     my $zone = shift;
     my $body = encode_json { next => $self->model->reminders($zone) };
     return $self->response('application/json' => $body);
+}
+
+sub put_reminder {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    
+    my $rem = eval { decode_json $req->raw_body };
+    return HTTP::Engine::Response->new( code => 400, body => "Bad JSON" ) if $@;
+
+    unless ($rem->{id} and $rem->{email}) {
+        return HTTP::Engine::Response->new(code => 400,
+            body => "Reminder id and email fields are mandatory!");
+    }
+
+    if ($self->model->get_reminder($zone, $rem->{id})) {
+        return HTTP::Engine::Response->new(code => 400,
+            body => "Reminder id already exists! '$rem->{id}'");
+    }
+
+    $self->model->add_reminder($zone, $rem);
+    return HTTP::Engine::Response->new( code => 201 );
 }
 
 sub response {

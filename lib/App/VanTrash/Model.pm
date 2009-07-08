@@ -1,7 +1,9 @@
 package App::VanTrash::Model;
 use Moose;
-use YAML qw/LoadFile/;
+use YAML qw/LoadFile DumpFile/;
 use DateTime;
+use Fatal qw/rename/;
+use namespace::clean -except => 'meta';
 
 has 'base_path'    => (is => 'ro', isa => 'Str',      required   => 1);
 has 'zonefile'     => (is => 'ro', isa => 'Str',      lazy_build => 1);
@@ -35,7 +37,24 @@ sub reminders {
     my $self = shift;
     my $zone = shift;
 
-    return [ keys %{ $self->reminderhash } ];
+    return [ keys %{ $self->reminderhash->{$zone} } ];
+}
+
+sub get_reminder {
+    my $self = shift;
+    my $zone = shift;
+    my $id   = shift;
+    return $self->reminderhash->{$zone}{$id};
+}
+
+sub add_reminder {
+    my $self = shift;
+    my $zone = shift;
+    my $rem  = shift;
+    $self->reminderhash->{$zone}{$rem->{id}} = $rem;
+    my $tmp = $self->reminderfile . ".tmp";
+    DumpFile($tmp, $self->reminderhash);
+    rename $tmp => $self->reminderfile;
 }
 
 sub _build_zones {
@@ -64,4 +83,5 @@ sub _build_reminderfile {
     return $self->base_path . "/trash-reminders.yaml";
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

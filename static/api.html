@@ -40,6 +40,20 @@
             <li>Reminders: <a href="/zones/vancouver-north-blue/reminders.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/reminders.json"><code>application/json</code></a></li>
         </ul>
+        </p>
+
+        <h3>Zone Reminders</h3>
+        <p>You can add and remove reminders through the API as follows.</p>
+        <h4>Adding a reminder</h4>
+        Submit a HTTP PUT request to <code>/zones/:zone_id/reminders</code> containing a JSON payload with the following elements in the body:
+        <ul>
+            <li><code>id</code> - A unique identifier for this reminder. Must be 3-30 characters alphanumeric.</li>
+            <li><code>password</code> - An optional password for this reminder</li>
+            <li><code>email</code> - An email address to receive email reminders</li>
+            <li><code>time_offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
+        </ul>
+        <h4>Deleting a reminder</h4>
+        Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.
       </div>
     </body>
 </html>
