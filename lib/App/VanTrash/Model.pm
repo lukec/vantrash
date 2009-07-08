@@ -85,7 +85,8 @@ sub reminderhash {
     my $self = shift;
 
     my $file = $self->reminderfile;
-    if ($self->{_modified}{$file} < (stat($file))[9]) {
+    my $last_modified = $self->{_modified}{$file};
+    if ($last_modified and $last_modified < (stat($file))[9]) {
         $self->_reminderhash( $self->_load_file('reminder') );
     }
     return $self->_reminderhash;
