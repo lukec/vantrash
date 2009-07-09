@@ -6,10 +6,12 @@ use lib "$FindBin::Bin/../lib";
 use App::VanTrash::Model;
 use DateTime;
 
+my $base_path = shift || "$FindBin::Bin/..";
+
 my $now = DateTime->now(time_zone => 'America/Vancouver');
 print "Running at: ", join('-', $now->year, $now->month, $now->day), "\n";
 
-my $model = App::VanTrash::Model->new( base_path => "$FindBin::Bin/..");
+my $model = App::VanTrash::Model->new( base_path => $base_path);
 my $reminders = $model->reminderhash;
 
 my @reminders_to_send;
