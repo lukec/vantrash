@@ -46,17 +46,20 @@ sub ical {
 sub next_pickup {
     my $self = shift;
     my $zone = shift;
+    my $limit = shift || 1;
 
     my $days = $self->days($zone);
     my $now = time;
+    my @return;
     for my $d (@$days) {
         $d =~ m/^(\d+)-(\d+)-(\d+)$/;
         my $dt = DateTime->new(year => $1, month => $2, day => $3,
                                time_zone => 'America/Vancouver');
         next if $now > $dt->epoch;
-        return $d;
+        push @return, $d;
+        last if @return == $limit;
     }
-    return "N/A";
+    return @return;
 }
 
 sub reminders {

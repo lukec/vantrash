@@ -19,7 +19,7 @@ sub handle_request {
     my $self = shift;
     my $req = shift;
 
-    my $path = $req->request_uri;
+    my $path = $req->path;
     my %func_map = (
         GET => [
             [ qr{^/$} => 'index.html' ],
@@ -159,10 +159,12 @@ sub zone_next_pickup_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    my $limit =  $req->param('limit');
+
     my %param = (
         zone => $zone,
         zone_uri => "/zones/$zone/nextpickup",
-        day => $self->model->next_pickup($zone),
+        days => [$self->model->next_pickup($zone, $limit)],
     );
     return $self->process_template('zone_next_pickup.html', \%param);
 }
@@ -171,7 +173,9 @@ sub zone_next_pickup_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = $self->model->next_pickup($zone);
+    my $limit =  $req->param('limit');
+
+    my $body = join "\n", $self->model->next_pickup($zone, $limit);
     return $self->response('text/plain' => $body);
 }
 
@@ -179,7 +183,10 @@ sub zone_next_pickup_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = encode_json { next => $self->model->next_pickup($zone) };
+    my $limit =  $req->param('limit');
+
+    my $body
+        = encode_json { next => [ $self->model->next_pickup($zone, $limit) ] };
     return $self->response('application/json' => $body);
 }
 
