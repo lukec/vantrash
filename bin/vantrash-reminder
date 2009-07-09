@@ -11,6 +11,7 @@ my $password;
 my $email;
 my $offset;
 my $delete;
+my $server_base = 'http://vantrash.ca';
 GetOptions(
     'z|zone=s'     => \$zone,
     'i|id=s'       => \$id,
@@ -18,6 +19,7 @@ GetOptions(
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
     'delete'       => \$delete,
+    'server=s'     => \$server_base,
 ) or usage();
 
 if ($delete) {
@@ -31,7 +33,7 @@ else {
 exit;
 
 sub delete_reminder {
-    my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders/$id";
+    my $uri = "$server_base/zones/$zone/reminders/$id";
     my $ua = LWP::UserAgent->new;
     my $req = HTTP::Request->new('DELETE', $uri);
     my $resp = $ua->request($req);
@@ -39,7 +41,7 @@ sub delete_reminder {
 }
 
 sub add_reminder {
-    my $uri = "http://cal.wikrad.com:2009/zones/$zone/reminders";
+    my $uri = "$server_base/zones/$zone/reminders";
     my $ua = LWP::UserAgent->new;
     my $req = HTTP::Request->new('PUT', $uri);
     $req->content( encode_json( {
