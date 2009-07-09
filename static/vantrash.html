@@ -7,14 +7,6 @@
         <div id="map_canvas" style="width: 100%; height: 80%"></div>
         <div id="clicks"></div><a href="#" onclick="$('#clicks').html('')">clear</a>
 
-        <div style="display:none">
-            <div id="notify_me">
-                Notify me when I should put my garbage out:<br />
-                phone: <input type="text"/><br />
-                <input type="submit"/>
-            </div>
-        </div>
-
         <script>
             var vancouver = [ 49.26422,-123.138542 ];
                 
@@ -138,6 +130,9 @@
             var map = new GMap2($("#map_canvas").get(0));
             map.setCenter(new GLatLng(vancouver[0], vancouver[1]), 12);
 
+            function getSchedule (name, callback) {
+            }
+
             var points = [];
             $.each(areas, function (name, data) {
                 var polygon = new GPolygon(
@@ -151,9 +146,9 @@
                 map.addOverlay(polygon);
 
                 GEvent.addListener(polygon, 'click', function(latlng) {
-                    map.openInfoWindow(
-                        latlng, $('#notify_me').clone().get(0)
-                    );
+                    getSchedule(name, function(sched) {
+                        map.openInfoWindow(latlng, sched);
+                    });
                 });
             });
 
