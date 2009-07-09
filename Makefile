@@ -11,3 +11,5 @@ release: $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC)
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	sudo /etc/init.d/apache2 restart
 
+install_static: $(SOURCE_FILES)
+	sudo cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
