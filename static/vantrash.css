@@ -1,10 +1,32 @@
 body {
-    background-image:url('images/bg.jpg');
-    background-repeat:repeat-y;
-    background-attachment:fixed;
-    background-position: 50% 0%;
     text-align: center;
-    font-size: 180%;
+    font-family: Helvetica, Verdana, Arial, sans-serif;
+}
+
+h1 {
+    margin: 4px;
+}
+h2 {
+    font-style: italic;
+    font-size: 80%;
+    margin: 4px;
+}
+
+.footerLinks {
+    float: left;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footerLinks a {
+    margin: 0 10px;
+}
+
+#mapCanvas {
+    margin: auto;
+    height: 80%;
+    width: 80%;
 }
 
 div.content {
