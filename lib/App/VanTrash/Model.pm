@@ -34,6 +34,7 @@ sub ical {
             summary => 'Garbage pickup day',
             dtstart => Date::ICal->new(
                 year => $year, month => $month, day => $day,
+                offset => "-0800",
             )->ical,
         );
         $ical->add_entry($evt);
