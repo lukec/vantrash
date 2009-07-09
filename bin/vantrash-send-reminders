@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use App::VanTrash::Model;
+use DateTime;
+
+my $now = DateTime->now(time_zone => 'America/Vancouver');
+print "Running at: ", join('-', $now->year, $now->month, $now->day), "\n";
+
+my $model = App::VanTrash::Model->new( base_path => "$FindBin::Bin/..");
+my $reminders = $model->reminderhash;
+
+my @reminders_to_send;
+
+for my $zone (keys %$reminders) {
+    my $next_pickup = $model->next_pickup($zone);
+    my ($next_y, $next_m, $next_d) = split '-', $next_pickup;
+
+    print "$zone - $next_pickup\n";
+    for my $id (keys %{ $reminders->{$zone} }) {
+        my $rem = $reminders->{$zone}{$id};
+        my $offset = $rem->{offset};
+
+        my $pickup_date = DateTime->new(
+            year => $next_y, month => $next_m, day => $next_d,
+            time_zone => 'America/Vancouver',
+        );
+        my $remind_time
+            = $pickup_date + DateTime::Duration->new(hours => $offset);
+
+        if ($now > $remind_time) {
+            if (my $last_notify_secs = $rem->{last_notification}) {
+                my $last_notify
+                    = DateTime->from_epoch(epoch => $last_notify_secs);
+                next if $last_notify > $remind_time;
+            }
+            push @reminders_to_send, {
+                zone => $zone,
+                date => $pickup_date,
+                reminder => $rem,
+            };
+        }
+    }
+}
+
+for my $r (@reminders_to_send) {
+    send_notification($r);
+    $model->reminderhash->{$r->{zone}}{$r->{reminder}{id}}{last_notification} = $now->epoch;
+    $model->save_reminderhash;
+}
+
+exit;
+
+sub send_notification {
+    my $r = shift;
+    warn "TODO send_notification for $r->{zone} for $r->{reminder}{id}\n";
+}
