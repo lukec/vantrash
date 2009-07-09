@@ -15,7 +15,7 @@ has '_reminderhash' => (is => 'rw', isa => 'HashRef', lazy_build => 1);
 sub days {
     my $self = shift;
     my $zone = shift;
-    return [sort {$a cmp $b} @{ $self->zonehash->{$zone} }];
+    return [sort {$a cmp $b} @{ $self->zonehash->{$zone} || [] }];
 }
 
 sub next_pickup {
