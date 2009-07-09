@@ -32,6 +32,7 @@ sub handle_request {
             [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days_html ],
             [ qr{^/zones/([^/]+)/pickupdays\.txt$} => \&zone_days_txt ],
             [ qr{^/zones/([^/]+)/pickupdays\.json$} => \&zone_days_json ],
+            [ qr{^/zones/([^/]+)/pickupdays\.ics$}  => \&zone_days_ical ],
             [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
             [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
             [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
@@ -143,6 +144,14 @@ sub zone_days_json {
     my $zone = shift;
     my $body = encode_json $self->model->days($zone);
     return $self->response('application/json' => $body);
+}
+
+sub zone_days_ical {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $body = $self->model->ical($zone);
+    return $self->response('text/calendar' => $body);
 }
 
 sub zone_next_pickup_html {

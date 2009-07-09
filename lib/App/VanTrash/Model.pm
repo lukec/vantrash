@@ -3,6 +3,9 @@ use Moose;
 use YAML qw/LoadFile DumpFile/;
 use DateTime;
 use Fatal qw/rename/;
+use Data::ICal;
+use Data::ICal::Entry::Event;
+use Date::ICal;
 use namespace::clean -except => 'meta';
 
 has 'base_path'    => (is => 'ro', isa => 'Str',      required   => 1);
@@ -16,6 +19,27 @@ sub days {
     my $self = shift;
     my $zone = shift;
     return [sort {$a cmp $b} @{ $self->zonehash->{$zone} || [] }];
+}
+
+sub ical {
+    my $self = shift;
+    my $zone = shift;
+    my $days = $self->days($zone);
+
+    my $ical = Data::ICal->new();
+    for my $day (@$days) {
+        my ($year, $month, $day) = split '-', $day;
+        my $evt = Data::ICal::Entry::Event->new;
+        $evt->add_properties(
+            summary => 'Garbage pickup day',
+            dtstart => Date::ICal->new(
+                year => $year, month => $month, day => $day,
+            )->ical,
+        );
+        $ical->add_entry($evt);
+    }
+
+    return $ical->as_string;
 }
 
 sub next_pickup {
