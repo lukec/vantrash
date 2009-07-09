@@ -70,7 +70,7 @@ sub delete_reminder {
 
 sub save_reminderhash {
     my $self = shift;
-    my $tmp = $self->reminderfile . ".tmp";
+    my $tmp = "/tmp/reminder.$$";
     DumpFile($tmp, $self->reminderhash);
     rename $tmp => $self->reminderfile;
 }
@@ -100,7 +100,7 @@ sub _load_file {
     my $file = $self->$name;
     return {} unless -e $file;
     $self->{_modified}{$file} = (stat($file))[9];
-    return LoadFile($file);
+    return LoadFile($file) || {};
 }
 
 sub _build_zonefile {
@@ -110,7 +110,7 @@ sub _build_zonefile {
 
 sub _build_reminderfile {
     my $self = shift;
-    return $self->base_path . "/trash-reminders.yaml";
+    return $self->base_path . "/data/reminders.yaml";
 }
 
 __PACKAGE__->meta->make_immutable;
