@@ -126,6 +126,7 @@ sub zone_days_html {
         zone => $zone,
         zone_uri => "/zones/$zone/pickupdays",
         days => $self->model->days($zone),
+        has_ical => 1,
     );
     return $self->process_template('zone_days.html', \%param);
 }

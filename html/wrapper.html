@@ -3,6 +3,9 @@
   <body>
     [% content %]
     <hr />
+    [% IF has_ical %]
+    <a href="[% zone_uri %].ics">text/calendar (iCal)</a> | 
+    [% END %]
     <a href="[% zone_uri %].txt">text/plain</a> | 
     <a href="[% zone_uri %].json">application/json</a>
   </body>
