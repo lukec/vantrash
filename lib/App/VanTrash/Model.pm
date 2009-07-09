@@ -26,7 +26,8 @@ sub next_pickup {
     my $now = time;
     for my $d (@$days) {
         $d =~ m/^(\d+)-(\d+)-(\d+)$/;
-        my $dt = DateTime->new(year => $1, month => $2, day => $3);
+        my $dt = DateTime->new(year => $1, month => $2, day => $3,
+                               time_zone => 'America/Vancouver');
         next if $now > $dt->epoch;
         return $d;
     }
@@ -52,6 +53,7 @@ sub add_reminder {
     my $zone = shift;
     my $rem  = shift;
 
+    $rem->{offset} ||= -6;
     $self->reminderhash->{$zone}{$rem->{id}} = $rem;
     $self->save_reminderhash;
 }
