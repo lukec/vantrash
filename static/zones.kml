@@ -2,21 +2,54 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>VanTrash</name>
-    <LookAt>
-        <longitude>-123.138542</longitude>
-        <latitude>49.26422</latitude>
-        <range>10000</range>
-    </LookAt>
+    <Style id="red">
+      <LineStyle>
+        <width>5</width>
+        <color>990000ff</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>330000ff</color>
+      </PolyStyle>
+    </Style>
+    <Style id="blue">
+      <LineStyle>
+        <width>5</width>
+        <color>99ff0000</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>33ff0000</color>
+      </PolyStyle>
+    </Style>
+    <Style id="yellow">
+      <LineStyle>
+        <width>5</width>
+        <color>9900ffff</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>3300ffff</color>
+      </PolyStyle>
+    </Style>
+    <Style id="purple">
+      <LineStyle>
+        <width>5</width>
+        <color>99ff0088</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>33ff0088</color>
+      </PolyStyle>
+    </Style>
+    <Style id="green">
+      <LineStyle>
+        <width>5</width>
+        <color>9900ff00</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>3300ff00</color>
+      </PolyStyle>
+    </Style>
     <Placemark>
       <name>vancouver-south-red</name>
-      <Style id="red">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>990000ff</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#red</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -64,14 +97,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-south-blue</name>
-      <Style id="blue">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>99ff0000</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#blue</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -108,14 +134,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-south-purple</name>
-      <Style id="purple">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>99ff0088</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#purple</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -145,14 +164,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-south-green</name>
-      <Style id="green">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>9900ff00</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#green</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -177,14 +189,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-south-yellow</name>
-      <Style id="yellow">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>9900ffff</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#yellow</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -212,14 +217,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-north-red</name>
-      <Style id="red">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>990000ff</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#red</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -253,14 +251,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-north-blue</name>
-      <Style id="blue">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>99ff0000</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#blue</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -301,14 +292,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-north-purple</name>
-      <Style id="purple">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>99ff0088</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#purple</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -337,14 +321,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-north-green</name>
-      <Style id="green">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>9900ff00</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#green</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -381,14 +358,7 @@
     </Placemark>
     <Placemark>
       <name>vancouver-north-yellow</name>
-      <Style id="yellow">
-        <LineStyle>
-          <width>1.5</width>
-        </LineStyle>
-        <PolyStyle>
-          <color>9900ffff</color>
-        </PolyStyle>
-      </Style>
+      <styleUrl>#yellow</styleUrl>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>

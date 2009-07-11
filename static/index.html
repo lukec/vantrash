@@ -2,9 +2,9 @@
     <head>
         <title>VanTrash</title>
         <link href="vantrash.css" rel="stylesheet" type="text/css" media="screen">
-         <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5rEMciNjzck_9F910WRZkxQkGglP5O4HpwzXzPkg1mrDd6_pIhQOrRhaNFw0NJs0Y9o2jCPcHNE8Sw" type="text/javascript"></script>
-         <script src="http://jquery.com/src/jquery-latest.js"></script>
-         <script src="vantrash.js"></script>
+        <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5rEMciNjzck_9F910WRZkxQkGglP5O4HpwzXzPkg1mrDd6_pIhQOrRhaNFw0NJs0Y9o2jCPcHNE8Sw" type="text/javascript"></script>
+        <script src="http://jquery.com/src/jquery-latest.js"></script>
+        <script src="vantrash.js"></script>
     </head>
     <body>
         <h1>VanTrash</h1>
@@ -12,8 +12,10 @@
 
         <div id="mapCanvas"></div>
         <script>
-            var vantrash = new Vantrash();
-            vantrash.render($('#mapCanvas').get(0));
+            $(function(){
+                vantrash = new Vantrash();
+                vantrash.render($('#mapCanvas').get(0));
+            });
         </script>
 
         <div class="footerLinks">
