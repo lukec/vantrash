@@ -75,27 +75,20 @@ Vantrash.prototype = {
         var self = this;
 
         this.zones = [];
-        GEvent.addListener(this.map,'addoverlay',function(zone){
-            if (!zone.name) return;
-            self.zones.push(zone);
-
-            // Add click handler to the zone
-            GEvent.addListener(zone, 'click', function() {
-                var center = zone.getBounds().getCenter()
-                self.showSchedule(center, zone.name);
-                return false;
-            });
-        }); 
-
-        this.map.clearOverlays();
-        if (!url) url = "http://vantrash.ca/zones.kml";
-        this.geoxml = new GGeoXml(url);
-        this.map.addOverlay(this.geoxml);
-        this.geoxml.gotoDefaultViewport(this.map);
-
-        GEvent.addListener(this.geoxml, 'load', function() {
-            self.setCurrentLocation();
+        this.exml = new EGeoXml("exml", this.map, "zones.kml", {
+            createpolygon: function (pts,sc,sw,so,fc,fo,pl,name) {
+                var zone = new GPolygon(pts, sc, sw, so, fc, fo);
+                GEvent.addListener(zone, 'click', function() {
+                    var center = zone.getBounds().getCenter()
+                    self.showSchedule(center, name);
+                    return false;
+                });
+                self.zones.push(zone);
+                self.map.addOverlay(zone);
+            }
         });
+        this.exml.parse();
+        this.setCurrentLocation();
     },
 
     addClickHandler: function() {
