@@ -73,7 +73,6 @@ Vantrash.prototype = {
 
     loadKML: function(url) {
         var self = this;
-
         this.zones = [];
         this.exml = new EGeoXml("exml", this.map, "zones.kml", {
             createpolygon: function (pts,sc,sw,so,fc,fo,pl,name) {
@@ -87,8 +86,10 @@ Vantrash.prototype = {
                 self.map.addOverlay(zone);
             }
         });
+        GEvent.addListener(this.exml, 'parsed', function() {
+            self.setCurrentLocation();
+        });
         this.exml.parse();
-        this.setCurrentLocation();
     },
 
     addClickHandler: function() {
@@ -109,7 +110,7 @@ Vantrash.prototype = {
                 );
                 self.map.addOverlay(new GMarker(self._location));
                 $.each(self.zones, function(i, zone) {
-                    if (zone.getBounds().contains(self._location)) {
+                    if (zone.Contains(self._location)) {
                         GEvent.trigger(zone, 'click');
                         self._clicked_curloc = true;
                     }
