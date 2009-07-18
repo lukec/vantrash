@@ -92,14 +92,6 @@ Vantrash.prototype = {
         this.exml.parse();
     },
 
-    addClickHandler: function() {
-        GEvent.addListener(this.map, 'click', function(overlay, latlng) {
-            if (latlng) {
-                $('#clicks').append('['+latlng.y+', '+latlng.x+'], ');
-            }
-        });
-    },
-
     setCurrentLocation: function () {
         var self = this;
         if (navigator.geolocation) {
@@ -117,6 +109,19 @@ Vantrash.prototype = {
                 });
             });
         }
+    },
+
+    logClicks: function() {
+        $('body').append(
+            $('<a href="#">clear</a>')
+                .click(function() { $('#clicks').empty() })
+        );
+        $('body').append('<div id="clicks"></div>');
+        GEvent.addListener(this.map, 'click', function(o, latlng) {
+            if (latlng) {
+                $('#clicks').append(latlng.x+', '+latlng.y+', 0<br/>');
+            }
+        });
     }
 }
 
