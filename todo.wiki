@@ -1,0 +1,50 @@
+^ Phase One
+
+Running site with easy lookup and reminder service for email and SMS. Zones are hard-coded.
+
+^^ Business
+* form as a company
+** notify socialtext
+
+* Vantrash mission:
+** Short term: every citizen of vancouver can have email reminders by donation and paid sms reminders
+** Longer term: every canadian citizen can have email reminders  by donation and paid sms reminders
+
+* Payment?
+** Adwords?
+** Google Checkout?
+** Paypal?
+
+Write Stories:
+* First time user creates an email reminder
+* First time user creates an sms reminder
+* User changes their reminder
+* User deletes their reminder
+* User can view zone statistics
+** zone views
+** zone pickupdays
+** zone nextpickup
+** reminders per zone
+
+^^ Marketing
+
+* Add google adwords
+* blog? wordpress?
+* wiki? socialtext?
+* group? googlegroups? Google for Domains?
+* luke@vantrash.ca? kevinj@vantrash.ca?
+
+^^ Tech
+
+* https???
+* Email Tatango's Adrian about sms & email-sms
+* Write wikitests for existing API
+* Build the reminder service
+* Email reminders get sent
+* SMS reminders (email-to-sms) get sent
+* Automate testing the reminder service
+
+Nice to haves:
+* Tell users without location services in their browser to upgrade
+
+
