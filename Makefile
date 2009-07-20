@@ -12,6 +12,7 @@ JS_FILES=\
 	 static/jquery-latest.js \
 	 static/egeoxml.js \
 	 static/epoly.js \
+	 static/cal.js \
 	 static/vantrash.js
 
 all: $(JS_MINI)

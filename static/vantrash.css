@@ -47,3 +47,14 @@ div.footer {
     font-size: 40%;
 }
 
+.calendar td {
+    text-align: center;
+}
+
+.calendar .today {
+    background-color: #7777ff;
+}
+
+.calendar .marked {
+    background-color: #FF7777;
+}

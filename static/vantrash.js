@@ -5,60 +5,21 @@ Vantrash = function() {
 
 Vantrash.prototype = {
     center: [ 49.26422,-123.138542 ],
-    daysUntil: function(d) {
-        var counter = new Date; // today
-        function sameday (a, b) {
-            return a.getDate() == b.getDate()
-                && a.getMonth() == b.getMonth()
-                && a.getYear() == b.getYear();
-        }
-
-        var max_days = 20;
-        var days = 0;
-        while (!sameday(counter,d)) {
-            counter.setDate(counter.getDate()+1);
-            days++;
-            if (days > 10) return -1;
-        }
-        return days;
-    },
-
-    formattedDate: function(d) {
-        return d.toString().replace(/ \d+:\d+:.*/,'');
-    },
-
-    parseDate: function(d) {
-        var parts = d[0].split('-');
-        var dateobj = new Date;
-        dateobj.setYear(parts[0]);
-        dateobj.setMonth(parts[1]-1);
-        dateobj.setDate(parts[2]);
-        return dateobj;
-    },
 
     showInfo: function(latlng, html) {
-        this.map.openInfoWindow(latlng, '<br/>' + html);
+        this.map.openInfoWindow(latlng, html);
     },
 
     showSchedule: function(latlng, name) {
         var self = this;
-        $.getJSON('/zones/' + name + '/nextpickup.json', function (data) {
-            var next = self.parseDate(data.next);
-            var days = self.daysUntil(next);
-
-            if (days == -1) {
-                self.showInfo(latlng, 'Next pickup on ' + self.formattedDate(next));
-            }
-            else if (days == 1) {
-                self.showInfo(
-                    latlng, 'Next pickup <strong>tomorrow</strong> on ' + self.formattedDate(next)
-                );
-            }
-            else {
-                self.showInfo(
-                    latlng, 'Next pickup in ' + days + ' days on ' + self.formattedDate(next)
-                );
-            }
+        $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
+            var cal = new Calendar;
+            var table = cal.create();
+            $.each(data, function(i,d) {
+                cal.mark(d);
+            });
+            cal.show();
+            self.showInfo(latlng, table.get(0));
         });
     },
 
