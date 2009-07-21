@@ -1,8 +1,9 @@
 ^ Phase One
 
-Running site with easy lookup and reminder service for email and SMS. Zones are hard-coded.
+Running site with easy trash day lookup and a reminder service for email and SMS. Zones are hard-coded and limited to Vancouver only.
 
 ^^ Business
+
 * form as a company
 ** notify socialtext
 
@@ -26,17 +27,21 @@ Write Stories:
 ** zone nextpickup
 ** reminders per zone
 
+Optional:
+* Vantrash Android app
+
 ^^ Marketing
 
 * Add google adwords
-* blog? wordpress?
-* wiki? socialtext?
+* blog? blogger? vantrash.blogger.com?
+* wiki? socialtext? http://socialtext.net/vantrash?
 * group? googlegroups? Google for Domains?
 * luke@vantrash.ca? kevinj@vantrash.ca?
+* GetSatisfaction style feedback
 
 ^^ Tech
 
-* https???
+* Show iCal feed in pop-up
 * Email Tatango's Adrian about sms & email-sms
 * Write wikitests for existing API
 * Build the reminder service
@@ -47,4 +52,7 @@ Write Stories:
 Nice to haves:
 * Tell users without location services in their browser to upgrade
 
+^ Phase Two
+
+Admin interface to maintain views for other cities and to maintain zones collaboratively.
 
