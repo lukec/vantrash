@@ -17,6 +17,9 @@ Running site with easy trash day lookup and a reminder service for email and SMS
 ** Paypal?
 
 Write Stories:
+* First time user hits the site
+* First time user clicks their zone
+* First time user finds their zone via Postal Code
 * First time user creates an email reminder
 * First time user creates an sms reminder
 * User changes their reminder
@@ -42,7 +45,7 @@ Optional:
 ^^ Tech
 
 * Show iCal feed in pop-up
-* Email Tatango's Adrian about sms & email-sms
+* -Email Tatango's Adrian about sms & email-sms-
 * Write wikitests for existing API
 * Build the reminder service
 * Email reminders get sent
