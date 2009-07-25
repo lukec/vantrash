@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Template;
+my $name = shift || die "USAGE: $0 <name>\n";
+my $vars = { };
+my $tt2 = Template->new({ INCLUDE_PATH => 'template' });
+
+$tt2->process("$name.tt2", $vars, "static/$name.html")
+    or die $tt2->error;

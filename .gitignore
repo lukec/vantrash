@@ -1,0 +1,5 @@
+*.swp
+static/javascript/vantrash-compiled*
+static/about.html
+static/api.html
+static/index.html
