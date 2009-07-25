@@ -1,11 +1,31 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-
+use FindBin;
+use Socialtext::Resting::Getopt qw/get_rester/;
 use Template;
-my $name = shift || die "USAGE: $0 <name>\n";
-my $vars = { };
-my $tt2 = Template->new({ INCLUDE_PATH => 'template' });
 
-$tt2->process("$name.tt2", $vars, "static/$name.html")
+my $R = get_rester(
+    'rester-config' => "$FindBin::Bin/../.vantrash-rester.conf"
+);
+die "Couldn't load a rester" unless $R->password;
+
+my $name = shift || die "USAGE: $0 <name>\n";
+my $tt2 = Template->new({ INCLUDE_PATH => 'template' });
+$tt2->process("$name.tt2", make_vars(), "static/$name.html")
     or die $tt2->error;
+
+exit;
+
+sub load_page_from_wiki {
+    my $name = shift;
+    $R->accept('text/html');
+    warn "  Fetching page '$name' from the wiki...\n";
+    return $R->get_page($name);
+}
+
+sub make_vars {
+    return {
+        load_page_from_wiki => \&load_page_from_wiki,
+    };
+}
