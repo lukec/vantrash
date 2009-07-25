@@ -56,17 +56,13 @@ sub handle_request {
             if (ref $todo) {
                 return $todo->($self, $req, $1, $2, $3, $4);
             }
-            return $self->_static_file('index.html');
-        }
-        if ($path =~ m{^/(images/.+|.+\.(css|html))$}) {
-            return $self->_static_file($1);
+            else {
+                $path = $todo;
+            }
         }
     }
-    
-    return HTTP::Engine::Response->new(
-        status => 404,
-        body => "Sorry, that path doesn't exist!",
-    );
+
+    return $self->_static_file($path);
 }
 
 sub zones_html {
@@ -300,11 +296,19 @@ sub process_template {
 sub _static_file {
     my $self = shift;
     my $file = $self->base_path . "/static/" . shift;
-    open(my $fh, $file);
-    my $resp = HTTP::Engine::Response->new(body => $fh);
-    my $ctype = $self->mimetypes->mimeTypeOf($file) || 'text/plain';
-    $resp->headers->header('Content-Type' => $ctype);
-    return $resp;
+    if (-f $file) {
+        open(my $fh, $file);
+        my $resp = HTTP::Engine::Response->new(body => $fh);
+        my $ctype = $self->mimetypes->mimeTypeOf($file) || 'text/plain';
+        $resp->headers->header('Content-Type' => $ctype);
+        return $resp;
+    }
+    else {
+        return HTTP::Engine::Response->new(
+            status => 404,
+            body => "Sorry, that path doesn't exist!",
+        );
+    }
 }
 
 sub _build_mimetypes { MIME::Types->new }
