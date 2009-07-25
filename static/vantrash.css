@@ -21,7 +21,7 @@
  #mainContent {
      padding-right: 10px;
      padding-top: 10px;
-     padding-left:10%;
+     padding-left:25%;
      text-align:left;
  }
  #leftNav {
@@ -29,6 +29,9 @@
      margin-top:20px;
      padding-left:2%;
      text-align:left;
+ }
+ #leftNav div {
+     width: 22%;
  }
  #leftNav ul {
      padding-left:0;

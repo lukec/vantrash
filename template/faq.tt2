@@ -1,0 +1,5 @@
+[% WRAPPER wrapper.tt2 %]
+    <div class="content">
+       [% load_page_from_wiki('FAQ') %]
+    </div>
+[% END %]
