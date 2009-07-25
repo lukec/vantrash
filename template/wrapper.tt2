@@ -7,7 +7,18 @@
         [% END %]
     </head>
     <body>
-        [% content %]
+        <div id="header">
+            <a href="/"><img src="/images/logo.png"/></a>
+        </div>
+        <div id="leftNav">
+            <ul>
+                <li><a href="api.html">API</a> </li>
+                <li> <a href="about.html">About</a> </li>
+            </ul>
+        </div>
+        <div id="mainContent">
+            [% content %]
+        </div>
 
         <!-- Google Analytics -->
         <script type="text/javascript">
