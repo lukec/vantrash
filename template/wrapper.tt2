@@ -12,7 +12,8 @@
         </div>
         <div id="leftNav">
             <div>
-              VanTrash is a simple service designed to help you figure out your neighbourhood garbage schedule and set a reminder to your email, cell phone or home phone so you never forget to take the garbage out.
+              <p>VanTrash is a simple service designed to help you figure out your neighbourhood garbage schedule and set a reminder to your email, cell phone or home phone so you never forget to take the garbage out.</p>
+              <p>To find out your pick up schedule and/or set a reminder click on the zone in which you live on the map to your right.</p>
             </div>
             <ul>
                 <li><a href="about.html">About this site</a> </li>
