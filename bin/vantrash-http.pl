@@ -5,10 +5,13 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use App::VanTrash::Controller;
 
+my $port = 1009 + $<;
+warn "Starting up HTTP server on port $port\n";
+
 App::VanTrash::Controller->new(
     http_module => 'ServerSimple',
     http_args => {
-        port => 2009, 
+        port => $port,
         host => 'localhost',
         net_server => 'Net::Server::PreForkSimple',
         net_server_configure => {
