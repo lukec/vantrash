@@ -17,7 +17,7 @@ JS_FILES=\
 	 $(JS_DIR)/vantrash.js
 
 ALL_TEMPLATES=$(wildcard template/*.tt2)
-OTHER_TEMPLATES=
+OTHER_TEMPLATES=template/wrapper.tt2
 TEMPLATES=$(filter-out $(OTHER_TEMPLATES),$(ALL_TEMPLATES))
 HTML=$(TEMPLATES:template/%.tt2=static/%.html)
 

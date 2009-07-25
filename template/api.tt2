@@ -1,11 +1,6 @@
-<html>
-    <head>
-        <title>VanTrash API</title>
-        <link href="/vantrash.css" rel="stylesheet" type="text/css" media="screen">
-    </head
-    <body>
-      <h1>VanTrash API</h1>
-      This page defines the simple REST API that exposes collection times data.
+[% WRAPPER wrapper.tt2 %]
+    <h1>VanTrash API</h1>
+    This page defines the simple REST API that exposes collection times data.
 
       <div class="content">
         <h2>List of Zones</h2>
@@ -59,5 +54,4 @@
         <h4>Deleting a reminder</h4>
         Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.
       </div>
-    </body>
-</html>
+[% END %]
