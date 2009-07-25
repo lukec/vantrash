@@ -42,6 +42,8 @@ static/%.html: $(OTHER_TEMPLATES) template/%.tt2
 	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC)
+	make clean
+	make
 	sudo cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	sudo cp -R $(LIB) $(DATAFILE) $(TEMPLATES) $(INSTALL_DIR)
 	sudo cp $(EXEC) $(INSTALL_DIR)/bin
