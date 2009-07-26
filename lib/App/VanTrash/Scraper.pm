@@ -25,7 +25,12 @@ sub scrape_zone {
 
     my $row_scraper = scraper {
         process 'td.headings', 'months[]' => 'TEXT';
-        process 'td.date', 'dates[]' => 'TEXT';
+        process 'td:nth-child(2)', 'month1day' => 'TEXT';
+        process 'td:nth-child(3) > img', 'month1yard' => '@alt';
+        process 'td:nth-child(5)', 'month2day' => 'TEXT';
+        process 'td:nth-child(6) > img', 'month1yard' => '@alt';
+        process 'td:nth-child(8)', 'month3day' => 'TEXT';
+        process 'td:nth-child(9) > img', 'month1yard' => '@alt';
     };
 
     my $zone_scraper = scraper {
@@ -40,19 +45,24 @@ sub scrape_zone {
         if ($row->{months}) {
             @current_months = @{ $row->{months} };
         }
-        elsif ($row->{dates}) {
-            my $i = 0;
-            for my $day (@{ $row->{dates} }) {
-                next unless $day =~ m/^\d+$/;
+        else {
+            for my $i (1 .. 3) {
+                my $day = $row->{"month${i}day"};
+                next unless $day and $day =~ m/^\d+$/;
                 my $year = 2009;
-                my $month = $current_months[$i];
+                my $month = $current_months[$i - 1];
                 if ($month =~ s/^(\w+) (\d+)/$1/) {
                     $year = $2;
                 }
 
                 my $month_num = _month_to_num($month);
-                push @dates, sprintf '%4d-%02d-%02d', $year,$month_num,$day;
-                $i++;
+                my $date = sprintf '%4d-%02d-%02d', $year,$month_num,$day;
+
+                if ($row->{"month${i}yard"}) {
+                    $date .= ' Y';
+                }
+
+                push @dates, $date;
             }
         }
 
