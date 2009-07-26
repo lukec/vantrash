@@ -28,9 +28,9 @@ sub scrape_zone {
         process 'td:nth-child(2)', 'month1day' => 'TEXT';
         process 'td:nth-child(3) > img', 'month1yard' => '@alt';
         process 'td:nth-child(5)', 'month2day' => 'TEXT';
-        process 'td:nth-child(6) > img', 'month1yard' => '@alt';
+        process 'td:nth-child(6) > img', 'month2yard' => '@alt';
         process 'td:nth-child(8)', 'month3day' => 'TEXT';
-        process 'td:nth-child(9) > img', 'month1yard' => '@alt';
+        process 'td:nth-child(9) > img', 'month3yard' => '@alt';
     };
 
     my $zone_scraper = scraper {
