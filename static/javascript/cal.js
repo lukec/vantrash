@@ -8,33 +8,12 @@ Calendar = function () {
 }
 
 Calendar.prototype = {
+    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    months: [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ],
     ROWS: 2 + Math.ceil(31 / 7),
-
-    // Extract the names of the months and days for internationalization
-    getNames: function () {
-        var date = new Date;
-
-        // create an array with the names of the months
-        this.months = [];
-        for (var i=0; i<12; i++) {
-            date.setMonth(i);
-            this.months.push(date.toString().split(' ')[1]);
-        }
-
-        // create an array with the names of the months
-        this.days = [];
-
-        // find monday
-        for (var i = date.getDate(); date.getDay(); i++) {
-            date.setDate(i);
-        }
-
-        // set the names
-        for (var i=date.getDate(); this.days.length < 7; i++) {
-            date.setDate(i);
-            this.days.push(date.toString().split(' ')[0]);
-        }
-    },
 
     nextMonth: function () {
         this.date.setMonth(this.date.getMonth()+1);
@@ -48,11 +27,10 @@ Calendar.prototype = {
 
     create: function () {
         var self = this;
-        if (!this.days || !this.month) {
-            this.getNames();
-        }
 
         this.table = $('<table></table>').addClass('calendar');
+
+        /* Month / Year row */
         var $tr = $('<tr></tr>').appendTo(this.table);
         $('<a href="#"></a>')
             .text('<<')
@@ -67,6 +45,12 @@ Calendar.prototype = {
             .click(function() { self.nextMonth() })
             .wrap('<td></td>')
             .appendTo($('<td></td>').appendTo($tr));
+
+        /* Day of week row */
+        var $daysRow = $('<tr></tr>').appendTo(this.table);
+        $.each(this.days, function(i, day) {
+            $('<td></td>').text(day).appendTo($daysRow);
+        });
 
         this.cells = [];
 
@@ -103,7 +87,7 @@ Calendar.prototype = {
         var today = new Date;
 
         while (cnt.getMonth() == month) {
-            var row = Math.floor((firstDay + cnt.getDate() - 1) / 7) + 1;
+            var row = Math.floor((firstDay + cnt.getDate() - 1) / 7) + 2;
             var $cell
                 = $($('td', $('tr',this.table).get(row)).get(cnt.getDay()));
 
