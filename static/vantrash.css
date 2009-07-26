@@ -1,57 +1,87 @@
- body {
-     font-family:Tahoma,Verdana,Arial,sans-serif;
-     line-height:1.1em;
-     text-align:center;
- }
- h1 {
-     margin:4px;
- }
- h2 {
-     font-size:80%;
-     font-style:italic;
-     margin:4px;
- }
- #header {
-     width:100%;
- }
- #header img {
-     width: 100%;
-     border: none;
- }
- #mainContent {
-     padding-right: 10px;
-     padding-top: 10px;
-     padding-left:25%;
-     text-align:left;
- }
- #leftNav {
-     width: 23%;
-     float:left;
-     margin-top:20px;
-     padding-left:2%;
-     text-align:left;
- }
- #leftNav div {
-     width: 90%;
- }
- #leftNav ul {
-     padding-left:0;
- }
- #leftNav li {
-     list-style-image:none;
-     list-style-position:outside;
-     list-style-type:none;
- }
- #mapCanvas {
-     height:80%;
-     margin:auto;
- }
- .calendar td {
-     text-align:center;
- }
- .calendar .today {
-     background-color:#7777FF;
- }
- .calendar .marked {
-     background-color:#FF7777;
- }
+html {
+    margin: 0;
+    padding: 0;
+}
+body { 
+    font: 75% verdana, georgia, sans-serif;
+    text-align:center;
+    line-height: 1.1;
+}
+
+h1 {
+    margin:4px;
+}
+#header {
+    width:100%;
+    text-align: left;
+    height: 97px;
+    background-color: #a5c880;
+}
+#headerLeft {
+    padding-left: 10px;
+    height: 97px;
+    background: url(/images/header_left.png) top left no-repeat;
+}
+#headerRight {
+    padding-right: 10px;
+    height: 97px;
+    background: url(/images/header_right.png) top right no-repeat;
+}
+#header .tagline {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    font-size: 120%;
+    text-align: center;
+    width: 100%;
+    font-style: italic;
+}
+#header img {
+    border: none;
+}
+
+#mainContent {
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-left: 20%;
+    text-align:left;
+}
+#leftNav {
+    width: 18%;
+    float: left;
+    margin-top: 20px;
+    padding: 0 10px;
+    text-align: left;
+}
+#leftNav ul {
+    padding-left:0;
+}
+#leftNav li {
+    padding: 4px 0;
+    list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;
+    border-top: 1px dashed #aaa;
+}
+#leftNav li.last {
+    border-bottom: 1px dashed #aaa;
+}
+#leftNav a {
+    text-decoration: none;
+}
+#leftNav a:hover {
+    text-decoration: underline;
+}
+#mapCanvas {
+    height:80%;
+    margin:auto;
+}
+.calendar td {
+    text-align:center;
+}
+.calendar .today {
+    background-color:#7777FF;
+}
+.calendar .marked {
+    background-color:#FF7777;
+}

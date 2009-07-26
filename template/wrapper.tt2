@@ -7,8 +7,15 @@
         [% END %]
     </head>
     <body>
-        <div id="header">
-            <a href="/"><img src="/images/logo.png"/></a>
+        <div id="headerLeft">
+            <div id="headerRight">
+                <div id="header">
+                    <a href="/"><img src="/images/logo.png"/></a>
+                    <span class="tagline">
+                        Never forget to take the trash out again!
+                    </span> 
+                </div>
+            </div>
         </div>
         <div id="leftNav">
             <div>
@@ -16,10 +23,10 @@
               <p>To find out your pick up schedule and/or set a reminder click on the zone in which you live on the map to your right.</p>
             </div>
             <ul>
-                <li><a href="about.html">About this site</a> </li>
-                <li> <a href="faq.html">FAQ</a> </li>
-                <li> <a href="donate.html">Donate</a> </li>
-                <li> <a href="api.html">VanTrash API</a> </li>
+                <li><a href="about.html">About this site</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="donate.html">Donate</a></li>
+                <li class="last"> <a href="api.html">VanTrash API</a></li>
             </ul>
         </div>
         <div id="mainContent">
