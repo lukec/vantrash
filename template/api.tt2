@@ -36,6 +36,8 @@
             <li>Reminders: <a href="/zones/vancouver-north-blue/reminders.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/reminders.json"><code>application/json</code></a></li>
         </ul>
+        Dates are expressed as <code>YYYY-MM-DD[ F]</code>.  The <code>F</code> is an optional flag (separated from the date with a single space).  The only supported flag currently is <code>Y</code> which means a 'Yard Trimmings Collection' also occurs on that day.</p>
+        <p>
         The <code>nextpickup</code> request accepts a <code>limit</code> GET parameter to show the next several pickups.<br />
         (eg: <code>/zones/vancouver-north-blue/nextpickup.txt?limit=5).
         </p>
