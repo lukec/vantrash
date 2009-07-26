@@ -211,7 +211,7 @@ sub get_reminders_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = encode_json { next => $self->model->reminders($zone) };
+    my $body = encode_json $self->model->reminders($zone);
     return $self->response('application/json' => $body);
 }
 
