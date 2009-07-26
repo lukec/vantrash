@@ -21,7 +21,11 @@ sub load_page_from_wiki {
     my $name = shift;
     $R->accept('text/html');
     warn "  Fetching page '$name' from the wiki...\n";
-    return $R->get_page($name);
+    my $content = $R->get_page($name);
+    if ($R->response->code != 200) {
+        die "Could not load page '$name'! " . $R->response->status_line;
+    }
+    return $content;
 }
 
 sub make_vars {
