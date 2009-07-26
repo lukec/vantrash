@@ -18,7 +18,19 @@ has '_reminderhash' => (is => 'rw', isa => 'HashRef', lazy_build => 1);
 sub days {
     my $self = shift;
     my $zone = shift;
-    return [sort {$a cmp $b} @{ $self->zonehash->{$zone} || [] }];
+    my $days = [sort {$a cmp $b} @{ $self->zonehash->{$zone} || [] }];
+    for my $d (@$days) {
+        my ($day_string, $flag) = split ' ', $d;
+        my ($year, $month, $day) = split '-', $day_string;
+        $d = {
+            year => $year,
+            month => $month,
+            day => $day,
+            string => $d,
+            flag => $flag || '',
+        };
+    }
+    return $days;
 }
 
 sub ical {
@@ -28,12 +40,13 @@ sub ical {
 
     my $ical = Data::ICal->new();
     for my $day (@$days) {
-        my ($year, $month, $day) = split '-', $day;
         my $evt = Data::ICal::Entry::Event->new;
+        my $summary = 'Garbage pickup day';
+        $summary .= ' & Yard trimmings day' if $day->{flag} eq 'Y';
         $evt->add_properties(
-            summary => 'Garbage pickup day',
+            summary => $summary,
             dtstart => Date::ICal->new(
-                year => $year, month => $month, day => $day,
+                map { $_ => $day->{$_} } qw/year month day/,
                 offset => "-0800",
             )->ical,
         );
@@ -52,11 +65,12 @@ sub next_pickup {
     my $now = time;
     my @return;
     for my $d (@$days) {
-        $d =~ m/^(\d+)-(\d+)-(\d+)$/;
-        my $dt = DateTime->new(year => $1, month => $2, day => $3,
-                               time_zone => 'America/Vancouver');
+        my $dt = DateTime->new(
+            (map { $_ => $d->{$_} } qw/year month day/),
+            time_zone => 'America/Vancouver',
+        );
         next if $now > $dt->epoch;
-        push @return, $d;
+        push @return, $d->{string};
         last if @return == $limit;
     }
     return @return;

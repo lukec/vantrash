@@ -131,7 +131,7 @@ sub zone_days_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = join "\n", @{ $self->model->days($zone) };
+    my $body = join "\n", map { $_->{string} } @{ $self->model->days($zone) };
     return $self->response('text/plain' => $body);
 }
 
