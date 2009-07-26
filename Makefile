@@ -20,6 +20,7 @@ ALL_TEMPLATES=$(wildcard template/*.tt2)
 OTHER_TEMPLATES=template/wrapper.tt2
 TEMPLATES=$(filter-out $(OTHER_TEMPLATES),$(ALL_TEMPLATES))
 HTML=$(TEMPLATES:template/%.tt2=static/%.html)
+TESTS=$(wildcard t/*.t)
 
 all: $(JS_MINI) $(HTML)
 
@@ -49,3 +50,5 @@ install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC)
 	sudo cp $(EXEC) $(INSTALL_DIR)/bin
 	sudo /etc/init.d/apache2 restart
 
+test: $(TESTS)
+	prove $(TESTS)
