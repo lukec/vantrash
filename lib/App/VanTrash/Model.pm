@@ -7,8 +7,9 @@ use Data::ICal;
 use Data::ICal::Entry::Event;
 use Date::ICal;
 use namespace::clean -except => 'meta';
+use Carp qw/croak/;
 
-has 'base_path'    => (is => 'ro', isa => 'Str',      required   => 1);
+has 'data_path'    => (is => 'ro', isa => 'Str',      required   => 1);
 has 'zonefile'     => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'reminderfile' => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'zones'        => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
@@ -78,32 +79,32 @@ sub next_pickup {
 
 sub reminders {
     my $self = shift;
-    my $zone = shift;
+    my $zone = shift or croak "A zone is mandatory!";
 
     return [ keys %{ $self->reminderhash->{$zone} } ];
 }
 
 sub get_reminder {
     my $self = shift;
-    my $zone = shift;
-    my $id   = shift;
+    my $zone = shift or croak "A zone is mandatory!";
+    my $id   = shift or croak "An id is mandatory!";
     return $self->reminderhash->{$zone}{$id};
 }
 
 sub add_reminder {
     my $self = shift;
-    my $zone = shift;
-    my $rem  = shift;
+    my $zone = shift or croak "A zone is mandatory!";
+    my $rem  = shift or croak "A reminder is mandatory!";
 
-    $rem->{offset} ||= -6;
-    $self->reminderhash->{$zone}{$rem->{id}} = $rem;
+    $self->reminderhash->{$zone}{$rem->id} = $rem;
     $self->save_reminderhash;
+    return $rem;
 }
 
 sub delete_reminder {
     my $self = shift;
-    my $zone = shift;
-    my $id   = shift;
+    my $zone = shift or croak 'A zone is mandatory!';
+    my $id   = shift or croak 'An id is mandatory!';
 
     return unless $self->get_reminder($zone, $id);
     delete $self->reminderhash->{$zone}{$id};
@@ -154,12 +155,12 @@ sub _load_file {
 
 sub _build_zonefile {
     my $self = shift;
-    return $self->base_path . "/trash-zone-times.yaml";
+    return $self->data_path . "/trash-zone-times.yaml";
 }
 
 sub _build_reminderfile {
     my $self = shift;
-    return $self->base_path . "/data/reminders.yaml";
+    return $self->data_path . "/reminders.yaml";
 }
 
 __PACKAGE__->meta->make_immutable;

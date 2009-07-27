@@ -4,6 +4,7 @@ use HTTP::Engine;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
+use App::VanTrash::Reminder;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
 
@@ -220,21 +221,24 @@ sub put_reminder {
     my $req  = shift;
     my $zone = shift;
     
-    my $rem = eval { decode_json $req->raw_body };
+    my $args = eval { decode_json $req->raw_body };
     return HTTP::Engine::Response->new( status => 400, body => "Bad JSON" ) if $@;
 
-    unless ($rem->{id} and $rem->{email}) {
-        return HTTP::Engine::Response->new(status => 400,
-            body => "Reminder id and email fields are mandatory!");
+    my $reminder;
+    eval {
+        $reminder = App::VanTrash::Reminder->new( $args );
+    };
+    if ($@) {
+        return HTTP::Engine::Response->new(status => 400, body => $@);
     }
 
-    if ($self->model->get_reminder($zone, $rem->{id})) {
+    if ($self->model->get_reminder($zone, $reminder->id)) {
         return HTTP::Engine::Response->new(status => 400,
-            body => "Reminder id already exists! '$rem->{id}'");
+            body => "Reminder already exists! '" . $reminder->id . "'");
     }
 
-    $self->model->add_reminder($zone, $rem);
-    my $uri = "/zones/$zone/reminders/$rem->{id}";
+    $self->model->add_reminder($zone, $reminder);
+    my $uri = "/zones/$zone/reminders/" . $reminder->id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
     return $resp;
@@ -283,7 +287,7 @@ sub _build_engine {
 
 sub _build_model {
     my $self = shift;
-    return App::VanTrash::Model->new( base_path => $self->base_path );
+    return App::VanTrash::Model->new( data_path => $self->base_path . "/data" );
 }
 
 sub process_template {

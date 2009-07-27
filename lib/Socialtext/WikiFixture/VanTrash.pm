@@ -73,7 +73,7 @@ sub base_path {
 }
 
 sub _build_model {
-    return App::VanTrash::Model->new( base_path => base_path() );
+    return App::VanTrash::Model->new( data_path => base_path() . '/data' );
 }
 
 1;

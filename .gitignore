@@ -6,3 +6,5 @@ static/index.html
 .vantrash-rester.conf
 static/faq.html
 static/donate.html
+*.wiki
+data/reminders.yaml
