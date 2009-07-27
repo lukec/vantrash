@@ -5,6 +5,7 @@ use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
 use App::VanTrash::Reminder;
+use App::VanTrash::Template;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
 
@@ -194,7 +195,7 @@ sub put_reminder {
 
     my $reminder;
     eval {
-        $reminder = App::VanTrash::Reminder->new( $args );
+        $reminder = App::VanTrash::Reminder->new( %$args, zone => $zone );
     };
     if ($@) {
         return HTTP::Engine::Response->new(status => 400, body => $@);
@@ -205,7 +206,7 @@ sub put_reminder {
             body => "Reminder already exists! '" . $reminder->id . "'");
     }
 
-    $self->model->add_reminder($zone, $reminder);
+    $self->model->add_reminder($reminder);
     my $uri = "/zones/$zone/reminders/" . $reminder->id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
@@ -237,9 +238,7 @@ sub response {
 
 sub _build_template {
     my $self = shift;
-    return Template->new(
-        { INCLUDE_PATH => $self->base_path . "/html" },
-    );
+    return App::VanTrash::Template->new( base_path => $self->base_path );
 }
 
 sub _build_engine {

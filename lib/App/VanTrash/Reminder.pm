@@ -4,6 +4,7 @@ use Moose;
 has 'id'        => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'name'      => (is => 'ro', isa => 'Str',  required   => 1);
 has 'email'     => (is => 'ro', isa => 'Str',  required   => 1);
+has 'zone'      => (is => 'ro', isa => 'Str',  required   => 1);
 has 'offset'    => (is => 'ro', isa => 'Int',  default    => -6);
 has 'confirmed' => (is => 'rw', isa => 'Bool', default    => 0);
 

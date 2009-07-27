@@ -84,6 +84,17 @@ sub reminders {
     return [ keys %{ $self->reminderhash->{$zone} } ];
 }
 
+sub all_reminders {
+    my $self = shift;
+    
+    my $hash = $self->reminderhash;
+    my @reminders;
+    for my $zone (keys %$hash) {
+        push @reminders, values %{ $hash->{$zone} };
+    }
+    return \@reminders;
+}
+
 sub get_reminder {
     my $self = shift;
     my $zone = shift or croak "A zone is mandatory!";
@@ -93,10 +104,9 @@ sub get_reminder {
 
 sub add_reminder {
     my $self = shift;
-    my $zone = shift or croak "A zone is mandatory!";
     my $rem  = shift or croak "A reminder is mandatory!";
 
-    $self->reminderhash->{$zone}{$rem->id} = $rem;
+    $self->reminderhash->{$rem->zone}{$rem->id} = $rem;
     $self->save_reminderhash;
     return $rem;
 }

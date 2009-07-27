@@ -4,9 +4,11 @@ use App::VanTrash::Model;
 use IPC::Run qw/start finish/;
 use Test::More;
 use File::Path qw/mkpath rmtree/;
+use IO::All;
 
 has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
 has 'http_server' => (is => 'rw', isa => 'HashRef');
+has 'email_file' => (is => 'ro', isa => 'Str', lazy_build => 1);
 
 after 'init' => sub {
     my $self = shift;
@@ -66,6 +68,21 @@ sub clear_reminders {
     }
 }
 
+sub reminder_count_is {
+    my $self = shift;
+    my $count = shift;
+
+    my $all_reminders = $self->model->all_reminders;
+    is scalar(@$all_reminders), $count, 'reminder count';
+}
+
+sub email_like {
+    my $self = shift;
+    my $regex = shift;
+
+    like scalar(io($self->email_file)->slurp), $regex, 'email matches';
+}
+
 sub base_path {
     my $file = $INC{'Socialtext/WikiFixture/VanTrash.pm'};
     (my $dir = $file) =~ s#(.+)/.+#$1#;
@@ -74,6 +91,11 @@ sub base_path {
 
 sub _build_model {
     return App::VanTrash::Model->new( data_path => base_path() . '/data' );
+}
+
+sub _build_email_file {
+    require File::Temp;
+    my $dir = File::Temp::tempdir( CLEANUP => 1 );
 }
 
 1;

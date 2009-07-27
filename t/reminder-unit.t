@@ -24,8 +24,9 @@ is_deeply $model->reminders($zone), [], 'is empty';
 my $reminder = App::VanTrash::Reminder->new(
     name => "Test Reminder",
     email => 'test@vantrash.ca',
+    zone => $zone,
 );
-my $rem = $model->add_reminder( $zone, $reminder );
+my $rem = $model->add_reminder( $reminder );
 isa_ok $rem, 'App::VanTrash::Reminder';
 is $rem->name,  'Test Reminder', 'name';
 is $rem->email, 'test@vantrash.ca', 'email';
