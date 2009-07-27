@@ -80,7 +80,7 @@ h1 {
     text-align:center;
 }
 .calendar .today {
-    background-color:#7777FF;
+    font-weight: bold;
 }
 .calendar .marked {
     background-color:#FF7777;
