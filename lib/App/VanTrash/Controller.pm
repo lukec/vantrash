@@ -38,9 +38,6 @@ sub handle_request {
             [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
             [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
 
-            [ qr{^/zones/([^/]+)/reminders$} => \&get_reminders_html ],
-            [ qr{^/zones/([^/]+)/reminders\.txt$} => \&get_reminders_txt ],
-            [ qr{^/zones/([^/]+)/reminders\.json$} => \&get_reminders_json ],
         ],
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
@@ -184,35 +181,6 @@ sub zone_next_pickup_json {
 
     my $body
         = encode_json { next => [ $self->model->next_pickup($zone, $limit) ] };
-    return $self->response('application/json' => $body);
-}
-
-sub get_reminders_html {
-    my $self = shift;
-    my $req  = shift;
-    my $zone = shift;
-
-    my %param = (
-        zone => $zone,
-        zone_uri => "/zones/$zone/reminders",
-        reminders => $self->model->reminders($zone),
-    );
-    return $self->process_template('reminders.html', \%param);
-}
-
-sub get_reminders_txt {
-    my $self = shift;
-    my $req  = shift;
-    my $zone = shift;
-    my $body = join "\n", @{ $self->model->reminders($zone) };
-    return $self->response('text/plain' => $body);
-}
-
-sub get_reminders_json {
-    my $self = shift;
-    my $req  = shift;
-    my $zone = shift;
-    my $body = encode_json $self->model->reminders($zone);
     return $self->response('application/json' => $body);
 }
 

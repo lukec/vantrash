@@ -24,7 +24,6 @@
         <ul>
             <li><a href="/zones/vancouver-north-blue/pickupdays">Pickup Days</a> - The list of pickup days for the zone</li>
             <li><a href="/zones/vancouver-north-blue/nextpickup">Next Pickup</a> - The next pickup day for this zone</li>
-            <li><a href="/zones/vancouver-north-blue/reminders">Reminders</a> - The list of reminders for this zone</li>
         </ul>
         This data is also has text and JSON representations:
         <ul>
@@ -33,8 +32,6 @@
                 <a href="/zones/vancouver-north-blue/pickupdays.ics"><code>text/calendar (iCal)</code></a></li>
             <li>Next Pickup: <a href="/zones/vancouver-north-blue/nextpickup.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/nextpickup.json"><code>application/json</code></a></li>
-            <li>Reminders: <a href="/zones/vancouver-north-blue/reminders.txt"><code>text/plain</code></a>, 
-                <a href="/zones/vancouver-north-blue/reminders.json"><code>application/json</code></a></li>
         </ul>
         Dates are expressed as <code>YYYY-MM-DD[ F]</code>.  The <code>F</code> is an optional flag (separated from the date with a single space).  The only supported flag currently is <code>Y</code> which means a 'Yard Trimmings Collection' also occurs on that day.</p>
         <p>
@@ -53,7 +50,10 @@
             <li><code>email</code> - An email address to receive email reminders</li>
             <li><code>time_offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
         </ul>
+        This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.
         <h4>Deleting a reminder</h4>
         Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.
+        <br />
+        This will send an email to confirm the reminder deletion by loading a confirmation link.
       </div>
 [% END %]
