@@ -13,7 +13,7 @@ has 'id'          =>
 has 'created_at' =>
     (is => 'ro', isa => 'Int', required => 1, lazy_build => 1);
 has 'confirm_hash' =>
-    (is => 'ro', isa => 'Int', required => 1, lazy_build => 1);
+    (is => 'ro', isa => 'Str', required => 1, lazy_build => 1);
 
 sub _build_id {
     my $self = shift;
@@ -24,7 +24,7 @@ sub _build_id {
 sub _build_confirm_url {
     my $self = shift;
     return 'http://vantrash.ca/zones/' . $self->zone
-        . '/reminders/' . $self->id . '/confirm';
+        . '/reminders/' . $self->confirm_hash . '/confirm';
 }
 
 sub _build_created_at {

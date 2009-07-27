@@ -24,21 +24,24 @@ sub handle_request {
     my $path = $req->path;
     my %func_map = (
         GET => [
-            [ qr{^/$} => 'index.html' ],
-            [ qr{^/zones$} => \&zones_html ],
-            [ qr{^/zones\.txt$} => \&zones_txt ],
-            [ qr{^/zones\.json$} => \&zones_json ],
-            [ qr{^/zones/([^./]+)$} => \&zone_html ],
-            [ qr{^/zones/([^/]+)\.txt$} => \&zone_txt ],
-            [ qr{^/zones/([^/]+)\.json$} => \&zone_json ],
-            [ qr{^/zones/([^/]+)/pickupdays$} => \&zone_days_html ],
-            [ qr{^/zones/([^/]+)/pickupdays\.txt$} => \&zone_days_txt ],
+            [ qr{^/$}                               => 'index.html' ],
+            [ qr{^/zones$}                          => \&zones_html ],
+            [ qr{^/zones\.txt$}                     => \&zones_txt ],
+            [ qr{^/zones\.json$}                    => \&zones_json ],
+            [ qr{^/zones/([^./]+)$}                 => \&zone_html ],
+            [ qr{^/zones/([^/]+)\.txt$}             => \&zone_txt ],
+            [ qr{^/zones/([^/]+)\.json$}            => \&zone_json ],
+            [ qr{^/zones/([^/]+)/pickupdays$}       => \&zone_days_html ],
+            [ qr{^/zones/([^/]+)/pickupdays\.txt$}  => \&zone_days_txt ],
             [ qr{^/zones/([^/]+)/pickupdays\.json$} => \&zone_days_json ],
             [ qr{^/zones/([^/]+)/pickupdays\.ics$}  => \&zone_days_ical ],
             [ qr{^/zones/([^/]+)/nextpickup$} => \&zone_next_pickup_html ],
-            [ qr{^/zones/([^/]+)/nextpickup\.txt$} => \&zone_next_pickup_txt ],
-            [ qr{^/zones/([^/]+)/nextpickup\.json$} => \&zone_next_pickup_json ],
-
+            [ qr{^/zones/([^/]+)/nextpickup\.txt$} => 
+                    \&zone_next_pickup_txt ],
+            [ qr{^/zones/([^/]+)/nextpickup\.json$} =>
+                    \&zone_next_pickup_json ],
+            [ qr{^/zones/([^/]+)/reminders/([\w\d]+)/confirm$} =>
+                    \&confirm_reminder ],
         ],
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
@@ -183,6 +186,23 @@ sub zone_next_pickup_json {
     my $body
         = encode_json { next => [ $self->model->next_pickup($zone, $limit) ] };
     return $self->response('application/json' => $body);
+}
+
+sub confirm_reminder {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $hash = shift;
+
+    my $rem = $self->model->get_reminder_by_confirm_hash($zone, $hash);
+    unless ($rem) {
+        return $self->process_template('bad_confirm.html');
+    }
+
+    my %param = (
+        reminder => $rem,
+    );
+    return $self->process_template('good_confirm.html', \%param);
 }
 
 sub put_reminder {

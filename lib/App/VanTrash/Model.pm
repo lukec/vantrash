@@ -79,20 +79,13 @@ sub next_pickup {
     return @return;
 }
 
-sub reminders {
-    my $self = shift;
-    my $zone = shift or croak "A zone is mandatory!";
-
-    return [ keys %{ $self->reminderhash->{$zone} } ];
-}
-
 sub all_reminders {
     my $self = shift;
     
     my $hash = $self->reminderhash;
     my @reminders;
-    for my $zone (keys %$hash) {
-        push @reminders, values %{ $hash->{$zone} };
+    for my $zone (keys %{ $hash->{id} }) {
+        push @reminders, values %{ $hash->{id}{$zone} };
     }
     return \@reminders;
 }
@@ -101,14 +94,22 @@ sub get_reminder {
     my $self = shift;
     my $zone = shift or croak "A zone is mandatory!";
     my $id   = shift or croak "An id is mandatory!";
-    return $self->reminderhash->{$zone}{$id};
+    return $self->reminderhash->{$zone}{id}{$id};
+}
+
+sub get_reminder_by_confirm_hash {
+    my $self = shift;
+    my $zone = shift;
+    my $hash = shift;
+    return $self->reminderhash->{$zone}{confirm}{$hash};
 }
 
 sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
 
-    $self->reminderhash->{$rem->zone}{$rem->id} = $rem;
+    $self->reminderhash->{$rem->zone}{id}{$rem->id} = $rem;
+    $self->reminderhash->{$rem->zone}{confirm}{$rem->confirm_hash} = $rem;
     $self->save_reminderhash;
 
     $self->mailer->send_email(
@@ -128,8 +129,10 @@ sub delete_reminder {
     my $zone = shift or croak 'A zone is mandatory!';
     my $id   = shift or croak 'An id is mandatory!';
 
-    return unless $self->get_reminder($zone, $id);
-    delete $self->reminderhash->{$zone}{$id};
+    my $rem = $self->get_reminder($zone, $id);
+    return unless $rem;
+    delete $self->reminderhash->{$zone}{id}{$id};
+    delete $self->reminderhash->{$zone}{confirm}{$rem->confirm_hash};
     $self->save_reminderhash;
 }
 

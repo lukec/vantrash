@@ -60,14 +60,7 @@ sub start_up_http_server {
 
 sub clear_reminders {
     my $self = shift;
-    my $model = $self->model;
-    my $zones = $model->zones;
-    for my $zone (@$zones) {
-        my $reminders = $model->reminders($zone);
-        for my $r (@$reminders) {
-            $model->delete_reminder($zone, $r);
-        }
-    }
+    unlink base_path() . "/data/reminders.yaml";
 }
 
 sub reminder_count_is {
@@ -102,10 +95,14 @@ sub get_confirm_url {
 
     my $email = $self->email_contents;
     my $url;
-    if ($email =~ m#\bhttp://vantrash\.ca([\S+]+)\b#) {
+    if ($email =~ m#"http://vantrash\.ca([^"]+)"#) {
         $url = $1;
     }
-    die "Could not find a confirmation url in this mess\n$email\n" unless $url;
+    unless ($url) {
+        warn "Could not find a confirmation url in this mess\n$email\n";
+        ok 0, 'no confirmation email';
+        return;
+    }
 
     $self->clear_email();
     $self->get($url);

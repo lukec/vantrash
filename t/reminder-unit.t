@@ -23,7 +23,7 @@ my $zones = $model->zones;
 isa_ok $zones, 'ARRAY';
 my $zone = shift @$zones;
 
-is_deeply $model->reminders($zone), [], 'is empty';
+is_deeply $model->all_reminders, [], 'is empty';
 
 my $reminder = App::VanTrash::Reminder->new(
     name => "Test Reminder",
