@@ -4,47 +4,47 @@
     <name>VanTrash</name>
     <Style id="red">
       <LineStyle>
-        <width>5</width>
-        <color>990000ff</color>
+        <width>3</width>
+        <color>ff3333ff</color>
       </LineStyle>
       <PolyStyle>
-        <color>330000ff</color>
+        <color>334861f1</color>
       </PolyStyle>
     </Style>
     <Style id="blue">
       <LineStyle>
-        <width>5</width>
-        <color>99ff0000</color>
+        <width>3</width>
+        <color>ffff3333</color>
       </LineStyle>
       <PolyStyle>
-        <color>33ff0000</color>
+        <color>33de6060</color>
       </PolyStyle>
     </Style>
     <Style id="yellow">
       <LineStyle>
-        <width>5</width>
-        <color>9900ffff</color>
+        <width>3</width>
+        <color>ff33ffff</color>
       </LineStyle>
       <PolyStyle>
-        <color>3300ffff</color>
+        <color>3360f8c7</color>
       </PolyStyle>
     </Style>
     <Style id="purple">
       <LineStyle>
-        <width>5</width>
-        <color>99ff0088</color>
+        <width>3</width>
+        <color>ffda4592</color>
       </LineStyle>
       <PolyStyle>
-        <color>33ff0088</color>
+        <color>33da4592</color>
       </PolyStyle>
     </Style>
     <Style id="green">
       <LineStyle>
-        <width>5</width>
-        <color>9900ff00</color>
+        <width>3</width>
+        <color>ff4fcb39</color>
       </LineStyle>
       <PolyStyle>
-        <color>3300ff00</color>
+        <color>334fcb39</color>
       </PolyStyle>
     </Style>
     <Placemark>
