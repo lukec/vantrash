@@ -17,9 +17,7 @@ Vantrash.prototype = {
             var table = cal.create();
             $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
-            $('.marked', table).css({
-                backgroundColor: clr
-            });
+            $('.marked', table).css('background-color', clr);
             self.showInfo(latlng, table.get(0));
         });
     },
