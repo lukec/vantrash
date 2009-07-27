@@ -254,7 +254,7 @@ sub _build_engine {
 
 sub _build_model {
     my $self = shift;
-    return App::VanTrash::Model->new( data_path => $self->base_path . "/data" );
+    return App::VanTrash::Model->new( base_path => $self->base_path );
 }
 
 sub process_template {

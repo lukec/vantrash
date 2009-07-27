@@ -8,13 +8,15 @@ use Data::ICal::Entry::Event;
 use Date::ICal;
 use namespace::clean -except => 'meta';
 use Carp qw/croak/;
+use App::VanTrash::Email;
 
-has 'data_path'    => (is => 'ro', isa => 'Str',      required   => 1);
-has 'zonefile'     => (is => 'ro', isa => 'Str',      lazy_build => 1);
-has 'reminderfile' => (is => 'ro', isa => 'Str',      lazy_build => 1);
-has 'zones'        => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
-has 'zonehash'     => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
-has '_reminderhash' => (is => 'rw', isa => 'HashRef', lazy_build => 1);
+has 'base_path'     => (is => 'ro', isa => 'Str',      required   => 1);
+has 'zonefile'      => (is => 'ro', isa => 'Str',      lazy_build => 1);
+has 'reminderfile'  => (is => 'ro', isa => 'Str',      lazy_build => 1);
+has 'zones'         => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
+has 'zonehash'      => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
+has '_reminderhash' => (is => 'rw', isa => 'HashRef',  lazy_build => 1);
+has 'mailer'        => (is => 'ro', isa => 'Object',   lazy_build => 1);
 
 sub days {
     my $self = shift;
@@ -108,6 +110,16 @@ sub add_reminder {
 
     $self->reminderhash->{$rem->zone}{$rem->id} = $rem;
     $self->save_reminderhash;
+
+    $self->mailer->send_email(
+        to => $rem->email,
+        subject => 'VanTrash Reminder Confirmation',
+        template => 'confirm.html',
+        template_args => {
+            zone => $rem->zone,
+            confirm_url => $rem->confirm_url,
+        },
+    );
     return $rem;
 }
 
@@ -165,12 +177,17 @@ sub _load_file {
 
 sub _build_zonefile {
     my $self = shift;
-    return $self->data_path . "/trash-zone-times.yaml";
+    return $self->base_path . "/data/trash-zone-times.yaml";
 }
 
 sub _build_reminderfile {
     my $self = shift;
-    return $self->data_path . "/reminders.yaml";
+    return $self->base_path . "/data/reminders.yaml";
+}
+
+sub _build_mailer {
+    my $self = shift;
+    return App::VanTrash::Email->new( base_path => $self->base_path );
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -36,8 +36,10 @@ sub stop_http_server {
 sub start_up_http_server {
     my $self = shift;
 
+    system("killall perl");
     my $out = '';
     my $base_dir = base_path();
+    $ENV{VT_EMAIL} = $self->email_file;
     my @command = ($^X, "$base_dir/bin/vantrash-http.pl");
     my $handle = start(\@command, \*STDIN, \$out, \$out);
     $self->http_server( {
@@ -76,11 +78,37 @@ sub reminder_count_is {
     is scalar(@$all_reminders), $count, 'reminder count';
 }
 
+sub clear_email {
+    my $self = shift;
+    unlink $self->email_file;
+}
+
 sub email_like {
     my $self = shift;
     my $regex = shift;
 
-    like scalar(io($self->email_file)->slurp), $regex, 'email matches';
+    like $self->email_contents, $regex, 'email matches';
+}
+
+sub email_contents {
+    my $self = shift;
+    return '' unless -e $self->email_file;
+    return scalar(io($self->email_file)->slurp);
+}
+
+sub get_confirm_url {
+    my $self = shift;
+    my $var  = shift;
+
+    my $email = $self->email_contents;
+    my $url;
+    if ($email =~ m#\bhttp://vantrash\.ca([\S+]+)\b#) {
+        $url = $1;
+    }
+    die "Could not find a confirmation url in this mess\n$email\n" unless $url;
+
+    $self->clear_email();
+    $self->get($url);
 }
 
 sub base_path {
@@ -90,12 +118,12 @@ sub base_path {
 }
 
 sub _build_model {
-    return App::VanTrash::Model->new( data_path => base_path() . '/data' );
+    return App::VanTrash::Model->new( base_path => base_path() );
 }
 
 sub _build_email_file {
-    require File::Temp;
-    my $dir = File::Temp::tempdir( CLEANUP => 1 );
+    my $file = "/tmp/email.$$";
+    return $file;
 }
 
 1;
