@@ -11,6 +11,7 @@ has 'http_server' => (is => 'rw', isa => 'HashRef');
 after 'init' => sub {
     my $self = shift;
     $self->start_up_http_server;
+    $self->clear_reminders;
 };
 
 after 'stop' => sub {
@@ -21,17 +22,20 @@ after 'stop' => sub {
 sub stop_http_server {
     my $self = shift;
     my $server = $self->http_server || return;
-    $server->{handle}->kill_kill();
+
+    my $h = $server->{handle};
+    $h->pump_nb;
+    $h->kill_kill();
+    if (my $msg = ${ $server->{output}}) {
+        warn $msg;
+    }
 }
 
 sub start_up_http_server {
     my $self = shift;
 
     my $out = '';
-    
-    my $file = $INC{'Socialtext/WikiFixture/VanTrash.pm'};
-    (my $dir = $file) =~ s#(.+)/.+#$1#;
-    my $base_dir = "$dir/../../..";
+    my $base_dir = base_path();
     my @command = ($^X, "$base_dir/bin/vantrash-http.pl");
     my $handle = start(\@command, \*STDIN, \$out, \$out);
     $self->http_server( {
@@ -45,17 +49,31 @@ sub start_up_http_server {
     unless ($out =~ m/Starting up HTTP server on port (\d+)/) {
         die "Couldn't find HTTP port:\n$out\n";
     }
+    $out = "";
     $self->{base_url} = "http://localhost:$1";
     diag "Setting base_url to $self->{base_url}";
 }
 
-sub _build_model {
-    my $base_path = "$FindBin::Bin/../t/root";
-    if (-d $base_path) {
-        rmtree $base_path;
+sub clear_reminders {
+    my $self = shift;
+    my $model = $self->model;
+    my $zones = $model->zones;
+    for my $zone (@$zones) {
+        my $reminders = $model->reminders($zone);
+        for my $r (@$reminders) {
+            $model->delete_reminder($zone, $r);
+        }
     }
-    mkpath $base_path;
-    return App::VanTrash::Model->new( base_path => $base_path );
+}
+
+sub base_path {
+    my $file = $INC{'Socialtext/WikiFixture/VanTrash.pm'};
+    (my $dir = $file) =~ s#(.+)/.+#$1#;
+    return "$dir/../../..";
+}
+
+sub _build_model {
+    return App::VanTrash::Model->new( base_path => base_path() );
 }
 
 1;
