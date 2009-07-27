@@ -27,6 +27,7 @@ Vantrash.prototype = {
         this.map.setCenter(
             new GLatLng(this.center[0], this.center[1]), 13
         );
+        this.map.setUIToDefault();
         this.loadKML();
     },
 
