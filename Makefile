@@ -45,7 +45,8 @@ static/%.html: $(OTHER_TEMPLATES) template/%.tt2
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR)
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
-	cp -R $(LIB) $(DATAFILE) $(TEMPLATE_DIR) $(INSTALL_DIR)
+	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
+	cp $(DATAFILE) $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	/etc/init.d/apache2 restart
 
