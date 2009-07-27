@@ -130,7 +130,12 @@ sub reminderhash {
 
     my $file = $self->reminderfile;
     my $last_modified = $self->{_modified}{$file};
-    if ($last_modified and $last_modified < (stat($file))[9]) {
+    my $last_size     = $self->{_size}{$file};
+    my @stats = stat($file);
+    if ($last_modified and $last_modified < $stats[9]) {
+        $self->_reminderhash( $self->_load_file('reminder') );
+    }
+    if ($last_size     and $last_size     < $stats[7]) {
         $self->_reminderhash( $self->_load_file('reminder') );
     }
     return $self->_reminderhash;
@@ -141,7 +146,9 @@ sub _load_file {
     my $name = $_[0] . 'file';
     my $file = $self->$name;
     return {} unless -e $file;
-    $self->{_modified}{$file} = (stat($file))[9];
+    my @stats = stat($file);
+    $self->{_modified}{$file} = $stats[9];
+    $self->{_size}{$file} = $stats[7];
     return LoadFile($file) || {};
 }
 
