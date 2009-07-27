@@ -115,7 +115,7 @@ sub add_reminder {
     $self->mailer->send_email(
         to => $rem->email,
         subject => 'VanTrash Reminder Confirmation',
-        template => 'confirm.html',
+        template => 'reminder-confirm.html',
         template_args => {
             zone => $rem->zone,
             confirm_url => $rem->confirm_url,
@@ -131,6 +131,15 @@ sub confirm_reminder {
     $rem->confirmed(1);
     delete $self->reminderhash->{$rem->zone}{confirm}{$rem->confirm_hash};
     $self->save_reminderhash;
+
+    $self->mailer->send_email(
+        to => $rem->email,
+        subject => 'Your VanTrash reminder is created',
+        template => 'reminder-success.html',
+        template_args => {
+            reminder => $rem,
+        },
+    );
 }
 
 sub delete_reminder {

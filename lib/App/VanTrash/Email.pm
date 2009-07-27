@@ -39,8 +39,10 @@ sub send_email {
 sub _build_mailer {
     my $self = shift;
 
+# Forces testing mode ON, set by unit tests.
+#    $ENV{VT_EMAIL} ||= '/tmp/email';
+
     my $class;
-    $ENV{VT_EMAIL} ||= '/tmp/email';
     if (my $file = $ENV{VT_EMAIL}) {
         require Email::Send::IO;
         @Email::Send::IO::IO = ($file);

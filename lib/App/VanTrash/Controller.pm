@@ -42,6 +42,8 @@ sub handle_request {
                     \&zone_next_pickup_json ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d]+)/confirm$} =>
                     \&confirm_reminder ],
+            [ qr{^/zones/([^/]+)/reminders/(.+)/delete$} => 
+                    \&delete_reminder_html ],
         ],
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
@@ -234,6 +236,20 @@ sub put_reminder {
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
     return $resp;
+}
+
+sub delete_reminder_html {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $id   = shift;
+
+    # TODO show templates here
+    if ($self->model->delete_reminder($zone, $id)) {
+        return HTTP::Engine::Response->new( status => 204 );
+    }
+
+    return HTTP::Engine::Response->new( status => 400 );
 }
 
 sub delete_reminder {

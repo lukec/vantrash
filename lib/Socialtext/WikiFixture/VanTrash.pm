@@ -89,7 +89,7 @@ sub email_contents {
     return scalar(io($self->email_file)->slurp);
 }
 
-sub set_confirm_url {
+sub set_url_from_email {
     my $self = shift;
     my $var  = shift;
 
@@ -99,7 +99,7 @@ sub set_confirm_url {
         $url = $1;
     }
     unless ($url) {
-        warn "Could not find a confirmation url in this mess\n$email\n";
+        warn "Could not find an url in this mess\n$email\n";
         ok 0, 'no confirmation email';
         return;
     }
