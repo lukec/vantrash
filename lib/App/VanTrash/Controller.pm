@@ -234,7 +234,10 @@ sub put_reminder {
     }
 
     $self->model->add_reminder($zone, $rem);
-    return HTTP::Engine::Response->new( status => 201 );
+    my $uri = "/zones/$zone/reminders/$rem->{id}";
+    my $resp = HTTP::Engine::Response->new( status => 201);
+    $resp->headers->header( Location => $uri );
+    return $resp;
 }
 
 sub delete_reminder {
