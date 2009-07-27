@@ -1,7 +1,7 @@
 INSTALL_DIR=/var/www/vantrash
 SOURCE_FILES=static/*
 LIB=lib
-DATAFILE=trash-zone-times.yaml
+DATAFILE=data/trash-zone-times.yaml
 TEMPLATES=html
 EXEC=bin/*
 MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS::minify(scalar <>);'
@@ -44,12 +44,10 @@ static/%.html: $(OTHER_TEMPLATES) template/%.tt2
 	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC)
-	make clean
-	make
-	sudo cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
-	sudo cp -R $(LIB) $(DATAFILE) $(TEMPLATES) $(INSTALL_DIR)
-	sudo cp $(EXEC) $(INSTALL_DIR)/bin
-	sudo /etc/init.d/apache2 restart
+	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
+	cp -R $(LIB) $(DATAFILE) $(TEMPLATES) $(INSTALL_DIR)
+	cp $(EXEC) $(INSTALL_DIR)/bin
+	/etc/init.d/apache2 restart
 
 test: $(TESTS) $(WIKITESTS)
 	prv $(TESTS)
