@@ -196,9 +196,12 @@ sub confirm_reminder {
 
     my $rem = $self->model->get_reminder_by_confirm_hash($zone, $hash);
     unless ($rem) {
-        return $self->process_template('bad_confirm.html');
+        my $resp = $self->process_template('bad_confirm.html');
+        $resp->status(404);
+        return $resp;
     }
 
+    $self->model->confirm_reminder($rem);
     my %param = (
         reminder => $rem,
     );

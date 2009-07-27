@@ -124,6 +124,15 @@ sub add_reminder {
     return $rem;
 }
 
+sub confirm_reminder {
+    my $self = shift;
+    my $rem = shift or croak 'A reminder is mandatory!';
+
+    $rem->confirmed(1);
+    delete $self->reminderhash->{$rem->zone}{confirm}{$rem->confirm_hash};
+    $self->save_reminderhash;
+}
+
 sub delete_reminder {
     my $self = shift;
     my $zone = shift or croak 'A zone is mandatory!';

@@ -89,7 +89,7 @@ sub email_contents {
     return scalar(io($self->email_file)->slurp);
 }
 
-sub get_confirm_url {
+sub set_confirm_url {
     my $self = shift;
     my $var  = shift;
 
@@ -103,9 +103,8 @@ sub get_confirm_url {
         ok 0, 'no confirmation email';
         return;
     }
-
-    $self->clear_email();
-    $self->get($url);
+    $self->{$var} = $url;
+    ok 1, 'found confirmation link in email';
 }
 
 sub base_path {
