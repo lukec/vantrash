@@ -8,7 +8,7 @@
         <color>ff3333ff</color>
       </LineStyle>
       <PolyStyle>
-        <color>334861f1</color>
+        <color>336565ff</color>
       </PolyStyle>
     </Style>
     <Style id="blue">
@@ -17,7 +17,7 @@
         <color>ffff3333</color>
       </LineStyle>
       <PolyStyle>
-        <color>33de6060</color>
+        <color>33ff6565</color>
       </PolyStyle>
     </Style>
     <Style id="yellow">
@@ -26,25 +26,25 @@
         <color>ff33ffff</color>
       </LineStyle>
       <PolyStyle>
-        <color>3360f8c7</color>
+        <color>3365ffff</color>
       </PolyStyle>
     </Style>
     <Style id="purple">
       <LineStyle>
         <width>3</width>
-        <color>ffda4592</color>
+        <color>ffff3399</color>
       </LineStyle>
       <PolyStyle>
-        <color>33da4592</color>
+        <color>33ff6599</color>
       </PolyStyle>
     </Style>
     <Style id="green">
       <LineStyle>
         <width>3</width>
-        <color>ff4fcb39</color>
+        <color>ff33ff33</color>
       </LineStyle>
       <PolyStyle>
-        <color>334fcb39</color>
+        <color>3365ff65</color>
       </PolyStyle>
     </Style>
     <Placemark>
