@@ -60,7 +60,9 @@ Vantrash.prototype = {
                 self._location = new GLatLng(
                     position.coords.latitude, position.coords.longitude
                 );
-                self.map.addOverlay(new GMarker(self._location));
+                var blueIcon = new GIcon(G_DEFAULT_ICON);
+                blueIcon.image = "http://vantrash.ca/images/home.png";
+                self.map.addOverlay(new GMarker(self._location, { icon: blueIcon }));
                 $.each(self.zones, function(i, zone) {
                     if (zone.Contains(self._location)) {
                         GEvent.trigger(zone, 'click');
