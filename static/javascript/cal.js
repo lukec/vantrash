@@ -140,11 +140,10 @@ Calendar.prototype = {
     },
 
     parseDate: function(d) {
-        var parts = d.split('-');
         var dateobj = new Date;
-        dateobj.setYear(parts[0]);
-        dateobj.setMonth(parts[1]-1);
-        dateobj.setDate(parts[2]);
+        dateobj.setYear(d.year);
+        dateobj.setMonth(d.month-1);
+        dateobj.setDate(d.day);
         return dateobj;
     }
 };
