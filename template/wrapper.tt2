@@ -24,10 +24,11 @@
               <p>To find out your pick up schedule and/or set a reminder click on the zone in which you live on the map to your right.</p>
             </div>
             <ul>
-                <li><a href="about.html">About this site</a></li>
-                <li><a href="faq.html">FAQ</a></li>
-                <li><a href="donate.html">Donate</a></li>
-                <li class="last"> <a href="api.html">VanTrash API</a></li>
+                <li><a href="/">Map</a></li>
+                <li><a href="/about.html">About this site</a></li>
+                <li><a href="/faq.html">FAQ</a></li>
+                <li><a href="/donate.html">Donate</a></li>
+                <li class="last"> <a href="/api.html">VanTrash API</a></li>
             </ul>
             <div class="ad">
               <script type="text/javascript"><!--
