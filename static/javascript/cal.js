@@ -28,7 +28,7 @@ Calendar.prototype = {
     create: function () {
         var self = this;
 
-        this.table = $('<table></table>').addClass('calendar');
+        this.table = $('<table></table>').addClass('calendar').get(0);
 
         /* Month / Year row */
         var $tr = $('<tr></tr>').appendTo(this.table);

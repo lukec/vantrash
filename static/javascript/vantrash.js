@@ -6,18 +6,21 @@ Vantrash = function() {
 Vantrash.prototype = {
     center: [ 49.26422,-123.138542 ],
 
-    showInfo: function(latlng, html) {
-        this.map.openInfoWindow(latlng, html);
-    },
-
-    showSchedule: function(latlng, name, clr) {
+    showSchedule: function(opts) {
         var self = this;
-        $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
-            var cal = new Calendar({ markColor: clr });
+        $.getJSON('/zones/' + opts.zone + '/pickupdays.json', function (data) {
+            var cal = new Calendar({ markColor: opts.color });
             var table = cal.create();
             $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
-            self.showInfo(latlng, table.get(0));
+            if (!opts.node) throw new Error("Node required");
+            if (opts.node.openInfoWindow) {
+                opts.node.openInfoWindow(table);
+            }
+            else {
+                var center = opts.node.getBounds().getCenter();
+                self.map.openInfoWindow(center, table);
+            }
         });
     },
 
@@ -38,10 +41,14 @@ Vantrash.prototype = {
             createpolygon: function (pts,sc,sw,so,fc,fo,pl,name) {
                 var zone = new GPolygon(pts, sc, sw, so, fc, fo);
                 GEvent.addListener(zone, 'click', function() {
-                    var center = zone.getBounds().getCenter()
-                    self.showSchedule(center, name, fc);
+                    self.showSchedule({
+                        node: zone,
+                        zone: name,
+                        color: fc
+                    });
                     return false;
                 });
+                zone.name = name;
                 self.zones.push(zone);
                 self.map.addOverlay(zone);
             }
@@ -83,14 +90,18 @@ Vantrash.prototype = {
                 self._location = new GLatLng(
                     position.coords.latitude, position.coords.longitude
                 );
-                self.map.addOverlay(
-                    new GMarker(self._location, {
-                        icon: self.createHomeIcon()
-                    })
-                );
-                $.each(self.zones, function(i, zone) {
+                var marker = new GMarker(self._location, {
+                    icon: self.createHomeIcon()
+                });
+                self.map.addOverlay(marker);
+
+                $.each(self.zones, function(i,zone) {
                     if (zone.Contains(self._location)) {
-                        GEvent.trigger(zone, 'click');
+                        self.showSchedule({
+                            node: marker,
+                            zone: zone.name,
+                            color: zone.color
+                        });
                         self._clicked_curloc = true;
                     }
                 });
