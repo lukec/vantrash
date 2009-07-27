@@ -15,7 +15,7 @@ has 'zonefile'      => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'reminderfile'  => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'zones'         => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
 has 'zonehash'      => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
-has '_reminderhash' => (is => 'rw', isa => 'HashRef',  lazy_build => 1);
+has 'reminderhash'  => (is => 'rw', isa => 'HashRef',  lazy_build => 1);
 has 'mailer'        => (is => 'ro', isa => 'Object',   lazy_build => 1);
 
 sub days {
@@ -158,22 +158,10 @@ sub _build_zones {
 }
 
 sub _build_zonehash      { shift->_load_file('zone') }
-sub _build__reminderhash { shift->_load_file('reminder') }
 
-sub reminderhash {
+sub _build_reminderhash {
     my $self = shift;
-
-    my $file = $self->reminderfile;
-    my $last_modified = $self->{_modified}{$file};
-    my $last_size     = $self->{_size}{$file};
-    my @stats = stat($file);
-    if ($last_modified and $last_modified < $stats[9]) {
-        $self->_reminderhash( $self->_load_file('reminder') );
-    }
-    if ($last_size     and $last_size     < $stats[7]) {
-        $self->_reminderhash( $self->_load_file('reminder') );
-    }
-    return $self->_reminderhash;
+    return $self->_load_file('reminder');
 }
 
 sub _load_file {
