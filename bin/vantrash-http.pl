@@ -15,7 +15,7 @@ App::VanTrash::Controller->new(
         host => 'localhost',
         net_server => 'Net::Server::PreForkSimple',
         net_server_configure => {
-            max_servers  => 5,
+            max_servers  => 1,
             max_requests => 100,
         },
     },
