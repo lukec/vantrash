@@ -10,15 +10,17 @@ Vantrash.prototype = {
         this.map.openInfoWindow(latlng, html);
     },
 
-    showSchedule: function(latlng, name) {
+    showSchedule: function(latlng, name, clr, opac) {
         var self = this;
         $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
             var cal = new Calendar;
             var table = cal.create();
-            $.each(data, function(i,d) {
-                cal.mark(d);
-            });
+            $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
+            $('.marked', table).css({
+                backgroundColor: clr,
+                opacity: opac
+            });
             self.showInfo(latlng, table.get(0));
         });
     },
@@ -40,7 +42,7 @@ Vantrash.prototype = {
                 var zone = new GPolygon(pts, sc, sw, so, fc, fo);
                 GEvent.addListener(zone, 'click', function() {
                     var center = zone.getBounds().getCenter()
-                    self.showSchedule(center, name);
+                    self.showSchedule(center, name, sc, so);
                     return false;
                 });
                 self.zones.push(zone);

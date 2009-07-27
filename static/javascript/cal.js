@@ -58,9 +58,7 @@ Calendar.prototype = {
         for (var row=0; row < this.ROWS; row++) {
             var $tr = $('<tr></tr>').appendTo(this.table);
             for (var day=0; day < 7; day++) {
-                $('<td></td>')
-                    .addClass('day')
-                    .appendTo($tr);
+                $('<td></td>').appendTo($tr);
             }
         }
 
@@ -86,13 +84,17 @@ Calendar.prototype = {
 
         var today = new Date;
 
+        $('td.day', this.table).removeClass('day')
         while (cnt.getMonth() == month) {
             var row = Math.floor((firstDay + cnt.getDate() - 1) / 7) + 2;
             var $cell
                 = $($('td', $('tr',this.table).get(row)).get(cnt.getDay()));
 
             var cellDate = cnt.getDate()
-            $cell.addClass(String(cellDate)).html(cellDate);
+            $cell
+                .addClass(String(cellDate))
+                .addClass('day')
+                .html(cellDate);
 
             if (this.isMarked(cnt)) {
                 $cell.addClass('marked');

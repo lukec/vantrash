@@ -76,12 +76,16 @@ h1 {
     height:80%;
     margin:auto;
 }
+.calendar {
+    border-collapse: collapse;
+}
 .calendar td {
     text-align:center;
+    margin: 0;
 }
 .calendar .today {
     font-weight: bold;
 }
-.calendar .marked {
-    background-color:#FF7777;
+.calendar .day {
+    border: 1px solid black;
 }
