@@ -52,6 +52,29 @@ Vantrash.prototype = {
         this.exml.parse();
     },
 
+   /* Google Map Custom Marker Maker 2009
+    * Please include the following credit in your code
+    *
+    * Sample custom marker code created with Google Map Custom Marker Maker
+    * http://www.powerhut.co.uk/googlemaps/custom_markers.php
+    */
+    createHomeIcon: function() {
+        var myIcon = new GIcon();
+        var myIcon = new GIcon();
+        myIcon.image = '/images/homeIcon.png';
+        myIcon.printImage = '/images/homeIconPrint.gif';
+        myIcon.mozPrintImage = '/images/homeIconMozPrint.gif';
+        myIcon.iconSize = new GSize(20,20);
+        myIcon.shadow = '/images/homeIconShadow.png';
+        myIcon.transparent = '/images/homeIconTransparent.png';
+        myIcon.shadowSize = new GSize(30,20);
+        myIcon.printShadow = '/images/homeIconPrintShadow.gif';
+        myIcon.iconAnchor = new GPoint(10,20);
+        myIcon.infoWindowAnchor = new GPoint(10,0);
+        myIcon.imageMap = [15,0,15,1,15,2,15,3,15,4,16,5,17,6,18,7,19,8,19,9,16,10,16,11,16,12,16,13,16,14,16,15,16,16,16,17,16,18,3,18,3,17,3,16,3,15,3,14,3,13,3,12,3,11,3,10,0,9,0,8,1,7,2,6,3,5,5,4,6,3,7,2,8,1,9,0];
+        return myIcon;
+    },
+
     setCurrentLocation: function () {
         var self = this;
         if (navigator.geolocation) {
@@ -60,9 +83,11 @@ Vantrash.prototype = {
                 self._location = new GLatLng(
                     position.coords.latitude, position.coords.longitude
                 );
-                var blueIcon = new GIcon(G_DEFAULT_ICON);
-                blueIcon.image = "http://vantrash.ca/images/home.png";
-                self.map.addOverlay(new GMarker(self._location, { icon: blueIcon }));
+                self.map.addOverlay(
+                    new GMarker(self._location, {
+                        icon: self.createHomeIcon()
+                    })
+                );
                 $.each(self.zones, function(i, zone) {
                     if (zone.Contains(self._location)) {
                         GEvent.trigger(zone, 'click');
