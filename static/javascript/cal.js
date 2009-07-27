@@ -1,7 +1,7 @@
 (function($){
 
-Calendar = function () {
-    $.extend(this, {
+Calendar = function (args) {
+    $.extend(this, args, {
         date: new Date,
         markers: []
     });
@@ -70,6 +70,7 @@ Calendar.prototype = {
     show: function() {
         $('.day', this.table)
             .html('')
+            .css('background-color', '')
             .removeClass('today')
             .removeClass('marked');
 
@@ -86,18 +87,18 @@ Calendar.prototype = {
 
         $('td.day', this.table).removeClass('day')
         while (cnt.getMonth() == month) {
-            var row = Math.floor((firstDay + cnt.getDate() - 1) / 7) + 2;
-            var $cell
-                = $($('td', $('tr',this.table).get(row)).get(cnt.getDay()));
+            var rowNum = Math.floor((firstDay + cnt.getDate() - 1) / 7) + 2;
+            var row = $('tr',this.table).get(rowNum)
+            var $cell = $( $('td', row).get(cnt.getDay()) );
 
             var cellDate = cnt.getDate()
-            $cell
-                .addClass(String(cellDate))
-                .addClass('day')
-                .html(cellDate);
+            $cell.addClass('day').html(cellDate);
 
             if (this.isMarked(cnt)) {
                 $cell.addClass('marked');
+                if (this.markColor) {
+                    $cell.css('background-color', this.markColor);
+                }
             }
             if (this.areSameDay(cnt, today)) {
                 $cell.addClass('today');

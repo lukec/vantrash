@@ -13,11 +13,10 @@ Vantrash.prototype = {
     showSchedule: function(latlng, name, clr) {
         var self = this;
         $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
-            var cal = new Calendar;
+            var cal = new Calendar({ markColor: clr });
             var table = cal.create();
             $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
-            $('.marked', table).css('background-color', clr);
             self.showInfo(latlng, table.get(0));
         });
     },
