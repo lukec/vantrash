@@ -152,6 +152,7 @@ sub delete_reminder {
     delete $self->reminderhash->{$zone}{id}{$id};
     delete $self->reminderhash->{$zone}{confirm}{$rem->confirm_hash};
     $self->save_reminderhash;
+    return $rem;
 }
 
 sub save_reminderhash {

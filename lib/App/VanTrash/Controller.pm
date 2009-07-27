@@ -244,12 +244,17 @@ sub delete_reminder_html {
     my $zone = shift;
     my $id   = shift;
 
-    # TODO show templates here
-    if ($self->model->delete_reminder($zone, $id)) {
-        return HTTP::Engine::Response->new( status => 204 );
+    if (my $rem = $self->model->delete_reminder($zone, $id)) {
+        my $resp = $self->process_template('good_delete.html', {
+            reminder => $rem,
+        });
+        $resp->status(200);
+        return $resp;
     }
 
-    return HTTP::Engine::Response->new( status => 400 );
+    my $resp = $self->process_template('bad_delete.html');
+    $resp->status(404);
+    return $resp;
 }
 
 sub delete_reminder {

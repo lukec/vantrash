@@ -24,12 +24,20 @@ sub _build_id {
     return sha1_hex($self->zone . $self->email . $self->name);
 }
 
-sub _build_confirm_url { shift->base_url . '/confirm' }
-sub _build_delete_url { shift->base_url . '/delete' }
+sub _build_confirm_url {
+    my $self = shift;
+    return $self->base_url . $self->confirm_hash . '/confirm';
+}
+
+sub _build_delete_url {
+    my $self = shift;
+    return $self->base_url . $self->id . '/delete';
+}
+
 sub _build_base_url {
     my $self = shift;
-    return 'http://vantrash.ca/zones/' . $self->zone
-        . '/reminders/' . $self->confirm_hash;
+    my $type = shift || 'id';
+    return 'http://vantrash.ca/zones/' . $self->zone . '/reminders/';
 }
 
 sub _build_created_at {
