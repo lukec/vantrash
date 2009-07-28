@@ -81,20 +81,6 @@ sub next_pickup {
     return @return;
 }
 
-sub get_reminder {
-    my $self = shift;
-    my $zone = shift or croak "A zone is mandatory!";
-    my $id   = shift or croak "An id is mandatory!";
-    return $self->reminders->by_id( $zone, $id );
-}
-
-sub get_reminder_by_confirm_hash {
-    my $self = shift;
-    my $zone = shift;
-    my $hash = shift;
-    return $self->reminders->by_hash( $zone, $hash );
-}
-
 sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
@@ -129,11 +115,11 @@ sub confirm_reminder {
 
 sub delete_reminder {
     my $self = shift;
-    my $zone = shift or croak 'A zone is mandatory!';
     my $id   = shift or croak 'An id is mandatory!';
 
-    my $rem = $self->get_reminder($zone, $id);
-    return unless $rem;
+    my $rem = $self->reminders->by_id($id);
+    die "Could not delete reminder '$id'" unless $rem;
+
     $self->reminders->delete($rem);
     return $rem;
 }

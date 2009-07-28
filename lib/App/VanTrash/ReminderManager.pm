@@ -52,7 +52,6 @@ sub all {
 
 sub by_id {
     my $self = shift;
-    my $zone = shift;
     my $id   = shift;
 
     return $self->reminders->{$id};
@@ -60,7 +59,6 @@ sub by_id {
 
 sub by_hash {
     my $self = shift;
-    my $zone = shift;
     my $hash = shift;
 
     return $self->need_confirmation->{$hash};
@@ -75,13 +73,7 @@ sub insert {
     }
 
     $self->reminders->{$rem->id} = $rem;
-
-    if ($rem->confirmed) {
-        delete $self->need_confirmation->{$rem->confirm_hash};
-    }
-    else {
-        $self->need_confirmation->{$rem->confirm_hash} = $rem;
-    }
+    $self->need_confirmation->{$rem->confirm_hash} = $rem;
     $self->save;
 }
 
@@ -90,7 +82,9 @@ sub confirm {
     my $rem  = shift;
 
     return if $rem->confirmed;
+
     $rem->confirmed(1);
+    delete $self->need_confirmation->{$rem->confirm_hash};
     $self->save;
 }
 

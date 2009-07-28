@@ -39,18 +39,29 @@ is $rem->email, 'test@vantrash.ca', 'email';
 like $rem->id,  qr/^[\w\d]+$/, 'id';
 is scalar(@{ $model->reminders->all }), 1, 'one reminder';
 
-undef $model;
-$model = App::VanTrash::Model->new( base_path => $tmp_dir );
+# Re-load the model, see if it persisted
+undef $model; $model = App::VanTrash::Model->new( base_path => $tmp_dir );
 my $reminders = $model->reminders->all;
 is scalar(@$reminders), 1, 'one reminder';
+ok !$reminders->[0]->confirmed, 'not confirmed';
 
-$model->delete_reminder($reminders->[0]->zone, $reminders->[0]->id);
+# Re-load and confirm the reminder
+undef $model; $model = App::VanTrash::Model->new( base_path => $tmp_dir );
+$reminders = $model->reminders->all;
+$model->reminders->confirm($reminders->[0]);
+ok $reminders->[0]->confirmed, 'confirmed';
 
+# Re-load and check the confirmation, then delete it
+undef $model; $model = App::VanTrash::Model->new( base_path => $tmp_dir );
+$reminders = $model->reminders->all;
+ok $reminders->[0]->confirmed, 'confirmed';
+
+$model->delete_reminder($reminders->[0]->id);
 $reminders = $model->reminders->all;
 is scalar(@$reminders), 0, 'no reminders';
 
-undef $model;
-$model = App::VanTrash::Model->new( base_path => $tmp_dir );
+# Re-load and check it's still deleted
+undef $model; $model = App::VanTrash::Model->new( base_path => $tmp_dir );
 $reminders = $model->reminders->all;
 is scalar(@$reminders), 0, 'no reminders';
 

@@ -196,7 +196,7 @@ sub confirm_reminder {
     my $zone = shift;
     my $hash = shift;
 
-    my $rem = $self->model->get_reminder_by_confirm_hash($zone, $hash);
+    my $rem = $self->model->reminders->by_hash($hash);
     unless ($rem) {
         my $resp = $self->process_template('bad_confirm.html');
         $resp->status(404);
@@ -226,7 +226,7 @@ sub put_reminder {
         return HTTP::Engine::Response->new(status => 400, body => $@);
     }
 
-    if ($self->model->get_reminder($zone, $reminder->id)) {
+    if ($self->model->reminders->by_id($reminder->id)) {
         return HTTP::Engine::Response->new(status => 400,
             body => "Reminder already exists! '" . $reminder->id . "'");
     }
@@ -244,7 +244,7 @@ sub delete_reminder_html {
     my $zone = shift;
     my $id   = shift;
 
-    if (my $rem = $self->model->delete_reminder($zone, $id)) {
+    if (my $rem = $self->model->delete_reminder($id)) {
         my $resp = $self->process_template('good_delete.html', {
             reminder => $rem,
         });
@@ -263,7 +263,7 @@ sub delete_reminder {
     my $zone = shift;
     my $id   = shift;
 
-    if ($self->model->delete_reminder($zone, $id)) {
+    if ($self->model->delete_reminder($id)) {
         return HTTP::Engine::Response->new( status => 204 );
     }
 
