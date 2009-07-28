@@ -4,8 +4,8 @@
     <div id="mapCanvas"></div>
     <script>
         $(function(){
-            vantrash = new Vantrash();
-            vantrash.render($('#mapCanvas').get(0));
+            map = new TrashMap();
+            map.render($('#mapCanvas').get(0));
         });
     </script>
 [% END %]

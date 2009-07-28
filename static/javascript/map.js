@@ -1,9 +1,9 @@
 (function($) {
 
-Vantrash = function() {
+TrashMap = function() {
 }
 
-Vantrash.prototype = {
+TrashMap.prototype = {
     center: [ 49.26422,-123.138542 ],
 
     showSchedule: function(opts) {

@@ -14,7 +14,7 @@ JS_FILES=\
 	 $(JS_DIR)/egeoxml.js \
 	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/cal.js \
-	 $(JS_DIR)/api.js
+	 $(JS_DIR)/map.js \
 
 ALL_TEMPLATES=$(wildcard template/*.tt2)
 OTHER_TEMPLATES=template/wrapper.tt2
