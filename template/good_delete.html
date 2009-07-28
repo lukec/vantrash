@@ -1,7 +1,12 @@
 [% WRAPPER wrapper.tt2 %]
   <div class="success">
       <p>
-  The garbage reminder for [% reminder.email %] has been deleted.
+      The following garbage reminder has been deleted:<br />
+      <ul>
+        <li><strong>Zone:</strong>[% reminder.zone %]</li>
+        <li><strong>Email:</strong>[% reminder.email %]</li>
+        <li><strong>Name:</strong>[% reminder.name %]</li>
+      </ul>
       </p>
   </div>
 [% END %]
