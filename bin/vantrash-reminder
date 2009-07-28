@@ -7,6 +7,7 @@ use JSON::XS 'encode_json';
 
 my $zone;
 my $id;
+my $name;
 my $password;
 my $email;
 my $offset;
@@ -15,6 +16,7 @@ my $server_base = 'http://vantrash.ca';
 GetOptions(
     'z|zone=s'     => \$zone,
     'i|id=s'       => \$id,
+    'n|name=s'     => \$name,
     'p|password=s' => \$password,
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
@@ -27,7 +29,7 @@ if ($delete) {
     delete_reminder();
 }
 else {
-    usage() unless $zone and $id and $email;
+    usage() unless $zone and $name and $email;
     add_reminder();
 }
 exit;
@@ -45,7 +47,7 @@ sub add_reminder {
     my $ua = LWP::UserAgent->new;
     my $req = HTTP::Request->new('PUT', $uri);
     $req->content( encode_json( {
-                id => $id,
+                name => $name,
                 email => $email,
                 ($password ? (password => $password) : ()),
                 ($offset   ? (offset   => $offset  ) : ()),
@@ -55,6 +57,7 @@ sub add_reminder {
 
     my $resp = $ua->request($req);
     print $resp->status_line, "\n";
+    print $resp->headers->header('Location'), "\n";
 }
 
 
