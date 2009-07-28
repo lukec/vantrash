@@ -9,3 +9,5 @@ static/faq.html
 static/donate.html
 *.wiki
 data/reminders.yaml
+data/all
+data/root
