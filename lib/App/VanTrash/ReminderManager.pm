@@ -81,8 +81,6 @@ sub confirm {
     my $self = shift;
     my $rem  = shift;
 
-    return if $rem->confirmed;
-
     $rem->confirmed(1);
     delete $self->need_confirmation->{$rem->confirm_hash};
     $self->save;
