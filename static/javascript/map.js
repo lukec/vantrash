@@ -1,25 +1,35 @@
 (function($) {
 
-TrashMap = function() {
+TrashMap = function(opts) {
+    if (!arguments.length) opts = {};
+    $.extend(this, opts);
 }
 
 TrashMap.prototype = {
     center: [ 49.26422,-123.138542 ],
 
-    showSchedule: function(opts) {
-        var self = this;
-        $.getJSON('/zones/' + opts.zone + '/pickupdays.json', function (data) {
-            var cal = new Calendar({ markColor: opts.color });
+    getZoneInfo: function(name, color, callback) {
+        $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
+            var cal = new Calendar({ markColor: color });
             var table = cal.create();
             $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
-            if (!opts.node) throw new Error("Node required");
-            if (opts.node.openInfoWindow) {
-                opts.node.openInfoWindow(table);
+
+            callback(table);
+        });
+    },
+
+    showSchedule: function(node, name, color) {
+        var self = this;
+
+        this.getZoneInfo(name, color, function(result) {
+            if (!node) throw new Error("Node required");
+            if (node.openInfoWindow) {
+                node.openInfoWindow(result);
             }
             else {
-                var center = opts.node.getBounds().getCenter();
-                self.map.openInfoWindow(center, table);
+                var center = node.getBounds().getCenter();
+                self.map.openInfoWindow(center, result);
             }
         });
     },
@@ -41,11 +51,7 @@ TrashMap.prototype = {
             createpolygon: function (pts,sc,sw,so,fc,fo,pl,name) {
                 var zone = new GPolygon(pts, sc, sw, so, fc, fo);
                 GEvent.addListener(zone, 'click', function() {
-                    self.showSchedule({
-                        node: zone,
-                        zone: name,
-                        color: fc
-                    });
+                    self.showSchedule(zone, name, fc);
                     return false;
                 });
                 zone.name = name;
@@ -97,11 +103,7 @@ TrashMap.prototype = {
 
                 $.each(self.zones, function(i,zone) {
                     if (zone.Contains(self._location)) {
-                        self.showSchedule({
-                            node: marker,
-                            zone: zone.name,
-                            color: zone.color
-                        });
+                        self.showSchedule(marker, zone.name, zone.color);
                         self._clicked_curloc = true;
                     }
                 });
