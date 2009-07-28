@@ -117,11 +117,11 @@ sub delete_reminder {
     my $self = shift;
     my $id   = shift or croak 'An id is mandatory!';
 
-    my $rem = $self->reminders->by_id($id);
-    die "Could not delete reminder '$id'" unless $rem;
-
-    $self->reminders->delete($rem);
-    return $rem;
+    if (my $rem = $self->reminders->by_id($id)) {
+        $self->reminders->delete($rem);
+        return $rem;
+    }
+    return;
 }
 
 sub _build_zones {
