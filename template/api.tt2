@@ -52,7 +52,7 @@
         </ul>
         This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.
         <h4>Deleting a reminder</h4>
-        Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.
+        Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.  Returns 204 on successful delete, 400 on failure.
         <br />
         This will send an email to confirm the reminder deletion by loading a confirmation link.
       </div>
