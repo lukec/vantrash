@@ -5,11 +5,10 @@ use Test::More;
 use File::Copy qw/copy/;
 use FindBin;
 use IO::All;
+use t::VanTrash;
 
 use_ok 'App::VanTrash::Email';
 
-$ENV{VT_EMAIL} = "/tmp/email.$$";
-END { unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL} }
 my $email = App::VanTrash::Email->new( base_path => "$FindBin::Bin/.." );
 isa_ok $email, 'App::VanTrash::Email';
 

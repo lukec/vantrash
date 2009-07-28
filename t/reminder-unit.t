@@ -6,7 +6,9 @@ use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use FindBin;
 use Fatal qw/mkdir symlink/;
+use t::VanTrash;
 
+use_ok 'App::VanTrash::DB';
 use_ok 'App::VanTrash::Model';
 use_ok 'App::VanTrash::Reminder';
 
@@ -23,7 +25,7 @@ my $zones = $model->zones;
 isa_ok $zones, 'ARRAY';
 my $zone = shift @$zones;
 
-is_deeply $model->all_reminders, [], 'is empty';
+is_deeply $model->reminders->all, [], 'is empty';
 
 my $reminder = App::VanTrash::Reminder->new(
     name => "Test Reminder",
@@ -35,6 +37,22 @@ isa_ok $rem, 'App::VanTrash::Reminder';
 is $rem->name,  'Test Reminder', 'name';
 is $rem->email, 'test@vantrash.ca', 'email';
 like $rem->id,  qr/^[\w\d]+$/, 'id';
+is scalar(@{ $model->reminders->all }), 1, 'one reminder';
+
+undef $model;
+$model = App::VanTrash::Model->new( base_path => $tmp_dir );
+my $reminders = $model->reminders->all;
+is scalar(@$reminders), 1, 'one reminder';
+
+$model->delete_reminder($reminders->[0]->zone, $reminders->[0]->id);
+
+$reminders = $model->reminders->all;
+is scalar(@$reminders), 0, 'no reminders';
+
+undef $model;
+$model = App::VanTrash::Model->new( base_path => $tmp_dir );
+$reminders = $model->reminders->all;
+is scalar(@$reminders), 0, 'no reminders';
 
 done_testing();
 exit;

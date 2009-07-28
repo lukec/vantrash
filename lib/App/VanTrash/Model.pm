@@ -1,22 +1,24 @@
 package App::VanTrash::Model;
 use Moose;
-use YAML qw/LoadFile DumpFile/;
-use DateTime;
-use Fatal qw/rename/;
+use App::VanTrash::Email;
+use App::VanTrash::DB;
+use App::VanTrash::ReminderManager;
+use Carp qw/croak/;
 use Data::ICal;
 use Data::ICal::Entry::Event;
 use Date::ICal;
+use DateTime;
+use Fatal qw/rename/;
+use YAML qw/LoadFile DumpFile/;
 use namespace::clean -except => 'meta';
-use Carp qw/croak/;
-use App::VanTrash::Email;
 
 has 'base_path'     => (is => 'ro', isa => 'Str',      required   => 1);
 has 'zonefile'      => (is => 'ro', isa => 'Str',      lazy_build => 1);
-has 'reminderfile'  => (is => 'ro', isa => 'Str',      lazy_build => 1);
 has 'zones'         => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
 has 'zonehash'      => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
-has 'reminderhash'  => (is => 'rw', isa => 'HashRef',  lazy_build => 1);
 has 'mailer'        => (is => 'ro', isa => 'Object',   lazy_build => 1);
+has 'reminders'     => (is => 'ro', isa => 'Object',   lazy_build => 1);
+has 'db'            => (is => 'ro', isa => 'Object',   lazy_build => 1);
 
 sub days {
     my $self = shift;
@@ -79,39 +81,25 @@ sub next_pickup {
     return @return;
 }
 
-sub all_reminders {
-    my $self = shift;
-    
-    my $hash = $self->reminderhash;
-    my @reminders;
-    for my $zone (keys %{ $hash->{id} }) {
-        push @reminders, values %{ $hash->{id}{$zone} };
-    }
-    return \@reminders;
-}
-
 sub get_reminder {
     my $self = shift;
     my $zone = shift or croak "A zone is mandatory!";
     my $id   = shift or croak "An id is mandatory!";
-    return $self->reminderhash->{$zone}{id}{$id};
+    return $self->reminders->by_id( $zone, $id );
 }
 
 sub get_reminder_by_confirm_hash {
     my $self = shift;
     my $zone = shift;
     my $hash = shift;
-    return $self->reminderhash->{$zone}{confirm}{$hash};
+    return $self->reminders->by_hash( $zone, $hash );
 }
 
 sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
 
-    $self->reminderhash->{$rem->zone}{id}{$rem->id} = $rem;
-    $self->reminderhash->{$rem->zone}{confirm}{$rem->confirm_hash} = $rem;
-    $self->save_reminderhash;
-
+    $self->reminders->insert($rem);
     $self->mailer->send_email(
         to => $rem->email,
         subject => 'VanTrash Reminder Confirmation',
@@ -128,10 +116,7 @@ sub confirm_reminder {
     my $self = shift;
     my $rem = shift or croak 'A reminder is mandatory!';
 
-    $rem->confirmed(1);
-    delete $self->reminderhash->{$rem->zone}{confirm}{$rem->confirm_hash};
-    $self->save_reminderhash;
-
+    $self->reminders->confirm($rem);
     $self->mailer->send_email(
         to => $rem->email,
         subject => 'Your VanTrash reminder is created',
@@ -149,17 +134,8 @@ sub delete_reminder {
 
     my $rem = $self->get_reminder($zone, $id);
     return unless $rem;
-    delete $self->reminderhash->{$zone}{id}{$id};
-    delete $self->reminderhash->{$zone}{confirm}{$rem->confirm_hash};
-    $self->save_reminderhash;
+    $self->reminders->delete($rem);
     return $rem;
-}
-
-sub save_reminderhash {
-    my $self = shift;
-    my $tmp = "/tmp/reminder.$$";
-    DumpFile($tmp, $self->reminderhash);
-    rename $tmp => $self->reminderfile;
 }
 
 sub _build_zones {
@@ -168,12 +144,6 @@ sub _build_zones {
 }
 
 sub _build_zonehash      { shift->_load_file('zone') }
-
-sub _build_reminderhash {
-    my $self = shift;
-    return $self->_load_file('reminder');
-}
-
 sub _load_file {
     my $self = shift;
     my $name = $_[0] . 'file';
@@ -190,14 +160,19 @@ sub _build_zonefile {
     return $self->base_path . "/data/trash-zone-times.yaml";
 }
 
-sub _build_reminderfile {
-    my $self = shift;
-    return $self->base_path . "/data/reminders.yaml";
-}
-
 sub _build_mailer {
     my $self = shift;
     return App::VanTrash::Email->new( base_path => $self->base_path );
+}
+
+sub _build_reminders {
+    my $self = shift;
+    return App::VanTrash::ReminderManager->load_or_create( db => $self->db );
+}
+
+sub _build_db {
+    my $self = shift;
+    return App::VanTrash::DB->new( base_path => $self->base_path );
 }
 
 __PACKAGE__->meta->make_immutable;
