@@ -14,15 +14,12 @@
 
 (function($){
 
-    $.fn.lightbox = function(options){
+    $.lightbox = function(options){
         // build main options
-        var opts = $.extend({}, $.fn.lightbox.defaults, options);
-        
-        return this.each(function(){
-            // initalize the lightbox
-            initialize();
-            start(this);
-        });
+        var opts = $.extend({}, $.lightbox.defaults, options);
+        // initalize the lightbox
+        initialize();
+        start(this);
         
         /**
          * initalize()
@@ -227,7 +224,7 @@
         };
     };
         
-    $.fn.lightbox.parseJsonData = function(data) {
+    $.lightbox.parseJsonData = function(data) {
         var imageArray = [];
         
         $.each(data, function(){
@@ -237,7 +234,7 @@
         return imageArray;
     };
 
-    $.fn.lightbox.defaults = {
+    $.lightbox.defaults = {
         fileLoadingImage : 'images/loading.gif',
         fileBottomNavCloseImage : 'images/closelabel.gif',
         overlayOpacity : 0.8,

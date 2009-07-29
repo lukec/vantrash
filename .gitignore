@@ -12,3 +12,4 @@ data/reminders.yaml
 data/all
 data/root
 static/new_reminder.html
+static/beta.html

@@ -7,7 +7,7 @@ TrashReminders.prototype = {
     },
 
     showLightbox: function($node) {
-        $("<div>hi</div>").lightbox({
+        $.lightbox({
             src: '/new_reminder.html',
             height: 80,
             widthFactor: 0.4
