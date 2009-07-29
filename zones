@@ -1,4 +1,4 @@
-[% WRAPPER wrapper.html %]
+[% WRAPPER zones/wrapper.html %]
 <h1>[% zone %] Next Pickup</h1>
 <ul>
   [% FOR day IN days %]

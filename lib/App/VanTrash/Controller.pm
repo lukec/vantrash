@@ -75,7 +75,7 @@ sub zones_html {
         zones => $self->model->zones,
         zone_uri => "/zones",
     );
-    return $self->process_template('zones.html', \%param);
+    return $self->process_template('zones/zones.html', \%param);
 }
 
 sub zones_txt {
@@ -99,7 +99,7 @@ sub zone_html {
         zone => $zone,
         zone_uri => "/zones/$zone",
     );
-    return $self->process_template('zone.html', \%param);
+    return $self->process_template('zones/zone.html', \%param);
 }
 
 sub zone_txt {
@@ -128,7 +128,7 @@ sub zone_days_html {
         days => $self->model->days($zone),
         has_ical => 1,
     );
-    return $self->process_template('zone_days.html', \%param);
+    return $self->process_template('zones/days.html', \%param);
 }
 
 sub zone_days_txt {
@@ -166,7 +166,7 @@ sub zone_next_pickup_html {
         zone_uri => "/zones/$zone/nextpickup",
         days => [$self->model->next_pickup($zone, $limit)],
     );
-    return $self->process_template('zone_next_pickup.html', \%param);
+    return $self->process_template('zones/zone_next_pickup.html', \%param);
 }
 
 sub zone_next_pickup_txt {
@@ -198,7 +198,7 @@ sub confirm_reminder {
 
     my $rem = $self->model->reminders->by_hash($hash);
     unless ($rem) {
-        my $resp = $self->process_template('bad_confirm.html');
+        my $resp = $self->process_template('zones/reminders/bad_confirm.html');
         $resp->status(404);
         return $resp;
     }
@@ -207,7 +207,7 @@ sub confirm_reminder {
     my %param = (
         reminder => $rem,
     );
-    return $self->process_template('good_confirm.html', \%param);
+    return $self->process_template('zones/reminders/good_confirm.html', \%param);
 }
 
 sub put_reminder {
@@ -245,14 +245,14 @@ sub delete_reminder_html {
     my $id   = shift;
 
     if (my $rem = $self->model->delete_reminder($id)) {
-        my $resp = $self->process_template('good_delete.html', {
+        my $resp = $self->process_template('zones/reminders/good_delete.html', {
             reminder => $rem,
         });
         $resp->status(200);
         return $resp;
     }
 
-    my $resp = $self->process_template('bad_delete.html');
+    my $resp = $self->process_template('zones/reminders/bad_delete.html');
     $resp->status(404);
     return $resp;
 }
