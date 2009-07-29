@@ -9,6 +9,7 @@
         [% END %]
     </head>
     <body>
+        [% UNLESS lightbox %]
         <div id="headerLeft">
             <div id="headerRight">
                 <div id="header">
@@ -50,7 +51,8 @@
               </script>
             </div>
         </div>
-        <div id="mainContent">
+        [% END %]
+        <div [% IF lightbox %]class="lightbox"[% END %] id="mainContent">
             [% content %]
         </div>
 
@@ -65,6 +67,7 @@
             pageTracker._trackPageview();
         } catch(err) {}</script>
 
+        [% UNLESS lightbox %]
         <!-- GetSatisfaction -->
         <script type="text/javascript" charset="utf-8">
           var is_ssl = ("https:" == document.location.protocol);
@@ -81,5 +84,6 @@
           feedback_widget_options.style = "idea";
           var feedback_widget = new GSFN.feedback_widget(feedback_widget_options);
         </script>
+        [% END %]
     </body>
 </html>

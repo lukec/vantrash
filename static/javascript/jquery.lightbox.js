@@ -156,14 +156,16 @@
         };
         
         function doChangeImage() {
-            var width = window.innerWidth ||
+            var width = opts.width ||
+                        window.innerWidth ||
                         document.documentElement.clientWidth ||
                         document.body.clientWidth;
-            var height = window.innerHeight ||
+            var height = opts.height ||
+                         window.innerHeight ||
                          document.documentElement.clientHeight ||
                          document.body.clientHeight;
-            width *= 0.9;
-            height *= 0.7;
+            width *= (opts.widthFactor || 0.9);
+            height *= (opts.heightFactor || 0.7);
             $('#lightboxIframe')
                 .attr('src', opts.src)
                 .height(height)

@@ -41,6 +41,9 @@ h1 {
     font-style: italic;
 }
 
+#mainContent.lightbox {
+    padding: 0;
+}
 #mainContent {
     padding-right: 10px;
     padding-top: 10px;

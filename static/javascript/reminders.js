@@ -8,8 +8,9 @@ TrashReminders.prototype = {
 
     showLightbox: function($node) {
         $("<div>hi</div>").lightbox({
-            src: 'http://www.google.com',
-            imageClickClose: false
+            src: '/new_reminder.html',
+            height: 80,
+            widthFactor: 0.4
         });
     }
 };

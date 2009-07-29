@@ -1,0 +1,3 @@
+[% WRAPPER wrapper.tt2 lightbox=1 %]
+We're sorry, but this feature does not work yet. Please check back over the next few weeks to see
+[% END %]
