@@ -1,6 +1,28 @@
+DATA
+----
 All of the trash pickup data is scraped from the City of Vancouver's website:
+    http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm
+    http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm
 
-  http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm
-  http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm
+PERL CODE
+---------
+The scraping codes and the reminder system codes are licensed under
+the Perl Artistic License.
 
-The scraping codes and the reminder system codes are licensed under the Perl Artistic License.
+JAVASCRIPT
+----------
+jQuery is dually licensed under the MIT and GPL licenses
+Copyright (c) 2009 John Resig
+http://docs.jquery.com/License
+
+EGeoXML is licenced under a Creative Commons Licence
+http://creativecommons.org/licenses/by/2.0/uk/
+
+EPolygon is licenced under a Creative Commons Licence
+http://creativecommons.org/licenses/by/2.0/uk/
+
+IMAGES
+------
+The vantrash logo was created by Andy and was released under public domain
+http://creativecommons.org/licenses/publicdomain/
+It was originally downloaded from http://openclipart.org/media/files/Andy/68

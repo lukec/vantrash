@@ -9,14 +9,38 @@ TrashMap.prototype = {
     center: [ 49.26422,-123.138542 ],
 
     getZoneInfo: function(name, color, callback) {
+        var self = this;
         $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
             var cal = new Calendar({ markColor: color });
             var table = cal.create();
             $.each(data, function(i,d) { cal.mark(d) });
             cal.show();
-
-            callback(table);
+            callback(self.createInfoNode(table, name));
         });
+    },
+
+    createInfoNode: function (calendar, name) {
+        var $div = $('<div class="balloon"></div>')
+            .append(calendar)
+            .append(
+                $('<a href="#"></a>')
+                    .attr('href', '/zones/' + name + '/pickupdays.ics')
+                    .append(
+                        $('<img/>')
+                            .attr('src', '/images/ical.png')
+                    ),
+                $('<a href="#"></a>')
+                    .click(function() {
+                        var reminders = new TrashReminders;
+                        reminders.showLightbox();
+                    })
+                    .append(
+                        $('<img/>')
+                            .attr('src', '/images/remind_me.png')
+                    )
+            );
+
+        return $div.get(0);
     },
 
     showSchedule: function(node, name, color) {

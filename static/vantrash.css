@@ -8,6 +8,10 @@ body {
     line-height: 1.1;
 }
 
+a img {
+    border: none;
+}
+
 h1 {
     margin:4px;
 }
@@ -35,9 +39,6 @@ h1 {
     text-align: center;
     width: 100%;
     font-style: italic;
-}
-#header img {
-    border: none;
 }
 
 #mainContent {
@@ -75,6 +76,10 @@ h1 {
 #mapCanvas {
     height:80%;
     margin:auto;
+}
+
+.balloon a img {
+    margin: 0 4px;
 }
 .calendar {
     border-collapse: collapse;

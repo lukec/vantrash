@@ -11,9 +11,11 @@ JS_TARGET=$(JS_DIR)/vantrash-compiled.js
 JS_MINI=$(JS_DIR)/vantrash-compiled-mini.js
 JS_FILES=\
 	 $(JS_DIR)/jquery-latest.js \
+	 $(JS_DIR)/jquery.lightbox.js \
 	 $(JS_DIR)/egeoxml.js \
 	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/cal.js \
+	 $(JS_DIR)/reminders.js \
 	 $(JS_DIR)/map.js \
 
 ALL_TEMPLATES=$(wildcard template/*.tt2)
