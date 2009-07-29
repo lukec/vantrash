@@ -33,6 +33,7 @@ TrashMap.prototype = {
                     .click(function() {
                         var reminders = new TrashReminders;
                         reminders.showLightbox();
+                        return false;
                     })
                     .append(
                         $('<img/>')
