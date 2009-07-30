@@ -50,6 +50,8 @@ install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TE
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	cp $(DATAFILE) $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
+	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
+	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
 	/etc/init.d/apache2 restart
 
 test: $(TESTS) $(WIKITESTS)

@@ -1,0 +1,19 @@
+PerlSwitches -Mlib=/var/www/vantrash/lib
+<VirtualHost *>
+	ServerAdmin admin@cal.wikrad.com
+	
+	<Location />
+	    SetHandler modperl
+	    PerlOptions +SetupEnv
+	    PerlResponseHandler App::VanTrash::ModPerl
+	</Location>
+
+	ErrorLog /var/log/apache2/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/access.log combined
+	ServerSignature On
+</VirtualHost>
