@@ -1,0 +1,34 @@
+upstream mod_perl {
+    server 127.0.0.1:2080;
+}
+
+
+server {
+    listen   80;
+    server_name  vantrash.hackspace.ca vantrash.ca www.vantrash.ca;
+
+    access_log /var/log/nginx/vantrash-access.log;
+    error_log  /var/log/nginx/vantrash-error.log;
+
+    root   /var/www/vantrash/root;
+    index  index.html;
+
+    location / {
+        proxy_redirect false;
+        proxy_set_header   Host             $host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+        if (-f $request_filename/index.html) {
+            rewrite (.*) $1/index.html break;
+        }
+        if (-f $request_filename.html) {
+            rewrite (.*) $1.html break;
+        }
+        if (!-f $request_filename) {
+            proxy_pass http://mod_perl;
+            break;
+        }
+    }
+}
+

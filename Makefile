@@ -52,7 +52,10 @@ install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TE
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
 	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
+	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
+	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	/etc/init.d/apache2 restart
+	/etc/init.d/nginx reload
 
 test: $(TESTS) $(WIKITESTS)
 	prv $(TESTS)
