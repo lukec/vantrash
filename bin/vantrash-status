@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+use lib 'lib';
+use App::VanTrash::Model;
+use Getopt::Long;
+
+my $base_path = ".";
+GetOptions(
+    'base-path=s' => \$base_path,
+) or die "USAGE: $0 --base-path=foo";
+
+my $model = App::VanTrash::Model->new(
+    base_path => $base_path,
+);
+
+my $zones = $model->zones;
+print "Zones: " . @$zones . "\n";
+
+my $reminders = $model->reminders->all;
+print "Reminders: " . @$reminders . "\n";
