@@ -84,6 +84,12 @@ h1 {
 .balloon a img {
     margin: 0 4px;
 }
+.balloon .zoneName {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 .calendar {
     border-collapse: collapse;
     font-size: 90%;

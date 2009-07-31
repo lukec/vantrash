@@ -6,6 +6,7 @@ TrashMap = function(opts) {
 }
 
 TrashMap.prototype = {
+    descriptions: {},
     center: [ 49.26422,-123.138542 ],
 
     getZoneInfo: function(name, color, callback) {
@@ -21,6 +22,10 @@ TrashMap.prototype = {
 
     createInfoNode: function (calendar, name) {
         var $div = $('<div class="balloon"></div>')
+            .append(
+                $('<div class="zoneName"></div>')
+                    .text(this.descriptions[name])
+            )
             .append(calendar)
             .append(
                 $('<a href="#"></a>')
@@ -73,13 +78,14 @@ TrashMap.prototype = {
         var self = this;
         this.zones = [];
         this.exml = new EGeoXml("exml", this.map, "zones.kml", {
-            createpolygon: function (pts,sc,sw,so,fc,fo,pl,name) {
+            createpolygon: function (pts,sc,sw,so,fc,fo,pl,name,desc) {
                 var zone = new GPolygon(pts, sc, sw, so, fc, fo);
                 GEvent.addListener(zone, 'click', function() {
                     self.showSchedule(zone, name, fc);
                     return false;
                 });
                 zone.name = name;
+                self.descriptions[name] = desc;
                 self.zones.push(zone);
                 self.map.addOverlay(zone);
             }
