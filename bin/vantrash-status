@@ -4,8 +4,10 @@ use App::VanTrash::Model;
 use Getopt::Long;
 
 my $base_path = ".";
+my $verbose;
 GetOptions(
     'base-path=s' => \$base_path,
+    'v|verbose'   => \$verbose,
 ) or die "USAGE: $0 --base-path=foo";
 
 my $model = App::VanTrash::Model->new(
@@ -14,6 +16,15 @@ my $model = App::VanTrash::Model->new(
 
 my $zones = $model->zones;
 print "Zones: " . @$zones . "\n";
+for my $z (@$zones) {
+    print "  $z\n";
+}
 
 my $reminders = $model->reminders->all;
 print "Reminders: " . @$reminders . "\n";
+for my $r (@$reminders) {
+    my $id = $r->id;
+    my $email = $r->email;
+    my $zone = $r->zone;
+    print "  $id - $zone\t- $email\n";
+}
