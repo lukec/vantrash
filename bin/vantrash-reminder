@@ -65,11 +65,13 @@ sub usage {
     die <<EOT
 USAGE: $0 <options>
 
-WHERE options are:
-  --zone=foo        (mandatory)
-  --id=foo          (mandatory)
-  --email=foo       (mandatory)
-  --password=foo
-  --offset=foo
+Creating a reminder:
+   $0 --name foo --email your\@email --zone your-zone [--offset 'offset']
+
+Deleting a reminder:
+   $0 --delete --id id_to_delete
+
+Other:
+  --server http://your-server
 EOT
 }
