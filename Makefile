@@ -21,14 +21,16 @@ JS_FILES=\
 ALL_TEMPLATES=$(wildcard template/*.tt2)
 OTHER_TEMPLATES=template/wrapper.tt2
 TEMPLATES=$(filter-out $(OTHER_TEMPLATES),$(ALL_TEMPLATES))
+LIGHTBOXES=template/donate.tt2 template/new_reminder.tt2
 HTML=$(TEMPLATES:template/%.tt2=static/%.html)
+LIGHTBOX_HTML=$(LIGHTBOXES:template/%.tt2=static/%-lightbox.html)
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: $(JS_MINI) $(HTML)
+all: $(JS_MINI) $(HTML) $(LIGHTBOX_HTML)
 
 clean:
-	rm -f $(JS_MINI) $(JS_TARGET) $(HTML)
+	rm -f $(JS_MINI) $(JS_TARGET) $(HTML) $(LIGHTBOX_HTML)
 
 .SUFFIXES: .js -mini.js
 
@@ -41,8 +43,12 @@ $(JS_TARGET): $(JS_FILES) Makefile
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
+static/%-lightbox.html: $(OTHER_TEMPLATES) template/%.tt2
+	$(PERL) bin/process-template --lightbox $(@:static/%-lightbox.html=%) > $@
+	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
+
 static/%.html: $(OTHER_TEMPLATES) template/%.tt2
-	$(PERL) bin/process-template ${@:static/%.html=%}
+	$(PERL) bin/process-template $(@:static/%.html=%) > $@
 	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR)

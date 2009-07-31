@@ -13,3 +13,6 @@ data/all
 data/root
 static/new_reminder.html
 static/beta.html
+static/beta-lightbox.html
+static/donate-lightbox.html
+static/new_reminder-lightbox.html
