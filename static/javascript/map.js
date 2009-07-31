@@ -11,40 +11,58 @@ TrashMap.prototype = {
 
     getZoneInfo: function(name, color, callback) {
         var self = this;
-        $.getJSON('/zones/' + name + '/pickupdays.json', function (data) {
+        $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
             var cal = new Calendar({ markColor: color });
-            var table = cal.create();
-            $.each(data, function(i,d) { cal.mark(d) });
-            cal.show();
-            callback(self.createInfoNode(table, name));
+            $.each(days, function(i,d) { cal.mark(d) });
+            cal.draw();
+            callback(self.createInfoNode(cal, name));
         });
     },
 
-    createInfoNode: function (calendar, name) {
+    createInfoNode: function (cal, name) {
         var $div = $('<div class="balloon"></div>')
-            .append(
-                $('<div class="zoneName"></div>')
-                    .text(this.descriptions[name])
-            )
-            .append(calendar)
-            .append(
-                $('<a href="#"></a>')
-                    .attr('href', '/zones/' + name + '/pickupdays.ics')
-                    .append(
-                        $('<img/>')
-                            .attr('src', '/images/ical.png')
-                    ),
-                $('<a href="#"></a>')
-                    .click(function() {
-                        var reminders = new TrashReminders;
-                        reminders.showLightbox();
-                        return false;
-                    })
-                    .append(
-                        $('<img/>')
-                            .attr('src', '/images/remind_me.png')
-                    )
+
+        // Zone Title
+        $div.append(
+            $('<div class="zoneName"></div>') .text(this.descriptions[name])
+        );
+
+        // Next pickup date
+        var nextDay = cal.nextMarkedDate();
+        if (nextDay) {
+            var days = cal.daysUntil(nextDay);
+            $div.append(
+                $('<div class="next"></div>').append(
+                    '<span class="title">Next pickup: </span>',
+                    days == 1 ?
+                        '<span class="day">Tomorrow+</span>' :
+                        '<span class="day">'+cal.formatDate(nextDay)+'</span>'
+                )
             );
+        }
+
+        // Zone pickup schedule calendar
+        $div.append(cal.getTable());
+
+        // Buttons
+        $div.append(
+            $('<a href="#"></a>')
+                .attr('href', '/zones/' + name + '/pickupdays.ics')
+                .append(
+                    $('<img/>')
+                        .attr('src', '/images/ical.png')
+                ),
+            $('<a href="#"></a>')
+                .click(function() {
+                    var reminders = new TrashReminders;
+                    reminders.showLightbox();
+                    return false;
+                })
+                .append(
+                    $('<img/>')
+                        .attr('src', '/images/remind_me.png')
+                )
+        );
 
         return $div.get(0);
     },

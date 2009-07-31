@@ -5,6 +5,7 @@ Calendar = function (args) {
         date: new Date,
         markers: []
     });
+    this.setup();
 }
 
 Calendar.prototype = {
@@ -15,17 +16,21 @@ Calendar.prototype = {
     ],
     ROWS: 2 + Math.ceil(31 / 7),
 
+    getTable: function() {
+        return this.table;
+    },
+
     nextMonth: function () {
         this.date.setMonth(this.date.getMonth()+1);
-        this.show();
+        this.draw();
     },
 
     prevMonth: function () {
         this.date.setMonth(this.date.getMonth()-1);
-        this.show();
+        this.draw();
     },
 
-    create: function () {
+    setup: function () {
         var self = this;
 
         this.table = $('<table></table>').addClass('calendar').get(0);
@@ -61,13 +66,9 @@ Calendar.prototype = {
                 $('<td></td>').appendTo($tr);
             }
         }
-
-        this.show();
-
-        return this.table;
     },
 
-    show: function() {
+    draw: function() {
         $('.day', this.table)
             .html('')
             .css('background-color', '')
@@ -146,7 +147,21 @@ Calendar.prototype = {
         dateobj.setMonth(d.month-1);
         dateobj.setDate(d.day);
         return dateobj;
+    },
+
+    formatDate: function(d) {
+        return String(d).replace(/ \d+:\d+.*/, '');
+    },
+
+    nextMarkedDate: function() {
+        var today = new Date;
+        for (var i=0; i<this.markers.length; i++) {
+            var marked = this.markers[i];
+            if (marked.getTime() > today.getTime()) return marked
+            if (this.areSameDay(today, marked)) return marked;
+        }
     }
+
 };
 
 })(jQuery);
