@@ -1,0 +1,18 @@
+Debian:
+- libdb4.6-dev
+
+Perl:
+- HTTP::Engine
+- KiokuDB
+- KiokuDB::Backend::BDB
+- Template
+- Email::Send
+- Email::MIME
+- Email::MIME::Creator
+- Date::ICal
+- Net::Server::PreForkSimple
+- JavaScript::Minifier::XS
+- Socialtext::WikiObject
+- Crypt::DES
+- BerkeleyDB
+
