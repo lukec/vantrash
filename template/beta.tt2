@@ -1,3 +1,0 @@
-[% WRAPPER wrapper.tt2 lightbox=1 %]
-This is just a warning that this site is currently under development so some of the features might not work yet.
-[% END %]

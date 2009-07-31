@@ -6,12 +6,6 @@
         $(function(){
             map = new TrashMap();
             map.render($('#mapCanvas').get(0));
-
-            $.lightbox({
-                src: '/beta.html',
-                height: 80,
-                widthFactor: 0.4
-            });
         });
     </script>
 [% END %]
