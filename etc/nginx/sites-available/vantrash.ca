@@ -5,7 +5,7 @@ upstream mod_perl {
 
 server {
     listen   80;
-    server_name  vantrash.hackspace.ca vantrash.ca www.vantrash.ca;
+    server_name  dev.hackspace.ca vantrash.hackspace.ca vantrash.ca www.vantrash.ca;
 
     access_log /var/log/nginx/vantrash-access.log;
     error_log  /var/log/nginx/vantrash-error.log;
