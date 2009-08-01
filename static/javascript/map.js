@@ -12,8 +12,16 @@ TrashMap.prototype = {
     getZoneInfo: function(name, color, callback) {
         var self = this;
         $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
-            var cal = new Calendar({ markColor: color });
-            $.each(days, function(i,d) { cal.mark(d) });
+            var cal = new Calendar();
+            $.each(days, function(i,d) {
+                cal.mark(new CalendarMarker({
+                    year: d.year,
+                    month: d.month,
+                    day: d.day,
+                    color: color,
+                    image: d.flag == 'Y' ? '/images/yard.gif' : false
+                }))
+            });
             cal.draw();
             callback(self.createInfoNode(cal, name));
         });

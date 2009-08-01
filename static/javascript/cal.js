@@ -71,7 +71,7 @@ Calendar.prototype = {
     draw: function() {
         $('.day', this.table)
             .html('')
-            .css('background-color', '')
+            .css('background', '')
             .removeClass('today')
             .removeClass('marked');
 
@@ -95,10 +95,17 @@ Calendar.prototype = {
             var cellDate = cnt.getDate()
             $cell.addClass('day').html(cellDate);
 
-            if (this.isMarked(cnt)) {
+            var marker = this.getMarker(cnt);
+            if (marker) {
                 $cell.addClass('marked');
-                if (this.markColor) {
-                    $cell.css('background-color', this.markColor);
+                if (marker.color) {
+                    $cell.css('background-color', marker.color);
+                }
+                if (marker.image) {
+                    $cell.css(
+                        'background-image',
+                        'url('+marker.image+') '
+                    );
                 }
             }
             if (this.areSameDay(cnt, today)) {
@@ -109,11 +116,11 @@ Calendar.prototype = {
         }
     },
 
-    mark: function(d) {
-        this.markers.push(d);
+    mark: function(marker) {
+        this.markers.push(marker);
     },
 
-    isMarked: function(d) {
+    getMarker: function(d) {
         var self = this;
         if (!this.markers.length) return false;
         for (var i=0; i<this.markers.length; i++) {
@@ -122,7 +129,7 @@ Calendar.prototype = {
                 d.getDate() == marker.day &&
                 d.getMonth() == marker.month-1 &&
                 d.getFullYear() == marker.year;
-            if (marked) return true;
+            if (marked) return marker;
         }
         return false;
     },
@@ -168,5 +175,11 @@ Calendar.prototype = {
     }
 
 };
+
+CalendarMarker = function(args) {
+    $.extend(this, args, {});
+}
+
+CalendarMarker.prototype = {};
 
 })(jQuery);
