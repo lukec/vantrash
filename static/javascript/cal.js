@@ -110,19 +110,25 @@ Calendar.prototype = {
     },
 
     mark: function(d) {
-        this.markers.push(this.parseDate(d));
+        this.markers.push(d);
     },
 
     isMarked: function(d) {
         var self = this;
-        if (!this.markers.length) return 0;
-        var length = $.grep(this.markers, function (date) {
-            return self.areSameDay(date, d);
-        }).length;
-        return length;
+        if (!this.markers.length) return false;
+        for (var i=0; i<this.markers.length; i++) {
+            var marker = this.markers[i];
+            var marked =
+                d.getDate() == marker.day &&
+                d.getMonth() == marker.month-1 &&
+                d.getFullYear() == marker.year;
+            if (marked) return true;
+        }
+        return false;
     },
 
     daysUntil: function(d) {
+        return 0;
         var counter = new Date; // today
 
         var max_days = 20;
@@ -154,6 +160,7 @@ Calendar.prototype = {
     },
 
     nextMarkedDate: function() {
+        return;
         var today = new Date;
         for (var i=0; i<this.markers.length; i++) {
             var marked = this.markers[i];
