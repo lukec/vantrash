@@ -81,6 +81,12 @@ h1 {
     margin:auto;
 }
 
+.balloon {
+    height: 200px;
+}
+.balloon .buttons {
+    margin-top: 5px;
+}
 .balloon a img {
     margin: 0 4px;
 }

@@ -46,22 +46,24 @@ TrashMap.prototype = {
 
         // Buttons
         $div.append(
-            $('<a href="#"></a>')
-                .attr('href', '/zones/' + name + '/pickupdays.ics')
-                .append(
-                    $('<img/>')
-                        .attr('src', '/images/ical.png')
-                ),
-            $('<a href="#"></a>')
-                .click(function() {
-                    var reminders = new TrashReminders;
-                    reminders.showLightbox();
-                    return false;
-                })
-                .append(
-                    $('<img/>')
-                        .attr('src', '/images/remind_me.png')
-                )
+            $('<div class="buttons"></div>').append(
+                $('<a href="#"></a>')
+                    .attr('href', '/zones/' + name + '/pickupdays.ics')
+                    .append(
+                        $('<img/>')
+                            .attr('src', '/images/ical.png')
+                    ),
+                $('<a href="#"></a>')
+                    .click(function() {
+                        var reminders = new TrashReminders;
+                        reminders.showLightbox();
+                        return false;
+                    })
+                    .append(
+                        $('<img/>')
+                            .attr('src', '/images/remind_me.png')
+                    )
+            )
         );
 
         return $div.get(0);
