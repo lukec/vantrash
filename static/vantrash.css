@@ -101,6 +101,7 @@ h1 {
 .calendar {
     border-collapse: collapse;
     font-size: 90%;
+    height: 123px;
 }
 .calendar td {
     text-align:center;
