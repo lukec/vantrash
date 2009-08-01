@@ -128,7 +128,6 @@ Calendar.prototype = {
     },
 
     daysUntil: function(d) {
-        return 0;
         var counter = new Date; // today
 
         var max_days = 20;
@@ -160,10 +159,9 @@ Calendar.prototype = {
     },
 
     nextMarkedDate: function() {
-        return;
         var today = new Date;
         for (var i=0; i<this.markers.length; i++) {
-            var marked = this.markers[i];
+            var marked = this.parseDate(this.markers[i]);
             if (marked.getTime() > today.getTime()) return marked
             if (this.areSameDay(today, marked)) return marked;
         }
