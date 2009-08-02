@@ -4,8 +4,9 @@ use namespace::clean -except => 'meta';
 
 has 'db' => (is => 'rw', required => 1);
 has 'db_scope' => (is => 'rw');
-has 'need_confirmation' => (is => 'rw', isa => 'HashRef', default => sub {{}});
-has 'reminders'         => (is => 'rw', isa => 'HashRef', default => sub {{}});
+has 'need_confirmation' =>
+    (is => 'rw', isa => 'HashRef', default => sub { {} });
+has 'reminders' => (is => 'rw', isa => 'HashRef', default => sub { {} });
 
 sub load_or_create {
     my $class = shift;
@@ -70,6 +71,9 @@ sub insert {
 
     if ($self->reminders->{$rem->id}) {
         die "A reminder for this zone with this ID already exists!";
+    }
+    unless ($rem->next_pickup) {
+        die "next_pickup must be set before insert!";
     }
 
     $self->reminders->{$rem->id} = $rem;

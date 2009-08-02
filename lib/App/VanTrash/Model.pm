@@ -3,6 +3,7 @@ use Moose;
 use App::VanTrash::Email;
 use App::VanTrash::DB;
 use App::VanTrash::ReminderManager;
+use App::VanTrash::Notifier;
 use Carp qw/croak/;
 use Data::ICal;
 use Data::ICal::Entry::Event;
@@ -19,6 +20,7 @@ has 'zonehash'      => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
 has 'mailer'        => (is => 'ro', isa => 'Object',   lazy_build => 1);
 has 'reminders'     => (is => 'ro', isa => 'Object',   lazy_build => 1);
 has 'db'            => (is => 'ro', isa => 'Object',   lazy_build => 1);
+has 'notifier'      => (is => 'ro', isa => 'Object',   lazy_build => 1);
 
 sub days {
     my $self = shift;
@@ -65,6 +67,7 @@ sub next_pickup {
     my $self = shift;
     my $zone = shift;
     my $limit = shift || 1;
+    my $datetime = shift;
 
     my $days = $self->days($zone);
     my $now = time;
@@ -75,16 +78,17 @@ sub next_pickup {
             time_zone => 'America/Vancouver',
         );
         next if $now > $dt->epoch;
-        push @return, $d->{string};
+        push @return, ($datetime ? $dt : $d->{string});
         last if @return == $limit;
     }
-    return @return;
+    return wantarray ? @return : @return == 1 ? $return[0] : \@return;
 }
 
 sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
 
+    $rem->next_pickup( $self->next_pickup($rem->zone, 1, 'dt')->epoch );
     $self->reminders->insert($rem);
     $self->mailer->send_email(
         to => $rem->email,
@@ -153,12 +157,22 @@ sub _build_mailer {
 
 sub _build_reminders {
     my $self = shift;
-    return App::VanTrash::ReminderManager->load_or_create( db => $self->db );
+    return App::VanTrash::ReminderManager->load_or_create( 
+        db => $self->db,
+    );
 }
 
 sub _build_db {
     my $self = shift;
     return App::VanTrash::DB->new( base_path => $self->base_path );
+}
+
+sub _build_notifier {
+    my $self = shift;
+    return App::VanTrash::Notifier->new(
+        reminders => $self->reminders,
+        mailer    => $self->mailer,
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

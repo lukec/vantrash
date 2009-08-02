@@ -2,6 +2,7 @@ package App::VanTrash::Reminder;
 use Moose;
 use Digest::SHA1 qw/sha1_hex/;
 
+has 'nice_name'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'name'        => (is => 'ro', isa => 'Str',  required   => 1);
 has 'email'       => (is => 'ro', isa => 'Str',  required   => 1);
 has 'zone'        => (is => 'ro', isa => 'Str',  required   => 1);
@@ -16,7 +17,13 @@ has 'created_at' =>
     (is => 'ro', isa => 'Int', required => 1, lazy_build => 1);
 has 'confirm_hash' =>
     (is => 'ro', isa => 'Str', required => 1, lazy_build => 1);
+has 'next_pickup'   => (is => 'rw', isa => 'Int', default => 0);
 has 'last_notified' => (is => 'rw', isa => 'Int', default => 0);
+
+sub _build_nice_name {
+    my $self = shift;
+    return join '-', $self->zone, $self->email, $self->name;
+}
 
 sub _build_id {
     my $self = shift;
