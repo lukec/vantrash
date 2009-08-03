@@ -15,6 +15,12 @@ a img {
 h1 {
     margin:4px;
 }
+.warning {
+    color: #d34f40;
+    font-style: italic;
+    font-weight: bold;
+    margin: 10px 0;
+}
 #header {
     width:100%;
     text-align: left;
@@ -130,4 +136,22 @@ h1 {
     padding: 60px;
     font-size: 220%;
     background-color: #FF4949;
+}
+
+.wizard {
+    color: #333;
+    width: 400px;
+}
+.wizard .title {
+    font-size: 110%;
+    font-weight: bold;
+}
+.wizard .section .buttons {
+    padding-top: 10px;
+}
+.button {
+    margin-right: 4px;
+}
+.wizard .section .button img {
+    vertical-align: middle;
 }

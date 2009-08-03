@@ -5,6 +5,7 @@ DATAFILE=data/trash-zone-times.yaml
 TEMPLATE_DIR=template
 EXEC=bin/*
 MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS::minify(scalar <>);'
+MINIFY=cat
 
 JS_DIR=static/javascript
 JS_TARGET=$(JS_DIR)/vantrash-compiled.js
@@ -12,10 +13,15 @@ JS_MINI=$(JS_DIR)/vantrash-compiled-mini.js
 JS_FILES=\
 	 $(JS_DIR)/jquery-latest.js \
 	 $(JS_DIR)/jquery.lightbox.js \
-	 $(JS_DIR)/egeoxml.js \
-	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/cal.js \
 	 $(JS_DIR)/reminders.js \
+	 $(JS_DIR)/wizard.js \
+
+JS_MAP_TARGET=$(JS_DIR)/vantrash-map-compiled.js
+JS_MAP_MINI=$(JS_DIR)/vantrash-map-compiled-mini.js
+JS_MAP_FILES=\
+	 $(JS_DIR)/egeoxml.js \
+	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/map.js \
 
 ALL_TEMPLATES=$(wildcard template/*.tt2)
@@ -27,10 +33,10 @@ LIGHTBOX_HTML=$(LIGHTBOXES:template/%.tt2=static/%-lightbox.html)
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: $(JS_MINI) $(HTML) $(LIGHTBOX_HTML)
+all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(HTML) $(LIGHTBOX_HTML)
 
 clean:
-	rm -f $(JS_MINI) $(JS_TARGET) $(HTML) $(LIGHTBOX_HTML)
+	rm -f $(JS_MINI) $(JS_TARGET) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(HTML) $(LIGHTBOX_HTML)
 
 .SUFFIXES: .js -mini.js
 
@@ -40,6 +46,12 @@ clean:
 $(JS_TARGET): $(JS_FILES) Makefile
 	rm -f $@;
 	for js in $(JS_FILES); do \
+	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
+	done
+
+$(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
+	rm -f $@;
+	for js in $(JS_MAP_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 

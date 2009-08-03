@@ -63,7 +63,7 @@ TrashMap.prototype = {
                     ),
                 $('<a href="#"></a>')
                     .click(function() {
-                        var reminders = new TrashReminders;
+                        var reminders = new TrashReminders({zone: name});
                         reminders.showLightbox();
                         return false;
                     })

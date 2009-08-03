@@ -1,6 +1,6 @@
 *.swp
 *.swo
-static/javascript/vantrash-compiled*
+static/javascript/vantrash-*compiled*
 static/about.html
 static/api.html
 static/index.html
@@ -14,3 +14,4 @@ static/beta.html
 static/beta-lightbox.html
 static/donate-lightbox.html
 static/new_reminder-lightbox.html
+static/new_reminder2.html

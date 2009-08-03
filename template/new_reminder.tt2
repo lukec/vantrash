@@ -1,3 +1,81 @@
-[% WRAPPER wrapper.tt2 %]
-This is where the new reminder form will go
+[% WRAPPER wrapper.tt2 javascript=['/javascript/vantrash-compiled.js'] %]
+    <h2>Garbage Reminder Request</h2>
+    <div class="warning">Warning: This feature is in development and does not work properly yet</div>
+
+    <div class="wizard">
+        <form method="POST">
+            <div class="section">
+                <span class="title">Your zone: </span>
+                <select name="zone">
+                    <option value="vancouver-red-north">
+                        Vancouver Red North
+                    </option>
+                    <option value="vancouver-blue-north">
+                        Vancouver Blue North
+                    </option>
+                    <option value="vancouver-purple-north">
+                        Vancouver Purple North
+                    </option>
+                    <option value="vancouver-yellow-north">
+                        Vancouver Yellow North
+                    </option>
+                    <option value="vancouver-green-north">
+                        Vancouver Green North
+                    </option>
+                    <option value="vancouver-red-south">
+                        Vancouver Red South
+                    </option>
+                    <option value="vancouver-blue-south">
+                        Vancouver Blue South
+                    </option>
+                    <option value="vancouver-purple-south">
+                        Vancouver Purple South
+                    </option>
+                    <option value="vancouver-yellow-south">
+                        Vancouver Yellow South
+                    </option>
+                    <option value="vancouver-green-south">
+                        Vancouver Green South
+                    </option>
+                </select>
+            </div>
+
+            <div class="section">
+                <span class="title">Remind me by email: </span>
+                <input type="text" name="email"/>
+            </div>
+
+            <div class="section">
+                <span class="title">When: </span>
+                <select name="offset">
+                    <option value="-6">6PM the day before</option>
+                    <option value="-3">9PM the day before</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        var zone;
+        if (String(location.href).match(/[&?]zone=([^&#]+)/)) {
+            zone = RegExp.$1;
+        }
+
+        $('.wizard .section').wizard({
+            nextButton: '/images/next.png',
+            backButton: '/images/back.png',
+            submitButton: '/images/remind_me_big.png',
+            firstSlide: zone ? 1 : 0
+        });
+        $('.wizard form').submit(function() {
+            $.ajax({
+                type: 'POST', 
+                url: '/zones/' + zone + '/reminders',
+                complete: function() {
+                    window.parent.$('#bottomNavClose').click();
+                },
+            });
+            return false;
+        });
+    </script>
 [% END %]
