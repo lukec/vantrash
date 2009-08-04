@@ -25,7 +25,7 @@
                 <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
                 <p>
                     You can find out your garbage schedule, download the schedule to your calendar
-                    or set a reminder to your email, cell phone or home phone.
+                    or set a reminder to your email.
                     Never forget to take the garbage out again.
                 </p>
                 <div class="firststep">[% firststep %]</div>
