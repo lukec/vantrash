@@ -98,15 +98,7 @@ Calendar.prototype = {
             var marker = this.getMarker(cnt);
             if (marker) {
                 $cell.addClass('marked');
-                if (marker.color) {
-                    $cell.css('background-color', marker.color);
-                }
-                if (marker.image) {
-                    $cell.css(
-                        'background-image',
-                        'url('+marker.image+') '
-                    );
-                }
+                this.applyStyle($cell, marker);
             }
             if (this.areSameDay(cnt, today)) {
                 $cell.addClass('today');
@@ -172,6 +164,36 @@ Calendar.prototype = {
             if (marked.getTime() > today.getTime()) return marked
             if (this.areSameDay(today, marked)) return marked;
         }
+    },
+
+    applyStyle: function($cell, style) {
+        if (style.image) {
+            $cell.css(
+                'background',
+                'url('+style.image+')' + ' top left no-repeat'
+            );
+        }
+        if (style.color) {
+            $cell.css('background-color', style.color);
+        }
+        return $cell;
+    },
+
+    createLegend: function(legend) {
+        var self = this;
+        this.legend = $('<table></table>').addClass('legend');
+        $.each(legend, function(key,item) {
+            var $tr = $('<tr></tr>').appendTo(self.legend);
+            self.applyStyle(
+                $('<td></td>').addClass('key').appendTo($tr),
+                item
+            );
+            $('<td></td>').text(key).appendTo($tr);
+        });
+    },
+
+    getLegend: function() {
+        return this.legend;
     }
 
 };

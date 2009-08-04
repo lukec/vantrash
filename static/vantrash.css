@@ -88,9 +88,11 @@ h1 {
 }
 
 .balloon {
-    height: 200px;
+    height: 250px;
+    text-align: center;
 }
 .balloon .buttons {
+    text-align: left;
     margin-top: 5px;
 }
 .balloon a img {
@@ -98,7 +100,6 @@ h1 {
 }
 .balloon .zoneName {
     font-weight: bold;
-    text-align: center;
     margin-bottom: 10px;
 }
 .balloon .next .title {
@@ -107,7 +108,19 @@ h1 {
 .balloon .next {
     font-size: 90%;
     margin-bottom: 10px;
-    text-align:center;
+}
+.balloon table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.legend {
+    border-collapse: collapse;
+    font-size: 90%;
+}
+.legend .key {
+    width: 20px;
+    border: 1px solid black;
 }
 
 .calendar {

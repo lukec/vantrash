@@ -19,10 +19,14 @@ TrashMap.prototype = {
                     month: d.month,
                     day: d.day,
                     color: color,
-                    image: d.flag == 'Y' ? '/images/yard.gif' : false
+                    image: d.flag == 'Y' ? '/images/yard.png' : false
                 }))
             });
             cal.draw();
+            cal.createLegend({
+                'Garbage day': { color: color },
+                'Yard pickup': { color: color, image: '/images/yard.png' }
+            });
             callback(self.createInfoNode(cal, name));
         });
     },
@@ -51,6 +55,8 @@ TrashMap.prototype = {
 
         // Zone pickup schedule calendar
         $div.append(cal.getTable());
+
+        $div.append(cal.getLegend());
 
         // Buttons
         $div.append(
