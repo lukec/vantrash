@@ -109,17 +109,14 @@ h1 {
     font-size: 90%;
     margin-bottom: 10px;
 }
-.balloon table {
-    margin-left: auto;
-    margin-right: auto;
-}
 
 .legend {
+    margin-left: 60px;
     border-collapse: collapse;
     font-size: 90%;
 }
 .legend .key {
-    width: 20px;
+    width: 27px;
     border: 1px solid black;
 }
 
