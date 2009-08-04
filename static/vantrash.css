@@ -155,3 +155,6 @@ h1 {
 .wizard .section .button img {
     vertical-align: middle;
 }
+.firststep {
+    font-weight: bold;
+}
