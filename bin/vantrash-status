@@ -1,18 +1,28 @@
 #!/usr/bin/perl
 use lib 'lib';
+use FindBin;
 use App::VanTrash::Model;
 use Getopt::Long;
 
-my $base_path = ".";
+my $base_path = "$FindBin::Bin/..";
 my $verbose;
+my $reminder;
 GetOptions(
     'base-path=s' => \$base_path,
     'v|verbose'   => \$verbose,
+    'reminder=s'  => \$reminder,
 ) or die "USAGE: $0 --base-path=foo";
 
 my $model = App::VanTrash::Model->new(
     base_path => $base_path,
 );
+
+if ($reminder) {
+    my $r = $model->reminders->by_id($reminder);
+    die "Could not find reminder '$reminder'\n" unless $r;
+    print $r->dump;
+    exit;
+}
 
 my $zones = $model->zones;
 print "Zones: " . @$zones . "\n";
