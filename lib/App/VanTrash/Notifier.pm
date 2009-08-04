@@ -16,6 +16,8 @@ sub need_notification {
     my @due;
     for my $rem (@{ $self->reminders->all }) {
         my $rem_time = $rem->next_pickup + $rem->offset * 3600;
+        warn "last_notified: " . $rem->last_notified . "\n";
+        warn "rem_time:      $rem_time\n";
         next if $rem->last_notified > $rem_time;
         next if $as_of < $rem_time;
 
@@ -24,5 +26,25 @@ sub need_notification {
 
     return \@due;
 }
+
+sub notify {
+    my $self = shift;
+    my $rem  = shift;
+
+    my $garbage_day = DateTime->from_epoch( epoch => $rem->next_pickup );
+    $self->mailer->send_email(
+        to => $rem->email,
+        subject => 'It is garbage day',
+        template => 'notification.html',
+        template_args => {
+            reminder => $rem,
+            garbage_day => $garbage_day->ymd,
+        },
+    );
+    $rem->last_notified( $self->now() );
+}
+
+# Tests can override this
+sub now { time() }
 
 1;

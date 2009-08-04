@@ -5,7 +5,7 @@ use File::Copy qw/copy/;
 use FindBin;
 use Fatal qw/mkdir symlink/;
 use Test::More;
-use IO::All;
+use File::Slurp;
 use namespace::clean -except => 'meta';
 
 BEGIN {
@@ -37,11 +37,19 @@ sub model {
 }
 
 sub email_content {
-    return eval { scalar(io($ENV{VT_EMAIL})->slurp) } || '';
+    return eval { scalar read_file($ENV{VT_EMAIL}) } || '';
 }
 
 sub clear_email {
     unlink $ENV{VT_EMAIL};
+}
+
+sub set_time {
+    my $self = shift;
+    my $dt   = shift;
+
+    no warnings 'redefine';
+    *App::VanTrash::Notifier::now = sub { $dt->epoch };
 }
 
 __PACKAGE__->meta->make_immutable;

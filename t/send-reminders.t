@@ -27,9 +27,24 @@ Create_and_send_reminder: {
         hour => 1, # 1 hour ahead of offset => 0
     );
 
-    my $reminders = $model->notifier->need_notification( as_of => $pud);
-    is scalar(@$reminders), 1, 'found 1 reminder needing notification';
-    is $reminders->[0]->name, 'Test Reminder', 'and it had the right name';
+    Email_is_sent: {
+        my $reminders = $model->notifier->need_notification( as_of => $pud);
+        is scalar(@$reminders), 1, 'found 1 reminder needing notification';
+        is $reminders->[0]->name, 'Test Reminder', 'and it had the right name';
+
+        t::VanTrash->clear_email;
+
+        t::VanTrash->set_time($pud);
+        $model->notifier->notify($reminders->[0]);
+        my $email = t::VanTrash->email_content();
+        like $email, qr/garbage day/, 'email matches';
+    }
+
+    $pud->set(minute => 10);
+    Email_is_not_double_sent: {
+        my $reminders = $model->notifier->need_notification( as_of => $pud);
+        is scalar(@$reminders), 0, 'no more notifications needed';
+    }
 }
 
 done_testing();
