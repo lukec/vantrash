@@ -58,6 +58,7 @@ sub add_reminder {
     my $resp = $ua->request($req);
     print $resp->status_line, "\n";
     print $resp->headers->header('Location'), "\n";
+    print $resp->content, "\n";
 }
 
 
