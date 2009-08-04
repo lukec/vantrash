@@ -71,14 +71,15 @@ sub next_pickup {
 
     my $days = $self->days($zone);
     die "Not a valid zone: '$zone'\n" unless @$days;
-    my $now = time;
+    my $now = $self->now;
+    $now->set( hour => 23, minute => 59 );
     my @return;
     for my $d (@$days) {
         my $dt = DateTime->new(
             (map { $_ => $d->{$_} } qw/year month day/),
             time_zone => 'America/Vancouver',
         );
-        next if $now > $dt->epoch;
+        next if $now > $dt;
         push @return, ($datetime ? $dt : $d->{string});
         last if @return == $limit;
     }
@@ -175,6 +176,13 @@ sub _build_notifier {
         reminders => $self->reminders,
         mailer    => $self->mailer,
     );
+}
+
+sub now {
+    my $self = shift;
+    my $dt = DateTime->now;
+    $dt->set_time_zone('America/Vancouver');
+    return $dt;
 }
 
 __PACKAGE__->meta->make_immutable;
