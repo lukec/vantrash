@@ -7,34 +7,34 @@
             <div class="section">
                 <span class="title">Your zone: </span>
                 <select name="zone">
-                    <option value="vancouver-red-north">
+                    <option value="vancouver-north-red">
                         Vancouver Red North
                     </option>
-                    <option value="vancouver-blue-north">
+                    <option value="vancouver-north-blue">
                         Vancouver Blue North
                     </option>
-                    <option value="vancouver-purple-north">
+                    <option value="vancouver-north-purple">
                         Vancouver Purple North
                     </option>
-                    <option value="vancouver-yellow-north">
+                    <option value="vancouver-north-yellow">
                         Vancouver Yellow North
                     </option>
-                    <option value="vancouver-green-north">
+                    <option value="vancouver-north-green">
                         Vancouver Green North
                     </option>
-                    <option value="vancouver-red-south">
+                    <option value="vancouver-south-red">
                         Vancouver Red South
                     </option>
-                    <option value="vancouver-blue-south">
+                    <option value="vancouver-south-blue">
                         Vancouver Blue South
                     </option>
-                    <option value="vancouver-purple-south">
+                    <option value="vancouver-south-purple">
                         Vancouver Purple South
                     </option>
-                    <option value="vancouver-yellow-south">
+                    <option value="vancouver-south-yellow">
                         Vancouver Yellow South
                     </option>
-                    <option value="vancouver-green-south">
+                    <option value="vancouver-south-green">
                         Vancouver Green South
                     </option>
                 </select>
@@ -66,13 +66,17 @@
             backButton: '/images/back.png',
             submitButton: '/images/remind_me_big.png',
             firstStep: zone ? 1 : 0,
-            onSubmit: function() {
-                $.ajax({
-                    type: 'POST', 
-                    url: '/zones/' + zone + '/reminders',
-                    complete: function() {
-                        window.parent.$('#bottomNavClose').click();
-                    },
+            onSubmit: function($form) {
+                var data = {
+                    email: $('*[name=email]', $form).val(),
+                    offset: $('*[name=offset]', $form).val()
+                };
+
+                if (!zone) zone = $('*[name=zone]', $form).val();
+
+                var reminders = new TrashReminders();
+                reminders.add(zone, data, function() {
+                    window.parent.$('#bottomNavClose').click();
                 });
             }
         });

@@ -5,7 +5,15 @@ TrashReminders = function(opts) {
 }
 
 TrashReminders.prototype = {
-    add: function (id, password, email, time_offset) {
+    add: function (zone, data, callback) {
+        data.name = data.name || 'reminder';
+        $.ajax({
+            type: 'PUT',
+            url: '/zones/' + zone + '/reminders',
+            data: $.toJSON(data, true),
+            complete: function() {
+            },
+        });
     },
 
     showLightbox: function($node) {

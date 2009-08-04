@@ -46,7 +46,7 @@ $.fn.wizard = function() {
                 showStep(currentStep+1);
             }
             else if (opts.onSubmit) {
-                opts.onSubmit();
+                opts.onSubmit($form);
             };
             return false;
         });
