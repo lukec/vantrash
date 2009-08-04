@@ -27,6 +27,14 @@ Create_and_send_reminder: {
         hour => 1, # 1 hour ahead of offset => 0
     );
 
+    Not_sent_before_confirmation: {
+        my $reminders = $model->notifier->need_notification( as_of => $pud);
+        is scalar(@$reminders), 0, 'no more notifications needed';
+        $reminders = $model->reminders->all;
+        is scalar(@$reminders), 1, '1 reminder exists';
+        $model->confirm_reminder($reminders->[0]);
+    }
+
     Email_is_sent: {
         my $reminders = $model->notifier->need_notification( as_of => $pud);
         is scalar(@$reminders), 1, 'found 1 reminder needing notification';

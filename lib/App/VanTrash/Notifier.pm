@@ -15,9 +15,9 @@ sub need_notification {
 
     my @due;
     for my $rem (@{ $self->reminders->all }) {
-        my $rem_time = $rem->next_pickup + $rem->offset * 3600;
-        warn "last_notified: " . $rem->last_notified . "\n";
-        warn "rem_time:      $rem_time\n";
+        next unless $rem->confirmed;
+        my $garbage_epoch = $rem->next_pickup;
+        my $rem_time = $garbage_epoch + $rem->offset * 3600;
         next if $rem->last_notified > $rem_time;
         next if $as_of < $rem_time;
 

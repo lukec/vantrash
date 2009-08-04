@@ -70,6 +70,7 @@ sub next_pickup {
     my $datetime = shift;
 
     my $days = $self->days($zone);
+    die "Not a valid zone: '$zone'\n" unless @$days;
     my $now = time;
     my @return;
     for my $d (@$days) {
@@ -88,7 +89,8 @@ sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
 
-    $rem->next_pickup( $self->next_pickup($rem->zone, 1, 'dt')->epoch );
+    my $next_pickup_dt = $self->next_pickup($rem->zone, 1, 'dt');
+    $rem->next_pickup( $next_pickup_dt->epoch );
     $self->reminders->insert($rem);
     $self->mailer->send_email(
         to => $rem->email,
