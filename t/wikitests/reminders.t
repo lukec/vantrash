@@ -1,4 +1,4 @@
 #!/bin/bash
 
 export PERL5LIB="lib";
-wiki-prove 'Reminder Tests'
+wiki-prove -f t/wikitests/reminder-tests.wiki

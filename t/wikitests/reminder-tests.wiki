@@ -1,0 +1,55 @@
+* Fixture: VanTrash
+* Fixture: HTTP
+
+| *Comment* | Test set up |  |
+| clear-email |  |  |
+| clear-reminders |  |  |
+| set | email | test@vantrash.ca |
+
+| *Comment* | Add a reminder |
+| PUT_json | /zones/vancouver-north-blue/reminders | {"email":"%%email%%","name":"test"} |
+| code-is | 201 |
+| header-like | Location | qr/\/zones\/vancouver-north-blue\/reminders\/[\w\d]+/ |
+
+| *Comment* | Look for the email confirmation |
+| email-like | To: %%email%% |
+| email-like | From: "VanTrash" <help@vantrash.ca> |
+| email-like | Subject: VanTrash Reminder Confirmation |
+| email-like | click this link |
+| email-like | qr/vancouver-north-blue\/reminders\/[\w\d+]+\/confirm/ |
+| set_url_from_email | confirm_url |
+| clear-email |  |
+
+| *Comment* | Fetch the confirmation link |
+| get | %%confirm_url%% |
+| code-is | 200 |
+| body-like | Thank you for confirming your email, %%email%% |
+
+| *Comment* | Check that the success email is sent |
+| email-like | To: %%email%% |
+| email-like | From: "VanTrash" <help@vantrash.ca> |
+| email-like | Subject: Your VanTrash reminder is created |
+| email-like | Everything is all set up! |
+| email-like | qr/vancouver-north-blue\/reminders\/[\w\d+]+\/delete/ |
+| set_url_from_email | delete_url |
+
+| *Comment* | confirm a second time should fail |
+| get | %%confirm_url%% |
+| code-is | 404 |
+| body-like | Sorry |
+
+| *Comment* | Delete the reminder |
+| GET | %%delete_url%% |
+| code-is | 200 |
+| body-like | The garbage reminder for %%email%% has been deleted. |
+
+| *Comment* | Delete the reminder again |
+| GET | %%delete_url%% |
+| code-is | 404 |
+| body-like | Sorry |
+
+| *Comment* | Try a made-up reminder hash |
+| get | /zones/vancouver-north-blue/reminders/deadbeef/confirm |
+| code-is | 404 |
+| body-like | Sorry |
+
