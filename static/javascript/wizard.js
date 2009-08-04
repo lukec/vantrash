@@ -1,31 +1,26 @@
 (function($){
 
 var opts = {
-    firstSlide: 0
+    firstStep: 0
 };
 
 $.fn.wizard = function() {
     if (arguments.length) $.extend(opts, arguments[0]);
 
+    var steps = this;
+    var currentStep = opts.firstStep;
+
     var self = this;
     $(this).hide().each(function(i) {
         var $buttons = $('<div class="buttons"></div>').appendTo(this);
-        if (i > opts.firstSlide) {
+        if (i > opts.firstStep) {
             make_button(opts.backButton)
-                .click(function() {
-                    slide(i).fadeOut(function() {
-                        slide(i-1).fadeIn();
-                    });
-                })
+                .click(function() { showStep(i-1) })
                 .appendTo($buttons);
         }
         if (i < self.length-1) {
             make_button(opts.nextButton)
-                .click(function() {
-                    slide(i).fadeOut(function() {
-                        slide(i+1).fadeIn();
-                    });
-                })
+                .click(function() { showStep(i+1) })
                 .appendTo($buttons);
         }
         else {
@@ -37,12 +32,27 @@ $.fn.wizard = function() {
         }
     });
 
-    $($(this).get(opts.firstSlide)).show();
-
-    var slides = this;
-    function slide(i) {
-        return $(slides[i]);
+    function showStep(newStep) {
+        $(steps[currentStep]).fadeOut(function() {
+            $(steps[newStep]).fadeIn();
+            currentStep = newStep;
+        });
     }
+
+    var $form = $(this).parents('form');
+    if ($form.size()) {
+        $form.submit(function() {
+            if (currentStep < steps.length-1) {
+                showStep(currentStep+1);
+            }
+            else if (opts.onSubmit) {
+                opts.onSubmit();
+            };
+            return false;
+        });
+    }
+
+    $($(this).get(currentStep)).show();
 
     function make_button(src) {
         return $('<a href="#"></a>')

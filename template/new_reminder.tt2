@@ -65,17 +65,16 @@
             nextButton: '/images/next.png',
             backButton: '/images/back.png',
             submitButton: '/images/remind_me_big.png',
-            firstSlide: zone ? 1 : 0
-        });
-        $('.wizard form').submit(function() {
-            $.ajax({
-                type: 'POST', 
-                url: '/zones/' + zone + '/reminders',
-                complete: function() {
-                    window.parent.$('#bottomNavClose').click();
-                },
-            });
-            return false;
+            firstStep: zone ? 1 : 0,
+            onSubmit: function() {
+                $.ajax({
+                    type: 'POST', 
+                    url: '/zones/' + zone + '/reminders',
+                    complete: function() {
+                        window.parent.$('#bottomNavClose').click();
+                    },
+                });
+            }
         });
     </script>
 [% END %]
