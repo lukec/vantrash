@@ -12,6 +12,7 @@ JS_TARGET=$(JS_DIR)/vantrash-compiled.js
 JS_MINI=$(JS_DIR)/vantrash-compiled-mini.js
 JS_FILES=\
 	 $(JS_DIR)/jquery-latest.js \
+	 $(JS_DIR)/jquery-json-1.3.js \
 	 $(JS_DIR)/jquery.lightbox.js \
 	 $(JS_DIR)/cal.js \
 	 $(JS_DIR)/reminders.js \
