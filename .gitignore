@@ -7,7 +7,6 @@ static/index.html
 .vantrash-rester.conf
 static/faq.html
 static/donate.html
-*.wiki
 data/*
 static/new_reminder.html
 static/beta.html
