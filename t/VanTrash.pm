@@ -5,6 +5,7 @@ use File::Copy qw/copy/;
 use FindBin;
 use Fatal qw/mkdir symlink/;
 use Test::More;
+use IO::All;
 use namespace::clean -except => 'meta';
 
 BEGIN {
@@ -33,6 +34,14 @@ sub _build_base_path {
 sub model {
     my $self = shift;
     return App::VanTrash::Model->new( base_path => $self->base_path );
+}
+
+sub email_content {
+    return eval { scalar(io($ENV{VT_EMAIL})->slurp) } || '';
+}
+
+sub clear_email {
+    unlink $ENV{VT_EMAIL};
 }
 
 __PACKAGE__->meta->make_immutable;
