@@ -75,7 +75,9 @@ install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TE
 	/etc/init.d/apache2 restart
 	/etc/init.d/nginx reload
 
-test: $(TESTS) $(WIKITESTS)
+test: $(TESTS)
 	prv $(TESTS)
+
+wikitest: $(WIKITESTS)
 	prove $(WIKITESTS)
 	
