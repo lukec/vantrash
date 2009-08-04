@@ -36,5 +36,6 @@ for my $r (@$reminders) {
     my $id = $r->id;
     my $email = $r->email;
     my $zone = $r->zone;
-    print "  $id - $zone\t- $email\n";
+    my $confirmed = $r->confirmed ? 'confirmed' : 'unconfirmed';
+    print "  $id - $zone\t- $email - $confirmed\n";
 }
