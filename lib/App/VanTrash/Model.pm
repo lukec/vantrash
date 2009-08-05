@@ -71,19 +71,43 @@ sub next_pickup {
 
     my $days = $self->days($zone);
     die "Not a valid zone: '$zone'\n" unless @$days;
-    my $now = $self->now;
-    $now->set( hour => 23, minute => 59 );
+    my $tonight = $self->tonight;
     my @return;
     for my $d (@$days) {
         my $dt = DateTime->new(
             (map { $_ => $d->{$_} } qw/year month day/),
             time_zone => 'America/Vancouver',
         );
-        next if $now > $dt;
+        next if $tonight > $dt;
         push @return, ($datetime ? $dt : $d->{string});
         last if @return == $limit;
     }
     return wantarray ? @return : @return == 1 ? $return[0] : \@return;
+}
+
+sub next_dow_change {
+    my $self = shift;
+    my $zone = shift;
+
+    my $days = $self->days($zone);
+    die "Not a valid zone: '$zone'\n" unless @$days;
+    my $tonight = $self->tonight;
+
+    my $prev_dow;
+    my $prev_day;
+    for my $d (@$days) {
+        my $dt = DateTime->new(
+            (map { $_ => $d->{$_} } qw/year month day/),
+            time_zone => 'America/Vancouver',
+        );
+        my $dow = $dt->day_of_week;
+        if ($tonight < $dt and $prev_dow != $dow) {
+            return ($prev_day, $dt);
+        }
+        $prev_dow = $dow;
+        $prev_day = $dt;
+    }
+    return;
 }
 
 sub add_reminder {
@@ -179,10 +203,17 @@ sub _build_notifier {
 }
 
 sub now {
+    return $ENV{VANTRASH_NOW} if $ENV{VANTRASH_NOW};
     my $self = shift;
     my $dt = DateTime->now;
     $dt->set_time_zone('America/Vancouver');
     return $dt;
+}
+
+sub tonight {
+    my $self = shift;
+    my $now = $self->now;
+    $now->set( hour => 23, minute => 59 );
 }
 
 __PACKAGE__->meta->make_immutable;
