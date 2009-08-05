@@ -11,7 +11,7 @@ use MIME::Types;
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
-has 'model' => (is => 'ro', isa => 'App::VanTrash::Model');
+has 'model' => (is => 'rw', isa => 'App::VanTrash::Model');
 has 'mimetypes' => (is => 'ro', lazy_build => 1);
 has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
 has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
