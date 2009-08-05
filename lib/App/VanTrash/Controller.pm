@@ -11,7 +11,7 @@ use MIME::Types;
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
-has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
+has 'model' => (is => 'ro', isa => 'App::VanTrash::Model');
 has 'mimetypes' => (is => 'ro', lazy_build => 1);
 has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
 has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
@@ -59,6 +59,9 @@ sub handle_request {
         ],
     );
     
+    # Build a model for this request
+    $self->model( $self->_build_model );
+
     my $method = $req->method;
     for my $match (@{ $func_map{$method}}) {
         my ($regex, $todo) = @$match;
