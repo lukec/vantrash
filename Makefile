@@ -26,11 +26,11 @@ JS_MAP_FILES=\
 	 $(JS_DIR)/map.js \
 
 ALL_TEMPLATES=$(wildcard template/*.tt2)
-OTHER_TEMPLATES=template/wrapper.tt2
+OTHER_TEMPLATES=template/wrapper.tt2 template/paypal_form.tt2
 TEMPLATES=$(filter-out $(OTHER_TEMPLATES),$(ALL_TEMPLATES))
-LIGHTBOXES=template/donate.tt2 template/new_reminder.tt2
+LIGHTBOXES=template/donate.tt2 template/new_reminder.tt2 template/reminder_success.tt2
 HTML=$(TEMPLATES:template/%.tt2=static/%.html)
-LIGHTBOX_HTML=$(LIGHTBOXES:template/%.tt2=static/%-lightbox.html)
+LIGHTBOX_HTML=$(LIGHTBOXES:template/%.tt2=static/%_lb.html)
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
@@ -56,8 +56,8 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
-static/%-lightbox.html: $(OTHER_TEMPLATES) template/%.tt2
-	$(PERL) bin/process-template --lightbox $(@:static/%-lightbox.html=%) > $@
+static/%_lb.html: $(OTHER_TEMPLATES) template/%.tt2
+	$(PERL) bin/process-template --lightbox $(@:static/%_lb.html=%) > $@
 	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 static/%.html: $(OTHER_TEMPLATES) template/%.tt2

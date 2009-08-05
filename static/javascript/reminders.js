@@ -5,21 +5,25 @@ TrashReminders = function(opts) {
 }
 
 TrashReminders.prototype = {
-    add: function (zone, data, callback) {
-        data.name = data.name || 'reminder';
-        $.ajax({
-            type: 'PUT',
-            url: '/zones/' + zone + '/reminders',
-            data: $.toJSON(data, true),
-            complete: function() {
-            },
-        });
+    add: function (opts) {
+        var data = {
+            name: opts.name || 'reminder',
+            email: opts.email,
+            offset: opts.offset
+        };
+        $.ajax(
+            $.extend({
+                type: 'PUT',
+                url: '/zones/' + opts.zone + '/reminders',
+                data: $.toJSON(data, true)
+            }, opts)
+        );
     },
 
     showLightbox: function($node) {
         $.lightbox({
-            src: '/new_reminder-lightbox.html?zone=' + this.zone,
-            height: 240,
+            src: '/new_reminder_lb.html?zone=' + this.zone,
+            height: 300,
             widthFactor: 0.4
         });
     }

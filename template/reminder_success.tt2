@@ -1,5 +1,7 @@
 [% WRAPPER wrapper.tt2 %]
 <div class="content">
+    <strong>Your reminder has been successfully added!</strong>
+
     <p>VanTrash is created for you by Kevin Jones and Luke Closs with lots of help from David Eaves.  We count on your support to help cover the cost of the resources needed to run this service.</p>
 
     <p>We recommend a donation of $12/year if you use the reminder service.</p>

@@ -67,16 +67,18 @@
             submitButton: '/images/remind_me_big.png',
             firstStep: zone ? 1 : 0,
             onSubmit: function($form) {
-                var data = {
-                    email: $('*[name=email]', $form).val(),
-                    offset: $('*[name=offset]', $form).val()
-                };
-
-                if (!zone) zone = $('*[name=zone]', $form).val();
-
                 var reminders = new TrashReminders();
-                reminders.add(zone, data, function() {
-                    window.parent.$('#bottomNavClose').click();
+
+                reminders.add({
+                    email: $('*[name=email]', $form).val(),
+                    offset: $('*[name=offset]', $form).val(),
+                    zone: zone || $('*[name=zone]', $form).val(),
+                    success: function() {
+                        location = '/reminder_success_lb.html';
+                    },
+                    error: function() {
+                        location = '/reminder_error_lb.html';
+                    }
                 });
             }
         });
