@@ -59,6 +59,8 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 	done
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR)
+	rm -rf $(INSTALL_DIR)/*
+	mkdir $(INSTALL_DIR)/root $(INSTALL_DIR)/data $(INSTALL_DIR)/bin 
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	cp $(DATAFILE) $(INSTALL_DIR)/data
