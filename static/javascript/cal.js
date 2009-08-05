@@ -181,9 +181,10 @@ Calendar.prototype = {
 
     createLegend: function(legend) {
         var self = this;
-        this.legend = $('<table></table>').addClass('legend');
+        this.legend = $('<div></div>').addClass('legend');
+        var $table = $('<table></table>').appendTo(this.legend);
         $.each(legend, function(key,item) {
-            var $tr = $('<tr></tr>').appendTo(self.legend);
+            var $tr = $('<tr></tr>').appendTo($table);
             self.applyStyle(
                 $('<td></td>').addClass('key').appendTo($tr),
                 item
