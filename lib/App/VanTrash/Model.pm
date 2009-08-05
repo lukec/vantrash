@@ -102,7 +102,10 @@ sub next_dow_change {
         );
         my $dow = $dt->day_of_week;
         if ($tonight < $dt and $prev_dow != $dow) {
-            return ($prev_day, $dt);
+            return (
+                last => $prev_day, 
+                first => $dt,
+            );
         }
         $prev_dow = $dow;
         $prev_day = $dt;

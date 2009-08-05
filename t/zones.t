@@ -21,13 +21,13 @@ Next_pickup: {
 }
 
 Next_dow_change: {
-    my ($last, $first) = $model->next_dow_change('vancouver-south-red');
-    is $last->ymd,  '2009-09-03', 'next-day-change';
-    is $first->ymd, '2009-09-11', 'next-day-change';
+    my %days = $model->next_dow_change('vancouver-south-red');
+    is $days{last}->ymd,  '2009-09-03', 'next-day-change';
+    is $days{first}->ymd, '2009-09-11', 'next-day-change';
     $ENV{VANTRASH_NOW}->set( day => 11 );
-    ($last, $first) = $model->next_dow_change('vancouver-south-red');
-    is $last->ymd,  '2009-10-09', 'next-day-change';
-    is $first->ymd, '2009-10-19', 'next-day-change';
+    %days = $model->next_dow_change('vancouver-south-red');
+    is $days{last}->ymd,  '2009-10-09', 'next-day-change';
+    is $days{first}->ymd, '2009-10-19', 'next-day-change';
 }
 
 
