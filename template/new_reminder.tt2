@@ -56,28 +56,23 @@
     </div>
 
     <script>
-        var zone;
-        if (String(location.href).match(/[&?]zone=([^&#]+)/)) {
-            zone = RegExp.$1;
-        }
-
         $('.wizard .section').wizard({
             nextButton: '/images/next.png',
             backButton: '/images/back.png',
             submitButton: '/images/remind_me_big.png',
-            firstStep: zone ? 1 : 0,
+            firstStep: [% zone ? 1 : 0 %],
             onSubmit: function($form) {
                 var reminders = new TrashReminders();
 
                 reminders.add({
                     email: $('*[name=email]', $form).val(),
                     offset: $('*[name=offset]', $form).val(),
-                    zone: zone || $('*[name=zone]', $form).val(),
+                    zone: [% IF zone %]"[% zone %]"[% ELSE %]$('*[name=zone]', $form).val()[% END %],
                     success: function() {
-                        location = '/reminder_success_lb.html';
+                        location = '/reminder_success.html?lightbox=1';
                     },
-                    error: function() {
-                        location = '/reminder_error_lb.html';
+                    error: function(req) {
+                        location = '/reminder_error.html?lightbox=1&error=' + req.responseText;
                     }
                 });
             }

@@ -24,7 +24,8 @@ sub handle_request {
     my $path = $req->path;
     my %func_map = (
         GET => [
-            [ qr{^/$}                               => 'index.html' ],
+            [ qr{^/$}                               => \&ui_html ],
+            [ qr{^/([^/]+)\.html$}                  => \&ui_html ],
             [ qr{^/zones$}                          => \&zones_html ],
             [ qr{^/zones\.txt$}                     => \&zones_txt ],
             [ qr{^/zones\.json$}                    => \&zones_json ],
@@ -72,6 +73,13 @@ sub handle_request {
     }
 
     return $self->_static_file($path);
+}
+
+sub ui_html {
+    my ($self, $req, $tmpl) = @_;
+    $tmpl ||= 'index';
+    my $params = $req->params;
+    return $self->process_template("$tmpl.tt2", $params);
 }
 
 sub zones_html {
@@ -316,6 +324,13 @@ sub response {
     $res->headers->header('Content-Type' => $ct);
     $res->body($body);
     return $res;
+}
+
+sub _build_tenjin {
+    my $self = shift;
+    return Tenjin::Engine->new({
+        path => [ $self->base_path . '/template' ],
+    });
 }
 
 sub _build_template {

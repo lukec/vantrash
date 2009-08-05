@@ -25,24 +25,26 @@ JS_MAP_FILES=\
 	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/map.js \
 
-ALL_TEMPLATES=$(wildcard template/*.tt2)
-OTHER_TEMPLATES=template/wrapper.tt2 template/paypal_form.tt2
-TEMPLATES=$(filter-out $(OTHER_TEMPLATES),$(ALL_TEMPLATES))
-LIGHTBOXES=template/donate.tt2 template/new_reminder.tt2 template/reminder_success.tt2
-HTML=$(TEMPLATES:template/%.tt2=static/%.html)
-LIGHTBOX_HTML=$(LIGHTBOXES:template/%.tt2=static/%_lb.html)
+WIKI_PAGES=about_us faq
+WIKI_HTMLS=$(WIKI_PAGES:%=template/%.html)
+
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(HTML) $(LIGHTBOX_HTML)
+all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(WIKI_HTMLS)
 
 clean:
-	rm -f $(JS_MINI) $(JS_TARGET) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(HTML) $(LIGHTBOX_HTML)
+	rm -f $(JS_MINI) $(JS_TARGET) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(WIKI_HTMLS)
 
 .SUFFIXES: .js -mini.js
 
 .js-mini.js:
 	$(MINIFY) $< > $@
+
+$(WIKI_HTMLS): Makefile
+	rm -f $@;
+	bin/fetch-from-wiki $(@:template/%.html=%) > $@
+	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 $(JS_TARGET): $(JS_FILES) Makefile
 	rm -f $@;
@@ -55,14 +57,6 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 	for js in $(JS_MAP_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
-
-static/%_lb.html: $(OTHER_TEMPLATES) template/%.tt2
-	$(PERL) bin/process-template --lightbox $(@:static/%_lb.html=%) > $@
-	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
-
-static/%.html: $(OTHER_TEMPLATES) template/%.tt2
-	$(PERL) bin/process-template $(@:static/%.html=%) > $@
-	@grep $@ .gitignore >/dev/null || echo $@ >> .gitignore && :
 
 install: $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR)
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root

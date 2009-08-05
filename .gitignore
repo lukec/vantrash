@@ -20,3 +20,5 @@ static/reminder_success.html
 static/donate_lb.html
 static/new_reminder_lb.html
 static/reminder_success_lb.html
+template/about_us.html
+template/faq.html

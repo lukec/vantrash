@@ -1,5 +1,5 @@
 [% WRAPPER wrapper.tt2 %]
 <div class="content">
-    <strong>Error adding reminder: %%error%%</strong>
+    <strong>Error adding reminder: [% error %]strong>
 </div>
 [% END %]

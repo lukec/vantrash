@@ -1,5 +1,5 @@
 [% WRAPPER wrapper.tt2 %]
     <div class="content">
-       [% load_page_from_wiki('FAQ') %]
+       [% INCLUDE faq.html %]
     </div>
 [% END %]

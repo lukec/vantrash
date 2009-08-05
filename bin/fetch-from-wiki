@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use Socialtext::Resting::Getopt qw/get_rester/;
+use Template;
+use Getopt::Long;
+
+my %args;
+GetOptions(\%args, qw(lightbox));
+
+my $R = get_rester(
+    'rester-config' => "$FindBin::Bin/../.vantrash-rester.conf"
+);
+die "Couldn't load a rester" unless $R->password;
+
+my $name = shift || die "USAGE: $0 <name>\n";
+$R->accept('text/html');
+warn "  Fetching page '$name' from the wiki...\n";
+my $content = $R->get_page($name);
+if ($R->response->code != 200) {
+    die "Could not load page '$name'! " . $R->response->status_line;
+}
+
+print $content;
