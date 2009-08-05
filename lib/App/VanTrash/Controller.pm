@@ -40,6 +40,11 @@ sub handle_request {
                     \&zone_next_pickup_txt ],
             [ qr{^/zones/([^/]+)/nextpickup\.json$} =>
                     \&zone_next_pickup_json ],
+            [ qr{^/zones/([^/]+)/nextdowchange$} => \&zone_next_dow_change_html ],
+            [ qr{^/zones/([^/]+)/nextdowchange\.txt$} => 
+                    \&zone_next_dow_change_txt ],
+            [ qr{^/zones/([^/]+)/nextdowchange\.json$} =>
+                    \&zone_next_dow_change_json ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d]+)/confirm$} =>
                     \&confirm_reminder ],
             [ qr{^/zones/([^/]+)/reminders/(.+)/delete$} => 
@@ -187,6 +192,39 @@ sub zone_next_pickup_json {
 
     my $body
         = encode_json { next => [ $self->model->next_pickup($zone, $limit) ] };
+    return $self->response('application/json' => $body);
+}
+
+sub zone_next_dow_change_html {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+
+    my %param = (
+        zone => $zone,
+        zone_uri => "/zones/$zone/nextdowchange",
+        $self->model->next_dow_change($zone),
+    );
+    return $self->process_template('zones/zone_next_dow_change.html', \%param);
+}
+
+sub zone_next_dow_change_txt {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+
+    my %days = $self->model->next_dow_change($zone);
+    my $body = "Last pickup day before change: " . $days{last}->ymd . "\n"
+             . "First pickup day on the new schedule: " . $days{first}->ymd . "\n";
+    return $self->response('text/plain' => $body);
+}
+
+sub zone_next_dow_change_json {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+
+    my $body = encode_json {$self->model->next_dow_change($zone)};
     return $self->response('application/json' => $body);
 }
 

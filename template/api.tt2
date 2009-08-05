@@ -24,6 +24,7 @@
         <ul>
             <li><a href="/zones/vancouver-north-blue/pickupdays">Pickup Days</a> - The list of pickup days for the zone</li>
             <li><a href="/zones/vancouver-north-blue/nextpickup">Next Pickup</a> - The next pickup day for this zone</li>
+            <li><a href="/zones/vancouver-north-blue/nextdowchange">Next Day of Week Change</a> - The next pickup day that occurs on a different day of the week than its previous pickup</li>
         </ul>
         This data is also has text and JSON representations:
         <ul>
@@ -32,6 +33,8 @@
                 <a href="/zones/vancouver-north-blue/pickupdays.ics"><code>text/calendar (iCal)</code></a></li>
             <li>Next Pickup: <a href="/zones/vancouver-north-blue/nextpickup.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/nextpickup.json"><code>application/json</code></a></li>
+            <li>Next DOW Change: <a href="/zones/vancouver-north-blue/nextdowchange.txt"><code>text/plain</code></a>, 
+                <a href="/zones/vancouver-north-blue/nextdowchange.json"><code>application/json</code></a></li>
         </ul>
         Dates are expressed as <code>YYYY-MM-DD[ F]</code>.  The <code>F</code> is an optional flag (separated from the date with a single space).  The only supported flag currently is <code>Y</code> which means a 'Yard Trimmings Collection' also occurs on that day.</p>
         <p>
