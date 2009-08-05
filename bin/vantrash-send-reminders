@@ -10,9 +10,10 @@ use Getopt::Long;
 my %args;
 GetOptions( \%args,
     'debug',
+    'base-path=s',
 );
 
-my $base_path = "$FindBin::Bin/..";
+my $base_path = $args{'base-path'} || "$FindBin::Bin/..";
 
 my $now = DateTime->now(time_zone => 'America/Vancouver');
 print "Running at: ", join('-', $now->year, $now->month, $now->day), "\n";
