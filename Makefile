@@ -27,6 +27,7 @@ JS_MAP_FILES=\
 
 WIKI_PAGES=about_us faq
 WIKI_HTMLS=$(WIKI_PAGES:%=template/%.html)
+CRONJOB=etc/cron.d/vantrash
 
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
@@ -61,12 +62,14 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 $(INSTALL_DIR)/%:
 	mkdir $@
 
-install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR)
+install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) \
+    	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
 	rm -rf $(INSTALL_DIR)/root/*
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	cp $(DATAFILE) $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
+	cp -f etc/cron.d/vantrash /etc/cron.d/vantrash
 	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
 	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
