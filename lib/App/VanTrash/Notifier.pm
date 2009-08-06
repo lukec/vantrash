@@ -9,17 +9,28 @@ has 'reminders' => (is => 'ro', isa => 'Object',        required => 1);
 sub need_notification {
     my $self = shift;
     my %args = @_;
+    my $debug = $ENV{VT_DEBUG};
 
     my $as_of = $args{as_of} || DateTime->now;
     $as_of = $as_of->epoch;
 
     my @due;
     for my $rem (@{ $self->reminders->all }) {
-        next unless $rem->confirmed;
+        my $name = $rem->nice_name;
+        unless ($rem->confirmed) {
+            warn "reminder is not yet confirmed: $name\n" if $debug;
+            next;
+        }
         my $garbage_epoch = $rem->next_pickup;
         my $rem_time = $garbage_epoch + $rem->offset * 3600;
-        next if $rem->last_notified > $rem_time;
-        next if $as_of < $rem_time;
+        if ($rem->last_notified > $rem_time) {
+            warn "reminder notification already sent for $name\n" if $debug;
+            next;
+        }
+        if ($as_of < $rem_time) {
+            warn "It is too early to send for $name\n" if $debug;
+            next;
+        }
 
         push @due, $rem;
     }
