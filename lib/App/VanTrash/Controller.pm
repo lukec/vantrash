@@ -51,6 +51,11 @@ sub handle_request {
             [ qr{^/zones/([^/]+)/reminders/(.+)/delete$} => 
                     \&delete_reminder_html ],
         ],
+
+        POST => [
+            # Website Actions
+            [ qr{^/action/tell-friends$} => \&tell_friends ],
+        ],
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
         ],
@@ -303,6 +308,16 @@ sub delete_reminder_html {
 
     my $resp = $self->process_template('zones/reminders/bad_delete.html');
     $resp->status(404);
+    return $resp;
+}
+
+sub tell_friends {
+    my $self = shift;
+    my $req  = shift;
+
+    my $params = { error => 'Not yet implemented, sorry.' };
+    my $resp = $self->process_template('tell-a-friend.tt2', $params);
+    $resp->status(200);
     return $resp;
 }
 

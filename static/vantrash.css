@@ -174,3 +174,25 @@ h1 {
 .firststep {
     font-weight: bold;
 }
+.tellfriends label {
+    font-size: 120%;
+}
+.tellfriends textarea {
+    border: 3px solid #cccccc;
+    padding: 5px;
+    font-size: 160%;
+}
+.tellfriends input {
+    padding: 5px;
+    padding-left: 30px;
+    font-size: 130%;
+}
+.question input {
+    padding-left: 3px;
+    padding-top: 5px;
+    font-size: 180%;
+}
+.question {
+    padding: 15px;
+}
+

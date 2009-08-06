@@ -34,6 +34,7 @@
                 <li><a href="/">Map</a></li>
                 <li><a href="/about.html">About this site</a></li>
                 <li><a href="/faq.html">FAQ</a></li>
+                <li><a href="/tell-a-friend.html">Tell a friend</a></li>
                 <li><a href="/donate.html">Donate</a></li>
                 <li class="last"> <a href="/api.html">VanTrash API</a></li>
             </ul>
