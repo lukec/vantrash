@@ -12,6 +12,7 @@ GetOptions( \%args,
     'debug',
     'base-path=s',
 );
+$args{debug} = 1 if $ENV{VT_DEBUG};
 
 my $base_path = $args{'base-path'} || "$FindBin::Bin/..";
 

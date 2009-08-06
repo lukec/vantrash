@@ -38,5 +38,5 @@ for my $r (@$reminders) {
     my $zone = $r->zone;
     my $next_pickup = DateTime->from_epoch(epoch => $r->next_pickup);
     my $confirmed = $r->confirmed ? 'confirmed' : 'unconfirmed';
-    print "  $id - $zone\t- $email (" . $next_pickup->ymd . ") - $confirmed\n";
+    print "  $id - $zone - $email (" . $next_pickup->ymd . ") - $confirmed\n";
 }
