@@ -1,0 +1,4 @@
+# /etc/cron.d/vantrash: crontab fragment for vantrash
+#  This sends out vantrash reminders.
+
+0 * * * *     www-data   /var/www/vantrash/bin/vantrash-send-reminders >> /var/log/vantrash-email.log 2>&1
