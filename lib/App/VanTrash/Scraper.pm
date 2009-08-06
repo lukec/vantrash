@@ -4,24 +4,28 @@ use Web::Scraper;
 use URI;
 use YAML qw/DumpFile/;
 
+has 'zone'  => (is => 'ro', isa => 'Str');
 has 'zones' => (is => 'ro', isa => 'ArrayRef[HashRef]', lazy_build => 1);
 
 sub scrape {
     my $self = shift;
+    my $only_zone = $self->zone;
 
     my %data;
     for my $zone (@{ $self->zones() }) {
+        next if $only_zone and $zone->{name} ne $only_zone;
         print "Scraping $zone->{name}\n";
         $self->scrape_zone($zone);
         $data{$zone->{name}} = $zone->{dates};
     }
 
-    DumpFile('trash-zone-times.yaml', \%data);
+    DumpFile('data/trash-zone-times.yaml', \%data);
 }
 
 sub scrape_zone {
     my $self = shift;
     my $zone = shift;
+    my $debug = $ENV{VT_DEBUG};
 
     my $row_scraper = scraper {
         process 'td.headings', 'months[]' => 'TEXT';
@@ -48,7 +52,13 @@ sub scrape_zone {
         else {
             for my $i (1 .. 3) {
                 my $day = $row->{"month${i}day"};
-                next unless $day and $day =~ m/^\d+$/;
+                next unless $day;
+                next if $day =~ m/^\s*$/ or $day =~ m/Set out by 7/;
+                unless ($day and $day =~ m/^\s*(\d+)\s*$/) {
+                    warn "Couldn't recognize: '$day'\n";
+                    next;
+                }
+                $day = $1;
                 my $year = 2009;
                 my $month = $current_months[$i - 1];
                 if ($month =~ s/^(\w+) (\d+)/$1/) {
