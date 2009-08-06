@@ -8,6 +8,7 @@ static/index.html
 static/faq.html
 static/donate.html
 data/*
+!data/trash-zone-times.yaml
 static/new_reminder.html
 static/beta.html
 static/beta-lightbox.html
