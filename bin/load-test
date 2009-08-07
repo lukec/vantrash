@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+my $num_reminders = 1000;
+my $email = 'lukec@vancal.org';
+my $zone = 'vancouver-north-blue';
+
+for my $i (1 .. $num_reminders) {
+    system("vantrash-reminder --zone '$zone' --email '$email' --name 'test-$$-$i'");
+}
+
