@@ -37,7 +37,7 @@
 
             var outerImage = '<div id="outerImageContainer"><div id="imageContainer"><iframe id="lightboxIframe"></iframe><div id="loading"><a href="javascript://" id="loadingLink"><img src="'+opts.fileLoadingImage+'"></a></div></div></div>';
 
-            var imageData = '<div id="imageDataContainer" class="clearfix"><div id="imageData"><div id="imageDetails"><span id="caption"></span><span id="numberDisplay"></span></div><div id="bottomNav"><a href="javascript://" id="bottomNavClose" title="' + opts.strings.closeTitle + '"><img src="'+opts.fileBottomNavCloseImage+'"></a></div></div></div>';
+            var imageData = '<div id="imageDataContainer" class="clearfix"><div id="imageData"><div id="imageDetails"><span id="caption"></span><span id="numberDisplay"></span></div></div></div>';
 
             var string;
 
@@ -53,14 +53,8 @@
             $("#overlay").click(function(){ end(); }).hide();
             $("#lightbox").click(function(){ end();}).hide();
             $("#loadingLink").click(function(){ end(); return false;});
-            $("#bottomNavClose").click(function(){ end(); return false; });
             $('#outerImageContainer').width(opts.widthCurrent).height(opts.heightCurrent);
             $('#imageDataContainer').width(opts.widthCurrent);
-        
-            if (!opts.imageClickClose) {
-                $("#lightboxImage").click(function(){ return false; });
-                $("#hoverNav").click(function(){ return false; });
-            }
         };
         
         function getPageSize() {
@@ -170,6 +164,9 @@
                 .css('border', 'none')
                 .load(function() {
                     resizeImageContainer(width, height);
+                    var win;
+                    try { win = this.contentWindow } catch (e) {}
+                    if (win) win.closeLightbox = end;
                 });
         };
         
@@ -236,7 +233,6 @@
 
     $.lightbox.defaults = {
         fileLoadingImage : 'images/loading.gif',
-        fileBottomNavCloseImage : 'images/closelabel.gif',
         overlayOpacity : 0.8,
         borderSize : 10,
         imageArray : new Array,

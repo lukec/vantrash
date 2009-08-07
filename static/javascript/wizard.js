@@ -15,18 +15,20 @@ $.fn.wizard = function() {
         var $buttons = $('<div class="buttons"></div>').appendTo(this);
         if (i > opts.firstStep) {
             make_button(opts.backButton)
-                .click(function() { showStep(i-1) })
+                .click(function() { showStep(i-1); return false; })
                 .appendTo($buttons);
         }
         if (i < self.length-1) {
             make_button(opts.nextButton)
-                .click(function() { showStep(i+1) })
+                .click(function() { showStep(i+1); return false; })
                 .appendTo($buttons);
         }
-        else {
-            make_button(opts.submitButton)
+
+        if (opts.cancelButton) {
+            make_button(opts.cancelButton)
                 .click(function() {
-                    $(this).parents('form').submit();
+                    if ($.isFunction(opts.cancel)) opts.cancel();
+                    return false;
                 })
                 .appendTo($buttons)
         }
@@ -45,8 +47,8 @@ $.fn.wizard = function() {
             if (currentStep < steps.length-1) {
                 showStep(currentStep+1);
             }
-            else if (opts.onSubmit) {
-                opts.onSubmit($form);
+            else if ($.isFunction(opts.submit)) {
+                opts.submit($form);
             };
             return false;
         });

@@ -163,7 +163,9 @@ h1 {
     font-weight: bold;
 }
 .wizard .section .buttons {
-    padding-top: 10px;
+    position: absolute;
+    bottom: 1px;
+    right: 0;
 }
 .button {
     margin-right: 4px;

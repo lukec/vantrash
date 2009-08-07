@@ -51,17 +51,36 @@
                     <option value="-6">6PM the day before</option>
                     <option value="-3">9PM the day before</option>
                 </select>
+
+                <a id="submit" class="button" href="#">
+                    <img src="/images/remind_me_big.png"/>
+                </a>
             </div>
         </form>
     </div>
 
     <script>
+
+        $('#submit').click(function() {
+            $(this).parents('form').submit();
+            return false;
+        });
+
         $('.wizard .section').wizard({
             nextButton: '/images/next.png',
             backButton: '/images/back.png',
             submitButton: '/images/remind_me_big.png',
+            cancelButton: '/images/cancel.png',
             firstStep: [% zone ? 1 : 0 %],
-            onSubmit: function($form) {
+            cancel: function() {
+                if (typeof(closeLightbox) != 'undefined') {
+                    closeLightbox();
+                }
+                else {
+                    window.location = '/';
+                }
+            },
+            submit: function($form) {
                 var reminders = new TrashReminders();
 
                 reminders.add({
