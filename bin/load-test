@@ -1,12 +1,18 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use FindBin;
+use Benchmark;
 
-my $num_reminders = 1000;
+my $num_reminders = 1;
 my $email = 'lukec@vancal.org';
 my $zone = 'vancouver-north-blue';
+my $server = 'http://dev.hackspace.ca';
+my $tool = "$FindBin::Bin/vantrash-reminder";
 
-for my $i (1 .. $num_reminders) {
-    system("vantrash-reminder --zone '$zone' --email '$email' --name 'test-$$-$i'");
-}
+my $i = 0;
+timethis 1000, sub {
+    system("$tool --server '$server' --zone '$zone' --email '$email' --name 'test-$$-$i'");
+    $i++;
+};
 
