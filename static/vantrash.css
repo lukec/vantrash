@@ -162,7 +162,7 @@ h1 {
     font-size: 110%;
     font-weight: bold;
 }
-.wizard .section .buttons {
+.lbButtons {
     position: absolute;
     bottom: 1px;
     right: 0;

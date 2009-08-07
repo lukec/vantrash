@@ -2,4 +2,9 @@
 <div class="content">
     <strong>Error adding reminder: [% error %]</strong>
 </div>
+<div class="lbButtons">
+    <a class="button" onclick="closeLightbox()" href="#">
+        <img src="/images/cancel.png"/>
+    </a>
+</div>
 [% END %]

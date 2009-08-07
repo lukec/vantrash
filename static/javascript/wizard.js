@@ -12,7 +12,7 @@ $.fn.wizard = function() {
 
     var self = this;
     $(this).hide().each(function(i) {
-        var $buttons = $('<div class="buttons"></div>').appendTo(this);
+        var $buttons = $('<div class="lbButtons"></div>').appendTo(this);
         if (i > opts.firstStep) {
             make_button(opts.backButton)
                 .click(function() { showStep(i-1); return false; })
