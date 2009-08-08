@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use App::VanTrash::Model;
+use App::VanTrash::Reminder;
+use Time::HiRes qw/tv_interval gettimeofday/;
+
+my $base_path = '/var/www/vantrash';
+$base_path = "$FindBin::Bin/..";
+my $model = App::VanTrash::Model->new(
+    base_path => $base_path,
+);
+
+my $email = 'lukec@localhost';
+my $zone = 'vancouver-north-blue';
+
+for my $i (1 .. 10) {
+    my $t0 = [gettimeofday];
+    my $r = App::VanTrash::Reminder->new(
+        name => "test-$$-$i",
+        email => $email,
+        zone => $zone,
+    );
+    $model->add_reminder($r);
+    my $elapsed = tv_interval($t0);
+    print "Added reminder $i - " . $r->id . " ($elapsed)\n";
+}
