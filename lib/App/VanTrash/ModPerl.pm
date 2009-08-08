@@ -1,7 +1,8 @@
 package App::VanTrash::ModPerl;
-use Mouse; # or use Moose or use Any::Moose
+use Moose;
 extends 'HTTP::Engine::Interface::ModPerl';
 use App::VanTrash::Controller;
+use namespace::clean -except => 'meta';
 
 sub create_engine {
     my($class, $r, $context_key) = @_;
@@ -12,4 +13,5 @@ sub create_engine {
     )->engine;
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

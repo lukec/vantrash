@@ -1,6 +1,7 @@
 package App::VanTrash::Reminder;
 use Moose;
 use Digest::SHA1 qw/sha1_hex/;
+use namespace::clean -except => 'meta';
 
 has 'nice_name'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'name'        => (is => 'ro', isa => 'Str',  required   => 1);
@@ -56,4 +57,5 @@ sub _build_confirm_hash {
     return sha1_hex($self->id . $self->created_at);
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

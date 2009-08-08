@@ -8,6 +8,7 @@ use App::VanTrash::Reminder;
 use App::VanTrash::Template;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
+use namespace::clean -except => 'meta';
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
@@ -402,4 +403,5 @@ sub _static_file {
 
 sub _build_mimetypes { MIME::Types->new }
 
+__PACKAGE__->meta->make_immutable;
 1;

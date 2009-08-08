@@ -4,6 +4,7 @@ use Email::Send;
 use Email::MIME;
 use Email::MIME::Creator;
 use App::VanTrash::Template;
+use namespace::clean -except => 'meta';
 
 has 'base_path' => (is => 'ro', isa => 'Str',    required   => 1);
 has 'mailer'    => (is => 'ro', isa => 'Object', lazy_build => 1);
@@ -62,4 +63,5 @@ sub _build_template {
     return App::VanTrash::Template->new( base_path => $self->base_path );
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

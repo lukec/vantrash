@@ -3,6 +3,7 @@ use Moose;
 use Web::Scraper;
 use URI;
 use YAML qw/DumpFile/;
+use namespace::clean -except => 'meta';
 
 has 'zone'  => (is => 'ro', isa => 'Str');
 has 'zones' => (is => 'ro', isa => 'ArrayRef[HashRef]', lazy_build => 1);

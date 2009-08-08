@@ -1,6 +1,7 @@
 package App::VanTrash::Template;
 use Moose;
 use Template;
+use namespace::clean -except => 'meta';
 
 has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
 has '_template' => (is => 'ro', isa => 'Object', lazy_build => 1,
@@ -17,4 +18,5 @@ sub _build__template {
     );
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

@@ -58,4 +58,5 @@ sub notify {
 # Tests can override this
 sub now { time() }
 
+__PACKAGE__->meta->make_immutable;
 1;
