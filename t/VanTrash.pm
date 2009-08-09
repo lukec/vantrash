@@ -11,7 +11,6 @@ use namespace::clean -except => 'meta';
 BEGIN {
     $ENV{VT_EMAIL} = "/tmp/email.$$";
 
-    use_ok 'App::VanTrash::DB';
     use_ok 'App::VanTrash::Model';
     use_ok 'App::VanTrash::Reminder';
 }
@@ -28,6 +27,11 @@ sub _build_base_path {
     symlink "$FindBin::Bin/../template", "$tmp_dir/template";
     copy "$FindBin::Bin/../data/trash-zone-times.yaml",
         "$tmp_dir/data/trash-zone-times.yaml";
+    
+    # Create the SQL db
+    my $db_file = "$tmp_dir/data/vantrash.db";
+    my $sql_file = "$FindBin::Bin/../etc/sql/vantrash.sql";
+    system("sqlite3 $db_file < $sql_file");
     return $tmp_dir;
 }
 

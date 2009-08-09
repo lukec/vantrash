@@ -1,0 +1,36 @@
+---
+vancouver:
+  desc: Vancouver, BC
+  centre: "[ 49.26422,-123.138542 ]"
+  scraper: App::VanTrash::Scraper::Vancouver
+  zones: 
+    - name: vancouver-north-purple
+      desc: Vancouver North Purple
+      url: http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-purple.htm
+    - name: vancouver-north-red
+      desc: Vancouver North Red
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-red.htm
+    - name: vancouver-north-blue
+      desc: Vancouver North Blue
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-blue.htm
+    - name: vancouver-north-green
+      desc: Vancouver North Green
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-green.htm
+    - name: vancouver-north-yellow
+      desc: Vancouver North Yellow
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-yellow.htm
+    - name: vancouver-south-purple
+      desc: Vancouver South Purple
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-purple.htm
+    - name: vancouver-south-red
+      desc: Vancouver South Red
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-red.htm
+    - name: vancouver-south-blue
+      desc: Vancouver South Blue
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-blue.htm
+    - name: vancouver-south-green
+      desc: Vancouver South Green
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-green.htm
+    - name: vancouver-south-yellow
+      desc: Vancouver South Yellow
+      url:  http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-yellow.htm

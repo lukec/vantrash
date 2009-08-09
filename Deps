@@ -1,10 +1,9 @@
 Debian:
 - libdb4.6-dev
+- libxml2-dev
 
 Perl:
 - HTTP::Engine
-- KiokuDB
-- KiokuDB::Backend::BDB
 - Template
 - Email::Send
 - Email::MIME
@@ -15,4 +14,5 @@ Perl:
 - Socialtext::WikiObject
 - Crypt::DES
 - BerkeleyDB
-
+- Web::Scraper
+- DBIx::Class

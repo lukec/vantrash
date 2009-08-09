@@ -6,6 +6,7 @@ use App::VanTrash::Scraper;
 my $zone = shift;
 
 my $scraper = App::VanTrash::Scraper->new(
-    ($zone ? (zone => $zone) : ())
+    ($zone ? (zone => $zone) : ()),
+    area => 'vancouver',
 );
 $scraper->scrape;

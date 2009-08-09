@@ -1,26 +1,50 @@
 package App::VanTrash::Scraper;
-use Moose;
-use Web::Scraper;
 use URI;
-use YAML qw/DumpFile/;
+use Moose;
+use FindBin;
+use Web::Scraper;
+use YAML qw/LoadFile/;
+use App::VanTrash::Model;
 use namespace::clean -except => 'meta';
 
 has 'zone'  => (is => 'ro', isa => 'Str');
-has 'zones' => (is => 'ro', isa => 'ArrayRef[HashRef]', lazy_build => 1);
+has 'area'  => (is => 'ro', isa => 'Str', required => 1);
+has 'areas' => (is => 'ro', isa => 'HashRef', lazy_build => 1);
+has 'model' => (is => 'ro', isa => 'Object', lazy_build => 1);
 
 sub scrape {
-    my $self = shift;
+    my $self      = shift;
+    my $area_name = $self->area or die "area is mandatory!";
     my $only_zone = $self->zone;
 
-    my %data;
-    for my $zone (@{ $self->zones() }) {
+    my $area = $self->areas->{$area_name};
+    die "Sorry, '$area_name' is not a valid area" unless $area;
+    my $zones = $area->{zones};
+    die "Sorry, '$area_name' has no zones defined!" unless @$zones;
+
+    if (! $self->model->areas->by_name($area_name)) {
+        $self->model->areas->add({
+                name => $area_name,
+                desc => $area->{desc},
+                centre => $area->{centre},
+            },
+        );
+    }
+
+    for my $zone (@$zones) {
         next if $only_zone and $zone->{name} ne $only_zone;
         print "Scraping $zone->{name}\n";
         $self->scrape_zone($zone);
-        $data{$zone->{name}} = $zone->{dates};
-    }
 
-    DumpFile('data/trash-zone-times.yaml', \%data);
+        my $zobj = $self->model->zones->add({
+            name => $zone->{name},
+            desc => $zone->{desc},
+            area => $area_name,
+            colour => $zone->{colour},
+            days => $zone->{days},
+            }
+        );
+    }
 }
 
 sub scrape_zone {
@@ -42,9 +66,9 @@ sub scrape_zone {
         process 'tr', "rows[]" => $row_scraper;
     };
 
-    my $res = $zone_scraper->scrape( URI->new( $zone->{uri} ) );
+    my $res = $zone_scraper->scrape( URI->new( $zone->{url} ) );
 
-    my @dates;
+    my @days;
     my @current_months;
     for my $row (@{ $res->{rows} }) {
         if ($row->{months}) {
@@ -73,59 +97,19 @@ sub scrape_zone {
                     $date .= ' Y';
                 }
 
-                push @dates, $date;
+                push @days, $date;
             }
         }
 
     }
-    $zone->{dates} = [ sort @dates ];
+
+    $zone->{days} = [ sort @days ];
+
+    # In Vancouver, the colour always comes at the end of the zone name..
+    ($zone->{colour} = $zone->{name}) =~ s/.+-//;
+
 }
 
-
-sub _build_zones {
-    return [
-        {
-            name => 'vancouver-north-purple',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-purple.htm',
-        },
-        {
-            name => 'vancouver-north-red',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-red.htm',
-        },
-        {
-            name => 'vancouver-north-blue',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-blue.htm',
-        },
-        {
-            name => 'vancouver-north-green',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-green.htm',
-        },
-        {
-            name => 'vancouver-north-yellow',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/north-yellow.htm',
-        },
-        {
-            name => 'vancouver-south-purple',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-purple.htm',
-        },
-        {
-            name => 'vancouver-south-red',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-red.htm',
-        },
-        {
-            name => 'vancouver-south-blue',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-blue.htm',
-        },
-        {
-            name => 'vancouver-south-green',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-green.htm',
-        },
-        {
-            name => 'vancouver-south-yellow',
-            uri  => 'http://vancouver.ca/ENGSVCS/solidwaste/garbage/south-yellow.htm',
-        },
-    ];
-}
 
 sub _month_to_num {
     my $name = shift;
@@ -143,6 +127,19 @@ sub _month_to_num {
         november => 11,
         december => 12,
     }->{lc $name} || die "No month for $name";
+}
+
+sub _build_areas {
+    my $self = shift;
+    my $file = "$FindBin::Bin/../etc/areas.yaml";
+    die "Can't find area file: $file!" unless -e $file;
+    return LoadFile($file);
+
+}
+
+sub _build_model {
+    my $self = shift;
+    return App::VanTrash::Model->new(base_path => "$FindBin::Bin/..");
 }
 
 __PACKAGE__->meta->make_immutable;

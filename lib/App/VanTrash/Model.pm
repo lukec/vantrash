@@ -1,7 +1,10 @@
 package App::VanTrash::Model;
 use Moose;
 use App::VanTrash::Email;
-use App::VanTrash::DB;
+use App::VanTrash::Schema;
+use App::VanTrash::Areas;
+use App::VanTrash::Pickups;
+use App::VanTrash::Zones;
 use App::VanTrash::ReminderManager;
 use App::VanTrash::Notifier;
 use Carp qw/croak/;
@@ -13,31 +16,20 @@ use Fatal qw/rename/;
 use YAML qw/LoadFile DumpFile/;
 use namespace::clean -except => 'meta';
 
-has 'base_path'     => (is => 'ro', isa => 'Str',      required   => 1);
-has 'zonefile'      => (is => 'ro', isa => 'Str',      lazy_build => 1);
-has 'zones'         => (is => 'ro', isa => 'ArrayRef', lazy_build => 1);
-has 'zonehash'      => (is => 'ro', isa => 'HashRef',  lazy_build => 1);
-has 'mailer'        => (is => 'ro', isa => 'Object',   lazy_build => 1);
-has 'reminders'     => (is => 'ro', isa => 'Object',   lazy_build => 1);
-has 'db'            => (is => 'ro', isa => 'Object',   lazy_build => 1);
-has 'notifier'      => (is => 'ro', isa => 'Object',   lazy_build => 1);
+has 'base_path' => (is => 'ro', isa => 'Str',    required   => 1);
+has 'areas'     => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'zones'     => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'pickups'   => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'mailer'    => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'reminders' => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'schema'    => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'notifier'  => (is => 'ro', isa => 'Object', lazy_build => 1);
 
 sub days {
     my $self = shift;
     my $zone = shift;
-    my $days = [sort {$a cmp $b} @{ $self->zonehash->{$zone} || [] }];
-    for my $d (@$days) {
-        my ($day_string, $flag) = split ' ', $d;
-        my ($year, $month, $day) = split '-', $day_string;
-        $d = {
-            year => $year,
-            month => $month,
-            day => $day,
-            string => $d,
-            flag => $flag || '',
-        };
-    }
-    return $days;
+
+    return $self->pickups->by_zone($zone);
 }
 
 sub ical {
@@ -49,7 +41,7 @@ sub ical {
     for my $day (@$days) {
         my $evt = Data::ICal::Entry::Event->new;
         my $summary = 'Garbage pickup day';
-        $summary .= ' & Yard trimmings day' if $day->{flag} eq 'Y';
+        $summary .= ' & Yard trimmings day' if $day->{flags} eq 'Y';
         $evt->add_properties(
             summary => $summary,
             dtstart => Date::ICal->new(
@@ -158,12 +150,6 @@ sub delete_reminder {
     return;
 }
 
-sub _build_zones {
-    my $self = shift;
-    return [sort {$a cmp $b} keys %{ $self->zonehash }];
-}
-
-sub _build_zonehash      { shift->_load_file('zone') }
 sub _load_file {
     my $self = shift;
     my $name = $_[0] . 'file';
@@ -188,13 +174,14 @@ sub _build_mailer {
 sub _build_reminders {
     my $self = shift;
     return App::VanTrash::ReminderManager->load_or_create( 
-        db => $self->db,
+        schema => $self->schema,
     );
 }
 
-sub _build_db {
+sub _build_schema {
     my $self = shift;
-    return App::VanTrash::DB->new( base_path => $self->base_path );
+    my $db_file = $self->base_path . '/data/vantrash.db';
+    return App::VanTrash::Schema->connect("dbi:SQLite:$db_file");
 }
 
 sub _build_notifier {
@@ -217,6 +204,21 @@ sub tonight {
     my $self = shift;
     my $now = $self->now;
     $now->set( hour => 23, minute => 59 );
+}
+
+sub _build_areas {
+    my $self = shift;
+    return App::VanTrash::Areas->new( schema => $self->schema );
+}
+
+sub _build_zones {
+    my $self = shift;
+    return App::VanTrash::Zones->new( schema => $self->schema );
+}
+
+sub _build_pickups {
+    my $self = shift;
+    return App::VanTrash::Pickups->new( schema => $self->schema );
 }
 
 __PACKAGE__->meta->make_immutable;
