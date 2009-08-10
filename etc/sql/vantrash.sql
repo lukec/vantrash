@@ -20,10 +20,26 @@ CREATE TABLE pickup (
     flags TEXT NOT NULL
 );
 
+CREATE TABLE reminder (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    zone TEXT NOT NULL,
+    offset INTEGER NOT NULL,
+    confirmed BOOLEAN NOT NULL,
+    created_at INTEGER NOT NULL,
+    next_pickup INTEGER NOT NULL,
+    last_notified INTEGER NOT NULL,
+    confirm_hash TEXT NOT NULL
+);
+
 -- TODO:
 -- index area on name
 -- index zone on area
 -- index zone on name
 -- index pickup on zone
+-- index reminder on id
+-- index reminder on zone
+-- index reminder on confirm_hash
 
 COMMIT;

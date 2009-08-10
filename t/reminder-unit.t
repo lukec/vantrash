@@ -4,52 +4,65 @@ use warnings;
 use Test::More;
 use t::VanTrash;
 
-my $model = t::VanTrash->model;
-isa_ok $model, 'App::VanTrash::Model';
+$ENV{VT_LOAD_DATA} = 1;
 
-my $zones = $model->zones;
-isa_ok $zones, 'ARRAY';
-my $zone = shift @$zones;
+Add_a_reminder: {
+    my $model = t::VanTrash->model;
+    isa_ok $model, 'App::VanTrash::Model';
 
-is_deeply $model->reminders->all, [], 'is empty';
+    my $zones = $model->zones->all;
+    isa_ok $zones, 'ARRAY';
+    my $zone = shift @$zones;
 
-my $reminder = App::VanTrash::Reminder->new(
-    name => "Test Reminder",
-    email => 'test@vantrash.ca',
-    zone => $zone,
-);
-my $rem = $model->add_reminder( $reminder );
-isa_ok $rem, 'App::VanTrash::Reminder';
-is $rem->name,  'Test Reminder', 'name';
-is $rem->email, 'test@vantrash.ca', 'email';
-like $rem->id,  qr/^[\w\d]+$/, 'id';
-is scalar(@{ $model->reminders->all }), 1, 'one reminder';
+    is_deeply $model->reminders->all, [], 'is empty';
 
-# Re-load the model, see if it persisted
-undef $model; $model = t::VanTrash->model();
-my $reminders = $model->reminders->all;
-is scalar(@$reminders), 1, 'one reminder';
-ok !$reminders->[0]->confirmed, 'not confirmed';
+    my $rem = $model->add_reminder({
+            name => "Test Reminder",
+            email => 'test@vantrash.ca',
+            zone => $zone->{name},
+        },
+    );
 
-# Re-load and confirm the reminder
-undef $model; $model = t::VanTrash->model();
-$reminders = $model->reminders->all;
-$model->reminders->confirm($reminders->[0]);
-ok $reminders->[0]->confirmed, 'confirmed';
+    is $rem->name,  'Test Reminder', 'name';
+    is $rem->email, 'test@vantrash.ca', 'email';
+    like $rem->id,  qr/^[\w\d-]+$/, 'id';
+    is scalar(@{ $model->reminders->all }), 1, 'one reminder';
+}
 
-# Re-load and check the confirmation, then delete it
-undef $model; $model = t::VanTrash->model();
-$reminders = $model->reminders->all;
-ok $reminders->[0]->confirmed, 'confirmed';
+Check_if_model_persists: {
+    my $model = t::VanTrash->model();
+    my $rems = $model->reminders->all('objects');
+    is scalar(@$rems), 1, 'one reminder';
+    ok !$rems->[0]->confirmed, 'not confirmed';
+}
 
-$model->delete_reminder($reminders->[0]->id);
-$reminders = $model->reminders->all;
-is scalar(@$reminders), 0, 'no reminders';
+Confirm_reminder: {
+    my $model = t::VanTrash->model();
+    my $rems = $model->reminders->all('objects');
+    $rems->[0]->confirmed(1);
+    $rems->[0]->update;
+    ok $rems->[0]->confirmed, 'confirmed';
+}
 
-# Re-load and check it's still deleted
-undef $model; $model = t::VanTrash->model();
-$reminders = $model->reminders->all;
-is scalar(@$reminders), 0, 'no reminders';
+Reload_and_check_confirmation: {
+    my $model = t::VanTrash->model();
+    my $rems = $model->reminders->all('objects');
+    ok $rems->[0]->confirmed, 'confirmed';
+}
+
+Delete_reminder: {
+    my $model = t::VanTrash->model();
+    my $rems = $model->reminders->all('objects');
+    $rems->[0]->delete;
+    $rems = $model->reminders->all;
+    is scalar(@$rems), 0, 'no reminders';
+}
+
+Reload_and_check_delete: {
+    my $model = t::VanTrash->model();
+    my $rems = $model->reminders->all;
+    is scalar(@$rems), 0, 'no reminders';
+}
 
 done_testing();
 exit;

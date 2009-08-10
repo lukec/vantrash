@@ -10,3 +10,7 @@ my $scraper = App::VanTrash::Scraper->new(
     area => 'vancouver',
 );
 $scraper->scrape;
+
+my $dumpfile = "$FindBin::Bin/../data/vantrash.dump";
+print "Dumping database to $dumpfile\n";
+system("echo '.dump' | sqlite3 data/vantrash.db > $dumpfile");

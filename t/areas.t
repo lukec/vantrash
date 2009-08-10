@@ -55,7 +55,9 @@ Area_zones_create: {
 
     my $expected = [ $zone_hash ];
     is_deeply $model->zones->all, $expected, 'all zones';
-    is_deeply $model->zones->by_area('vancouver'), $expected, 'zones by_area';
+    my $van_zones = $model->zones->by_area('vancouver');
+    $_ = $_->to_hash() for @$van_zones;
+    is_deeply $van_zones, $expected, 'zones by_area';
 
     my $pickups = $model->pickups->by_zone($zone_hash->{name});
     is_deeply $pickups, [

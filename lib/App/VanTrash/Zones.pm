@@ -2,31 +2,17 @@ package App::VanTrash::Zones;
 use Moose;
 use namespace::clean -except => 'meta';
 
-has 'schema' => (is => 'ro', required => 1);
+extends 'App::VanTrash::Collection';
 
-sub all {
-    my $self = shift;
-    return [ map { $_->to_hash } $self->_rs->search()->all ];
-}
+sub by_area { [ shift->search_by(area => @_)->all ] }
 
-sub by_area {
-    my $self = shift;
-    my $area = shift;
-    return [ map { $_->to_hash } $self->_rs->search({area => $area})->all ];
-}
-
-sub by_name {
-    my $self = shift;
-    my $name = shift;
-    return $self->_rs->search({name => $name})->first;
-}
-
-sub add {
+around 'add' => sub {
+    my $orig = shift;
     my $self = shift;
     my $zone = shift;
     my $days = delete $zone->{days};
 
-    my $zobj = $self->_rs->create($zone);
+    my $zobj = $orig->($self, $zone);
     
     for my $day_str (@$days) {
         unless ($day_str =~ m/^([\d-]+)(?:\s+(\w+))?$/) {
@@ -42,12 +28,7 @@ sub add {
         );
     }
     return $zobj;
-}
-
-sub _rs {
-    my $self = shift;
-    return $self->schema->resultset('Zone');
-}
+};
 
 __PACKAGE__->meta->make_immutable;
 1;

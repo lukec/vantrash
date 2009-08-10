@@ -9,6 +9,7 @@ static/faq.html
 static/donate.html
 data/*
 !data/trash-zone-times.yaml
+!data/vantrash.dump
 static/new_reminder.html
 static/beta.html
 static/beta-lightbox.html

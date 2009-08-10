@@ -4,7 +4,6 @@ use HTTP::Engine;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
-use App::VanTrash::Reminder;
 use App::VanTrash::Template;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
@@ -47,9 +46,9 @@ sub handle_request {
                     \&zone_next_dow_change_txt ],
             [ qr{^/zones/([^/]+)/nextdowchange\.json$} =>
                     \&zone_next_dow_change_json ],
-            [ qr{^/zones/([^/]+)/reminders/([\w\d]+)/confirm$} =>
+            [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/confirm$} =>
                     \&confirm_reminder ],
-            [ qr{^/zones/([^/]+)/reminders/(.+)/delete$} => 
+            [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
                     \&delete_reminder_html ],
         ],
 
@@ -273,20 +272,13 @@ sub put_reminder {
     my $args = eval { decode_json $req->raw_body };
     return HTTP::Engine::Response->new( status => 400, body => "Bad JSON" ) if $@;
 
-    my $reminder;
-    eval {
-        $reminder = App::VanTrash::Reminder->new( %$args, zone => $zone );
-    };
-    if ($@) {
-        return HTTP::Engine::Response->new(status => 400, body => $@);
-    }
-
-    if ($self->model->reminders->by_id($reminder->id)) {
-        return HTTP::Engine::Response->new(status => 400,
-            body => "Reminder already exists! '" . $reminder->id . "'");
-    }
-
-    $self->model->add_reminder($reminder);
+    my $reminder = $self->model->add_reminder({
+            name => $args->{name},
+            email => $args->{email},
+            offset => $args->{offset},
+            zone => $zone,
+        },
+    );
     my $uri = "/zones/$zone/reminders/" . $reminder->id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );

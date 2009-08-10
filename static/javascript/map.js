@@ -19,7 +19,7 @@ TrashMap.prototype = {
                     month: d.month,
                     day: d.day,
                     color: color,
-                    image: d.flag == 'Y' ? '/images/yard.png' : false
+                    image: d.flags == 'Y' ? '/images/yard.png' : false
                 }))
             });
             cal.draw();

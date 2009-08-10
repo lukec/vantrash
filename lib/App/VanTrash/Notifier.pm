@@ -15,7 +15,7 @@ sub need_notification {
     $as_of = $as_of->epoch;
 
     my @due;
-    for my $rem (@{ $self->reminders->all }) {
+    for my $rem (@{ $self->reminders->all('objects') }) {
         my $name = $rem->nice_name;
         unless ($rem->confirmed) {
             warn "reminder is not yet confirmed: $name\n" if $debug;
@@ -53,6 +53,7 @@ sub notify {
         },
     );
     $rem->last_notified( $self->now() );
+    $rem->update;
 }
 
 # Tests can override this

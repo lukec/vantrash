@@ -12,6 +12,7 @@ my $password;
 my $email;
 my $offset;
 my $delete;
+my $confirm;
 my $server_base = 'http://vantrash.ca';
 GetOptions(
     'z|zone=s'     => \$zone,
@@ -21,12 +22,17 @@ GetOptions(
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
     'delete'       => \$delete,
+    'confirm'      => \$confirm,
     'server=s'     => \$server_base,
 ) or usage();
 
 if ($delete) {
     usage() unless $zone and $id;
     delete_reminder();
+}
+elsif ($confirm) {
+    usage() unless $zone and $id;
+    confirm_reminder();
 }
 else {
     usage() unless $zone and $name and $email;
@@ -38,6 +44,14 @@ sub delete_reminder {
     my $uri = "$server_base/zones/$zone/reminders/$id";
     my $ua = LWP::UserAgent->new;
     my $req = HTTP::Request->new('DELETE', $uri);
+    my $resp = $ua->request($req);
+    print $resp->status_line, "\n";
+}
+
+sub confirm_reminder {
+    my $uri = "$server_base/zones/$zone/reminders/$id/confirm";
+    my $ua = LWP::UserAgent->new;
+    my $req = HTTP::Request->new('GET', $uri);
     my $resp = $ua->request($req);
     print $resp->status_line, "\n";
 }
@@ -69,8 +83,11 @@ USAGE: $0 <options>
 Creating a reminder:
    $0 --name foo --email your\@email --zone your-zone [--offset 'offset']
 
+Confirming a reminder:
+   $0 --confirm --id confirm_hash --zone zone
+
 Deleting a reminder:
-   $0 --delete --id id_to_delete
+   $0 --delete --id id_to_delete --zone zone
 
 Other:
   --server http://your-server

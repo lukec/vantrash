@@ -5,21 +5,21 @@ use Test::More;
 use t::VanTrash;
 use DateTime;
 
-my $model = t::VanTrash->model;
-my $zones = $model->zones;
-is_deeply $model->reminders->all, [], 'is empty';
+$ENV{VT_LOAD_DATA} = 1;
 
 Create_and_send_reminder: {
+    my $model = t::VanTrash->model;
+    my $zones = $model->zones->all('objects');
+    is_deeply $model->reminders->all, [], 'is empty';
+
     my $zone = $zones->[0];
-    $model->add_reminder(
-        App::VanTrash::Reminder->new(
-            name => "Test Reminder",
-            email => 'test@vantrash.ca',
-            zone => $zone,
-            offset => 0,
-        )
-    );
-    my $next_pickup = $model->next_pickup($zone);
+    my $robj = $model->add_reminder({
+        name => "Test Reminder",
+        email => 'test@vantrash.ca',
+        zone => $zone->name,
+        offset => 0,
+    });
+    my $next_pickup = $model->next_pickup($zone->name);
     my ($y, $m, $d) = split m/[-\s]/, $next_pickup;
     my $pud = DateTime->new(
         year      => $y, month => $m, day => $d,
@@ -30,7 +30,7 @@ Create_and_send_reminder: {
     Not_sent_before_confirmation: {
         my $reminders = $model->notifier->need_notification( as_of => $pud);
         is scalar(@$reminders), 0, 'no more notifications needed';
-        $reminders = $model->reminders->all;
+        $reminders = $model->reminders->all('objects');
         is scalar(@$reminders), 1, '1 reminder exists';
         $model->confirm_reminder($reminders->[0]);
     }

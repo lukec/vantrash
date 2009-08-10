@@ -5,7 +5,7 @@ use App::VanTrash::Schema;
 use App::VanTrash::Areas;
 use App::VanTrash::Pickups;
 use App::VanTrash::Zones;
-use App::VanTrash::ReminderManager;
+use App::VanTrash::Reminders;
 use App::VanTrash::Notifier;
 use Carp qw/croak/;
 use Data::ICal;
@@ -109,26 +109,33 @@ sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
 
-    my $next_pickup_dt = $self->next_pickup($rem->zone, 1, 'dt');
-    $rem->next_pickup( $next_pickup_dt->epoch );
-    $self->reminders->insert($rem);
+    unless ($self->zones->by_name($rem->{zone})) {
+        croak "Sorry, '$rem->{zone}' is not a valid zone!";
+    }
+
+    my $next_pickup_dt = $self->next_pickup($rem->{zone}, 1, 'dt');
+    $rem->{next_pickup} = $next_pickup_dt->epoch;
+
+    my $robj = $self->reminders->add($rem);
     $self->mailer->send_email(
-        to => $rem->email,
+        to => $robj->email,
         subject => 'VanTrash Reminder Confirmation',
         template => 'reminder-confirm.html',
         template_args => {
-            zone => $rem->zone,
-            confirm_url => $rem->confirm_url,
+            zone => $robj->zone,
+            confirm_url => $robj->confirm_url,
         },
     );
-    return $rem;
+    return $robj;
 }
 
 sub confirm_reminder {
     my $self = shift;
     my $rem = shift or croak 'A reminder is mandatory!';
 
-    $self->reminders->confirm($rem);
+    $rem->confirmed(1);
+    $rem->update;
+
     $self->mailer->send_email(
         to => $rem->email,
         subject => 'Your VanTrash reminder is created',
@@ -144,7 +151,7 @@ sub delete_reminder {
     my $id   = shift or croak 'An id is mandatory!';
 
     if (my $rem = $self->reminders->by_id($id)) {
-        $self->reminders->delete($rem);
+        $rem->delete;
         return $rem;
     }
     return;
@@ -173,7 +180,7 @@ sub _build_mailer {
 
 sub _build_reminders {
     my $self = shift;
-    return App::VanTrash::ReminderManager->load_or_create( 
+    return App::VanTrash::Reminders->new( 
         schema => $self->schema,
     );
 }
