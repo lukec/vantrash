@@ -8,6 +8,10 @@ body {
     line-height: 1.1;
 }
 
+#activebar-container {
+    text-align: left;
+}
+
 a img {
     border: none;
 }
