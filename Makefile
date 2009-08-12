@@ -66,6 +66,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
 	rm -rf $(INSTALL_DIR)/root/*
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
+	rm -f $(INSTALL_DIR)/root/*.html
 	cp data/vantrash.dump $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	cp -f etc/cron.d/vantrash /etc/cron.d/vantrash
@@ -74,6 +75,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
+	chown www-data:www-data $(INSTALL_DIR)/data/vantrash.db
 	/etc/init.d/apache2 restart
 	/etc/init.d/nginx reload
 
