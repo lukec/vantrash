@@ -196,6 +196,7 @@ sub _build_notifier {
     return App::VanTrash::Notifier->new(
         reminders => $self->reminders,
         mailer    => $self->mailer,
+        pickups   => $self->pickups,
     );
 }
 

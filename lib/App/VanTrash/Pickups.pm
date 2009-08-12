@@ -15,5 +15,12 @@ sub by_zone {
     ];
 }
 
+sub by_day {
+    my $self = shift;
+    my $zone = shift;
+    my $day  = shift;
+    return $self->_rs->search( { zone => $zone, day => $day } )->first;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

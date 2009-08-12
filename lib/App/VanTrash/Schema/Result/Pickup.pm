@@ -25,7 +25,7 @@ sub to_hash {
 
 sub _build_string {
     my $self = shift;
-    return join ' ', $self->day, $self->flags;
+    return join ' ', $self->day, ($self->flags ? $self->flags : ());
 }
 
 __PACKAGE__->load_components(qw/Core/);

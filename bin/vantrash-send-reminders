@@ -17,18 +17,17 @@ $args{debug} = 1 if $ENV{VT_DEBUG};
 my $base_path = $args{'base-path'} || "$FindBin::Bin/..";
 
 my $now = DateTime->now(time_zone => 'America/Vancouver');
-print "Running at: ", join('-', $now->year, $now->month, $now->day), "\n";
-
 my $model = App::VanTrash::Model->new( base_path => $base_path);
-my $scope = $model->db->new_scope;
-my $reminders = $model->notifier->need_notification(as_of => $now);
+my $reminders = $model->notifier->need_notification(
+    as_of => $now,
+    debug => $args{debug},
+);
 for my $r (@$reminders) {
     if ($args{debug}) {
         print "Would have emailed: " . $r->email . "\n";
         next;
     }
     $model->notifier->notify($r);
-    $model->db->store($r);
 }
 
 exit;

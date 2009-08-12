@@ -69,7 +69,7 @@ Area_zones_create: {
         },
         {
             zone => $zone_hash->{name},
-            string => '2009-02-02',
+            string => '2009-02-02 Y',
             flags => 'Y',
             year => 2009, month => '02', day => '02',
         },

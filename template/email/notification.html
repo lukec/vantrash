@@ -1,5 +1,10 @@
-Just a friendly reminder that garbage in the [% reminder.zone %] will be picked up on: [% garbage_day %]
-The city [%will/will not %] be collecting yard trimmings.
+Just a friendly reminder that garbage in the [% reminder.zone %] will be picked up on: [% garbage_day.day %]
+
+[% IF garbage_day.flags == 'Y' -%]
+The city will be collecting yard trimmings today.
+[% ELSE -%]
+The city will not be collecting yard trimmings today.
+[%- END %]
 
 Don't forget to take out your garbage and your recycling!
 
