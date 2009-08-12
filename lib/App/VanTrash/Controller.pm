@@ -93,7 +93,7 @@ sub ui_html {
 sub zones_html {
     my $self = shift;
     my %param = (
-        zones => $self->model->zones,
+        zones => $self->model->zones->all,
         zone_uri => "/zones",
     );
     return $self->process_template('zones/zones.html', \%param);
@@ -101,13 +101,13 @@ sub zones_html {
 
 sub zones_txt {
     my $self = shift;
-    my $body = join("\n", @{ $self->model->zones });
+    my $body = join("\n", @{ $self->model->zones->all });
     return $self->response('text/plain' => $body);
 }
 
 sub zones_json {
     my $self = shift;
-    my $body = encode_json $self->model->zones;
+    my $body = encode_json $self->model->zones->all;
     return $self->response('application/json' => $body);
 }
 

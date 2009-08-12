@@ -7,6 +7,7 @@ has 'id' => (is => 'ro', isa => 'Int', required => 1);
 has 'zone'  => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
 has 'day'  => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
 has 'flags' => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
+has 'string' => (is => 'ro', isa => 'Str', lazy_build => 1);
 
 sub to_hash {
     my $self = shift;
@@ -17,9 +18,14 @@ sub to_hash {
         month => $month,
         day => $day,
         zone => $self->zone,
-        string => $self->day,
+        string => $self->string,
         flags => $self->flags,
     };
+}
+
+sub _build_string {
+    my $self = shift;
+    return join ' ', $self->day, $self->flags;
 }
 
 __PACKAGE__->load_components(qw/Core/);
