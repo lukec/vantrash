@@ -343,13 +343,6 @@ sub response {
     return $res;
 }
 
-sub _build_tenjin {
-    my $self = shift;
-    return Tenjin::Engine->new({
-        path => [ $self->base_path . '/template' ],
-    });
-}
-
 sub _build_template {
     my $self = shift;
     return App::VanTrash::Template->new( base_path => $self->base_path );
