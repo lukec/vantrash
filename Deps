@@ -1,6 +1,7 @@
 Debian:
 - libdb4.6-dev
 - libxml2-dev
+- tmpreaper
 
 Perl:
 - HTTP::Engine
@@ -16,3 +17,5 @@ Perl:
 - BerkeleyDB
 - Web::Scraper
 - DBIx::Class
+- Test::HTTP
+- Socialtext::WikiTest (unreleased)
