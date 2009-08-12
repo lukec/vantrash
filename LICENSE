@@ -7,10 +7,23 @@ All of the trash pickup data is scraped from the City of Vancouver's website:
 PERL CODE
 ---------
 The scraping codes and the reminder system codes are licensed under
-the Perl Artistic License.
+the folowing terms:
+
+Copyright (C) 2009 by Luke Closs and Kevin Jones
+
+This package is free software; you can redistribute it and/or modify it under 
+the following terms:
+
+1. The GNU General Public License as published by the Free Software Foundation; either version 1, or (at you r option) any later version, or.
+2. The original Artistic License, as published by Larry Wall.
+3. The Artistic License Version 2.0 - http://www.perlfoundation.org/legal/licenses/artistic-2_0.html, or at your option any later version of it.
+
 
 JAVASCRIPT
 ----------
+
+Copyright (C) 2009 by Luke Closs and Kevin Jones
+
 jQuery is dually licensed under the MIT and GPL licenses
 Copyright (c) 2009 John Resig
 http://docs.jquery.com/License
