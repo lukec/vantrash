@@ -62,6 +62,14 @@
               src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
               </script>
             </div>
+
+            <div id="twitter_div">
+            <h2 class="sidebar-title">Twitter Updates</h2>
+            <ul id="twitter_update_list"></ul>
+            <a href="http://twitter.com/vantrash" id="twitter-link" style="display:block;text-align:right;">follow me on Twitter</a>
+            </div>
+            <script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
+            <script type="text/javascript" src="http://twitter.com/statuses/user_timeline/vantrash.json?callback=twitterCallback2&amp;count=3"></script>
         </div>
         [% END %]
         <div [% IF lightbox %]class="lightbox"[% END %] id="mainContent">
