@@ -1,7 +1,6 @@
 INSTALL_DIR=/var/www/vantrash
 SOURCE_FILES=static/*
 LIB=lib
-DATAFILE=data/trash-zone-times.yaml
 TEMPLATE_DIR=template
 EXEC=bin/*
 MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS::minify(scalar <>);'
@@ -62,12 +61,12 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 $(INSTALL_DIR)/%:
 	mkdir $@
 
-install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) \
+install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
     	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
 	rm -rf $(INSTALL_DIR)/root/*
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
-	cp $(DATAFILE) $(INSTALL_DIR)/data
+	cp data/vantrash.dump $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	cp -f etc/cron.d/vantrash /etc/cron.d/vantrash
 	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
@@ -76,6 +75,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) $(DATAFILE) \
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	/etc/init.d/apache2 restart
 	/etc/init.d/nginx reload
+	cd $(INSTALL_DIR) && bin/setup-env
 
 test: $(TESTS)
 	prv $(TESTS)
