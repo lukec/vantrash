@@ -73,9 +73,9 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
 	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
+	cd $(INSTALL_DIR) && bin/setup-env
 	/etc/init.d/apache2 restart
 	/etc/init.d/nginx reload
-	cd $(INSTALL_DIR) && bin/setup-env
 
 test: $(TESTS)
 	prv $(TESTS)
