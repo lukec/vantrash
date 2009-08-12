@@ -101,7 +101,7 @@ sub zones_html {
 
 sub zones_txt {
     my $self = shift;
-    my $body = join("\n", @{ $self->model->zones->all });
+    my $body = join("\n", map { $_->{name} } @{ $self->model->zones->all });
     return $self->response('text/plain' => $body);
 }
 
@@ -117,8 +117,7 @@ sub zone_html {
     my $zone = shift;
 
     my %param = (
-        zone => $zone,
-        zone_uri => "/zones/$zone",
+        zone => $self->_load_zone($zone),
     );
     return $self->process_template('zones/zone.html', \%param);
 }
@@ -127,7 +126,13 @@ sub zone_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = $zone;
+
+    my $zone_hash = $self->_load_zone($zone)->to_hash;
+    my $body = '';
+    for my $key (keys %$zone_hash) {
+        $body .= "$key: $zone_hash->{$key}\n";
+    }
+
     return $self->response('text/plain' => $body);
 }
 
@@ -135,7 +140,7 @@ sub zone_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
-    my $body = encode_json { name => $zone };
+    my $body = encode_json $self->_load_zone($zone)->to_hash;
     return $self->response('application/json' => $body);
 }
 
@@ -144,8 +149,8 @@ sub zone_days_html {
     my $req  = shift;
     my $zone = shift;
     my %param = (
-        zone => $zone,
-        zone_uri => "/zones/$zone/pickupdays",
+        zone => $self->_load_zone($zone),
+        uri_append => '/pickupdays',
         days => $self->model->days($zone),
         has_ical => 1,
     );
@@ -156,6 +161,7 @@ sub zone_days_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+
     my $body = join "\n", map { $_->{string} } @{ $self->model->days($zone) };
     return $self->response('text/plain' => $body);
 }
@@ -183,8 +189,8 @@ sub zone_next_pickup_html {
     my $limit =  $req->param('limit');
 
     my %param = (
-        zone => $zone,
-        zone_uri => "/zones/$zone/nextpickup",
+        zone => $self->_load_zone($zone),
+        uri_append => '/nextpickup',
         days => [$self->model->next_pickup($zone, $limit)],
     );
     return $self->process_template('zones/zone_next_pickup.html', \%param);
@@ -218,7 +224,7 @@ sub zone_next_dow_change_html {
 
     my %param = (
         zone => $zone,
-        zone_uri => "/zones/$zone/nextdowchange",
+        uri_append => '/nextdowchange',
         $self->model->next_dow_change($zone),
     );
     return $self->process_template('zones/zone_next_dow_change.html', \%param);
@@ -394,6 +400,12 @@ sub _static_file {
 }
 
 sub _build_mimetypes { MIME::Types->new }
+
+sub _load_zone {
+    my $self = shift;
+    my $name = shift;
+    return $self->model->zones->by_name( $name );
+}
 
 __PACKAGE__->meta->make_immutable;
 1;

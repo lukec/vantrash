@@ -1,8 +1,8 @@
 [% WRAPPER zones/wrapper.html %]
-<h1>[% zone %] Next Pickup</h1>
+<h1>[% zone.name %] Next Pickup</h1>
 <ul>
   [% FOREACH day IN days %]
-    <li>[% day.string %]</li>
+    <li>[% day %]</li>
   [% END %]
 </ul>
 [% END %]

@@ -48,7 +48,7 @@ sub start_up_http_server {
         }
     );
     die "Failed to run @command" unless $handle;
-    sleep 1;
+    sleep 3;
     pump $handle;
     unless ($out =~ m/Starting up HTTP server on port (\d+)/) {
         die "Couldn't find HTTP port:\n$out\n";
@@ -95,7 +95,7 @@ sub set_url_from_email {
 
     my $email = $self->email_contents;
     my $url;
-    if ($email =~ m#"http://vantrash\.ca([^"]+)"#) {
+    if ($email =~ m#http://vantrash\.ca(\S+)#) {
         $url = $1;
     }
     unless ($url) {

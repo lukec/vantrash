@@ -36,5 +36,5 @@ This page is an executable specification for how the site should work.
 | body-like | vancouver-north-blue\nvancouver-north-green |
 | GET | /zones.json |
 | code-is | 200 |
-| body-like | ["vancouver-north-blue","vancouver-north-green" |
+| body-like | [{"colour":"purple","desc":"Vancouver North Purple","area":"vancouver","name":"vancouver-north-purple"},{"colour":"red", |
 

@@ -15,6 +15,11 @@ sub to_hash {
     };
 }
 
+sub uri {
+    my $self = shift;
+    return '/zones/' . $self->name;
+}
+
 __PACKAGE__->load_components(qw/Core/);
 __PACKAGE__->table('zone');
 
