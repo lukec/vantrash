@@ -310,6 +310,7 @@ sub put_reminder {
             name => $args->{name},
             email => $args->{email},
             offset => $args->{offset},
+            target => $args->{target},
             zone => $zone,
         },
     );

@@ -51,9 +51,16 @@
             <li><code>id</code> - A unique identifier for this reminder. Must be 3-30 characters alphanumeric.</li>
             <li><code>password</code> - An optional password for this reminder</li>
             <li><code>email</code> - An email address to receive email reminders</li>
-            <li><code>time_offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
+            <li><code>offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
+            <li><code>target</code> - (Optional) Notification delivery target.  Defaults to an email target.  See below for more targets.</li>
         </ul>
-        This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.
+        This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.<br />
+        <strong>Reminder targets</strong><br />
+        Reminders have a target which is how the reminder should notify the user.  The default target is <code>email:user@example.com</code> (with the email address of the user).  Here are the available reminder targets:<br />
+        <ul>
+            <li><code>email:email_address</code> - Sends a regular email notification to the address.</li>
+            <li><code>twitter:twitter_username</code> - Sends a direct message to the twitter user. They must follow <a href="http://twitter.com/vantrash">VanTrash</a> to receive the DM.</li>
+        </ul>
         <h4>Deleting a reminder</h4>
         Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.  Returns 204 on successful delete, 400 on failure.
         <br />
