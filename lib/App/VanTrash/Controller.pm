@@ -7,6 +7,7 @@ use App::VanTrash::Model;
 use App::VanTrash::Template;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
+use App::VanTrash::Log;
 use namespace::clean -except => 'meta';
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
@@ -16,6 +17,8 @@ has 'mimetypes' => (is => 'ro', lazy_build => 1);
 has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
 has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
 has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
+has 'logger' =>
+    (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
 sub handle_request {
     my $self = shift;
@@ -92,6 +95,8 @@ sub ui_html {
 
 sub zones_html {
     my $self = shift;
+    $self->log("ZONES HTML");
+
     my %param = (
         zones => $self->model->zones->all,
         zone_uri => "/zones",
@@ -101,12 +106,16 @@ sub zones_html {
 
 sub zones_txt {
     my $self = shift;
+    $self->log("ZONES TXT");
+
     my $body = join("\n", map { $_->{name} } @{ $self->model->zones->all });
     return $self->response('text/plain' => $body);
 }
 
 sub zones_json {
     my $self = shift;
+    $self->log("ZONES JSON");
+
     my $body = encode_json $self->model->zones->all;
     return $self->response('application/json' => $body);
 }
@@ -115,6 +124,7 @@ sub zone_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONE $zone HTML");
 
     my %param = (
         zone => $self->_load_zone($zone),
@@ -126,6 +136,7 @@ sub zone_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONE $zone TXT");
 
     my $zone_hash = $self->_load_zone($zone)->to_hash;
     my $body = '';
@@ -140,6 +151,8 @@ sub zone_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONE $zone JSON");
+
     my $body = encode_json $self->_load_zone($zone)->to_hash;
     return $self->response('application/json' => $body);
 }
@@ -148,6 +161,8 @@ sub zone_days_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONEDAYS $zone HTML");
+
     my %param = (
         zone => $self->_load_zone($zone),
         uri_append => '/pickupdays',
@@ -161,6 +176,7 @@ sub zone_days_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONEDAYS $zone TXT");
 
     my $body = join "\n", map { $_->{string} } @{ $self->model->days($zone) };
     return $self->response('text/plain' => $body);
@@ -170,6 +186,8 @@ sub zone_days_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONEDAYS $zone JSON");
+
     my $body = encode_json $self->model->days($zone);
     return $self->response('application/json' => $body);
 }
@@ -178,6 +196,8 @@ sub zone_days_ical {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONEDAYS $zone ICAL");
+
     my $body = $self->model->ical($zone);
     return $self->response('text/calendar' => $body);
 }
@@ -187,6 +207,7 @@ sub zone_next_pickup_html {
     my $req  = shift;
     my $zone = shift;
     my $limit =  $req->param('limit');
+    $self->log("ZONENEXTPICKUP $zone HTML");
 
     my %param = (
         zone => $self->_load_zone($zone),
@@ -201,6 +222,7 @@ sub zone_next_pickup_txt {
     my $req  = shift;
     my $zone = shift;
     my $limit =  $req->param('limit');
+    $self->log("ZONENEXTPICKUP $zone TXT");
 
     my $body = join "\n", $self->model->next_pickup($zone, $limit);
     return $self->response('text/plain' => $body);
@@ -211,6 +233,7 @@ sub zone_next_pickup_json {
     my $req  = shift;
     my $zone = shift;
     my $limit =  $req->param('limit');
+    $self->log("ZONENEXTPICKUP $zone JSON");
 
     my $body
         = encode_json { next => [ $self->model->next_pickup($zone, $limit) ] };
@@ -221,6 +244,7 @@ sub zone_next_dow_change_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONENEXTDOWCHANGE $zone HTML");
 
     my %param = (
         zone => $zone,
@@ -234,6 +258,7 @@ sub zone_next_dow_change_txt {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONENEXTDOWCHANGE $zone TXT");
 
     my %days = $self->model->next_dow_change($zone);
     my $body = "Last pickup day before change: " . $days{last}->ymd . "\n"
@@ -245,6 +270,7 @@ sub zone_next_dow_change_json {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
+    $self->log("ZONENEXTDOWCHANGE $zone JSON");
 
     my $body = encode_json {$self->model->next_dow_change($zone)};
     return $self->response('application/json' => $body);
@@ -260,10 +286,12 @@ sub confirm_reminder {
     unless ($rem) {
         my $resp = $self->process_template('zones/reminders/bad_confirm.html');
         $resp->status(404);
+        $self->log("CONFIRMFAIL $zone $hash");
         return $resp;
     }
 
     $self->model->confirm_reminder($rem);
+    $self->log("CONFIRM $zone $hash");
     my %param = (
         reminder => $rem,
     );
@@ -285,7 +313,9 @@ sub put_reminder {
             zone => $zone,
         },
     );
-    my $uri = "/zones/$zone/reminders/" . $reminder->id;
+    my $id = $reminder->id;
+    $self->log("ADD $zone $args->{offset} $id");
+    my $uri = "/zones/$zone/reminders/" . $id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
     return $resp;
@@ -313,6 +343,7 @@ sub delete_reminder_html {
 sub tell_friends {
     my $self = shift;
     my $req  = shift;
+    $self->log("TELLAFRIEND");
 
     my $params = { error => 'Not yet implemented, sorry.' };
     my $resp = $self->process_template('tell-a-friend.tt2', $params);
@@ -327,9 +358,11 @@ sub delete_reminder {
     my $id   = shift;
 
     if ($self->model->delete_reminder($id)) {
+        $self->log("DELETE $zone $id");
         return HTTP::Engine::Response->new( status => 204 );
     }
 
+    $self->log("DELETEFAIL $zone $id");
     return HTTP::Engine::Response->new( status => 400 );
 }
 
