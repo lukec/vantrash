@@ -286,7 +286,7 @@ sub confirm_reminder {
     unless ($rem) {
         my $resp = $self->process_template('zones/reminders/bad_confirm.html');
         $resp->status(404);
-        $self->log("CONFIRMFAIL $zone $hash");
+        $self->log("CONFIRM_FAIL $zone $hash");
         return $resp;
     }
 
@@ -344,10 +344,36 @@ sub delete_reminder_html {
 sub tell_friends {
     my $self = shift;
     my $req  = shift;
-    $self->log("TELLAFRIEND");
+    my $params = $req->params;
 
-    my $params = { error => 'Not yet implemented, sorry.' };
-    my $resp = $self->process_template('tell-a-friend.tt2', $params);
+    my $tmpl_params = {};
+    my $email_str = $params->{friend_emails};
+    my $skill_str = $params->{skilltesting} || '';
+    my $sender_email = $params->{sender_email};
+    if (lc($skill_str) ne 'bc') {
+        $tmpl_params->{error} = 'Please answer the Skill testing question correctly.';
+        $self->log("TELLAFRIEND_FAIL");
+    }
+    elsif ($email_str and $sender_email) {
+        my @emails = split qr/\s*,?\s+/, $email_str;
+        
+        for my $email (@emails) {
+            $self->model->mailer->send_email(
+                to => $email,
+                from => $sender_email,
+                subject => "Meet the Vancouver Garbage Reminder system",
+                template => 'tell-a-friend.html',
+                template_args => {
+                    friend_email => $sender_email,
+                },
+            );
+        }
+
+        $tmpl_params->{success} = "Sent emails.  Thanks!";
+        $self->log("TELLAFRIEND");
+    }
+    
+    my $resp = $self->process_template('tell-a-friend.tt2', $tmpl_params);
     $resp->status(200);
     return $resp;
 }
@@ -363,7 +389,7 @@ sub delete_reminder {
         return HTTP::Engine::Response->new( status => 204 );
     }
 
-    $self->log("DELETEFAIL $zone $id");
+    $self->log("DELETE_FAIL $zone $id");
     return HTTP::Engine::Response->new( status => 400 );
 }
 
