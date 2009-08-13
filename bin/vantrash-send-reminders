@@ -24,7 +24,7 @@ my $reminders = $model->notifier->need_notification(
 );
 for my $r (@$reminders) {
     if ($args{debug}) {
-        print "Would have emailed: " . $r->email . "\n";
+        print "Would have notified " . $r->target . "\n";
         next;
     }
     $model->notifier->notify($r);

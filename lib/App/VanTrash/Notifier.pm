@@ -114,7 +114,8 @@ sub _send_notification_tweet {
     my $self = shift;
     my %args = @_;
 
-    my $msg = "It is garbage day on " . $args{pickup}->day;
+    my $msg = "It is garbage day on " . $args{pickup}->day
+            . " for " . $args{reminder}->zone;
     if ($args{pickup}->flags eq 'Y') {
         $msg .= " - yard trimmings will be picked up";
     }

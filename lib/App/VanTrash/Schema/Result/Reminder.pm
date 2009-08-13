@@ -53,6 +53,9 @@ sub to_hash {
     };
 }
 
+sub email_target { shift->target =~ m/^email:/ }
+sub twitter_target { shift->target =~ m/^twitter:/ }
+
 __PACKAGE__->load_components(qw/Core/);
 __PACKAGE__->table('reminder');
 
