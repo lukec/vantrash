@@ -8,6 +8,7 @@ use namespace::clean -except => 'meta';
 has 'id'            => (is => 'ro', isa => 'Str',  required => 1);
 has 'name'          => (is => 'ro', isa => 'Str',  required => 1);
 has 'email'         => (is => 'ro', isa => 'Str',  required => 1);
+has 'target'        => (is => 'ro', isa => 'Str',  required => 1);
 has 'zone'          => (is => 'ro', isa => 'Str',  required => 1);
 has 'offset'        => (is => 'ro', isa => 'Int',  required => 1);
 has 'confirmed'     => (is => 'rw', isa => 'Bool', required => 1);
@@ -23,7 +24,8 @@ has 'base_url'    => (is => 'ro', isa => 'Str',  lazy_build => 1);
 
 sub _build_nice_name {
     my $self = shift;
-    return join '-', $self->zone, $self->email, $self->name;
+    return join('-', $self->zone, $self->email, $self->name)
+        . " (" . $self->target . ")";
 }
 
 sub _build_confirm_url {
@@ -47,7 +49,7 @@ sub to_hash {
     return {
         map { $_ => $self->$_() } qw/id name email zone offset confirmed
                                      created_at next_pickup last_notified
-                                     confirm_hash/
+                                     target confirm_hash/
     };
 }
 
@@ -58,6 +60,7 @@ __PACKAGE__->add_columns(
     id            => { data_type => 'text' },
     name          => { data_type => 'text' },
     email         => { data_type => 'text' },
+    target        => { data_type => 'text' },
     zone          => { data_type => 'text' },
     offset        => { data_type => 'integer' },
     confirmed     => { data_type => 'boolean' },

@@ -1,5 +1,6 @@
 package App::VanTrash::Pickups;
 use Moose;
+use DateTime;
 use namespace::clean -except => 'meta';
 
 extends 'App::VanTrash::Collection';
@@ -15,10 +16,14 @@ sub by_zone {
     ];
 }
 
-sub by_day {
+sub by_epoch {
     my $self = shift;
     my $zone = shift;
-    my $day  = shift;
+    my $epoch  = shift;
+
+    my $dt = DateTime->from_epoch(epoch => $epoch);
+    my $day = $dt->ymd;
+    warn "Looking up '$day'";
     return $self->_rs->search( { zone => $zone, day => $day } )->first;
 }
 

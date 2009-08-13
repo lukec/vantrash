@@ -611,6 +611,7 @@ CREATE TABLE reminder (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL,
+    target TEXT NOT NULL,
     zone TEXT NOT NULL,
     offset INTEGER NOT NULL,
     confirmed BOOLEAN NOT NULL,

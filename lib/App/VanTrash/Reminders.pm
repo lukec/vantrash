@@ -14,6 +14,7 @@ sub add {
     my $rem = shift;
 
     $rem->{id} = _build_uuid('vantrash', $rem);
+    $rem->{target} ||= "email:$rem->{email}";
     $rem->{offset}        = -6 unless defined $rem->{offset};
     $rem->{confirmed}     = 0;
     $rem->{created_at}    = time;

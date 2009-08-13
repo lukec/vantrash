@@ -1,11 +1,15 @@
 package App::VanTrash::Notifier;
 use Moose;
 use DateTime;
+use App::VanTrash::Log;
 use namespace::clean -except => 'meta';
 
-has 'mailer'    => (is => 'ro', isa => 'Object', required => 1);
-has 'reminders' => (is => 'ro', isa => 'Object', required => 1);
-has 'pickups'   => (is => 'ro', isa => 'Object', required => 1);
+has 'mailer'         => (is => 'ro', isa => 'Object', required   => 1);
+has 'reminders'      => (is => 'ro', isa => 'Object', required   => 1);
+has 'pickups'        => (is => 'ro', isa => 'Object', required   => 1);
+has 'sender_factory' => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'logger' =>
+    (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
 sub need_notification {
     my $self = shift;
@@ -35,6 +39,7 @@ sub need_notification {
 
         push @due, $rem;
     }
+    $self->log("Found " . @due . " reminders due.");
 
     return \@due;
 }
@@ -43,18 +48,63 @@ sub notify {
     my $self = shift;
     my $rem  = shift;
 
-    my $pobj = $self->pickups->by_day($rem->zone, $rem->next_pickup);
-    $self->mailer->send_email(
-        to => $rem->email,
-        subject => 'It is garbage day',
-        template => 'notification.html',
-        template_args => {
-            reminder => $rem,
-            garbage_day => $pobj,
-        },
-    );
+    my $pobj = $self->pickups->by_epoch($rem->zone, $rem->next_pickup);
+    unless ($pobj) {
+        warn "Cannot find '" . $rem->zone . "/" . $rem->next_pickup . "'\n";
+        return;
+    }
+    
+    $self->_send_notification($rem, $pobj);
+
     $rem->last_notified( $self->now() );
     $rem->update;
+}
+
+
+{
+    my %target_map = (
+        email => \&_send_notification_email,
+    );
+
+    sub _send_notification {
+        my $self   = shift;
+        my $rem    = shift;
+        my $pickup = shift;
+
+        my $target = $rem->target;
+        unless ($target =~ m/^(\w+):(.+)/) {
+            warn "Could not understand target: '$target' for " . $self->nice_name;
+            return;
+        }
+        my ($type, $dest) = ($1, $2);
+        my $func = $target_map{$type};
+        unless ($func) {
+            warn "No such target: $func for " . $self->nice_name;
+            return;
+        }
+
+        $self->log("Sending $type notification to $dest");
+        $func->($self, 
+            reminder => $rem,
+            pickup   => $pickup,
+            target   => $dest,
+        );
+    }
+}
+
+sub _send_notification_email {
+    my $self = shift;
+    my %args = @_;
+
+    $self->mailer->send_email(
+        to            => $args{target},
+        subject       => 'It is garbage day',
+        template      => 'notification.html',
+        template_args => {
+            reminder    => $args{reminder},
+            garbage_day => $args{pickup},
+        },
+    );
 }
 
 # Tests can override this
