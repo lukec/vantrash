@@ -23,7 +23,6 @@ sub by_epoch {
 
     my $dt = DateTime->from_epoch(epoch => $epoch);
     my $day = $dt->ymd;
-    warn "Looking up '$day'";
     return $self->_rs->search( { zone => $zone, day => $day } )->first;
 }
 
