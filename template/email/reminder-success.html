@@ -1,4 +1,10 @@
+[% IF reminder.email_target %]
 Congratulations! You will now receive email reminders for garbage pick up dates for your neighbourhood!
+[% ELSIF reminder.twitter_target %]
+Congratulations! You will now receive twitter reminders for garbage pick up dates for your neighbourhood!
+
+Make sure you are following VanTrash user on twitter to receive the messages: http://twitter.com/vantrash
+[% END %]
 
 To delete this reminder, click on the link below or copy and paste it into your browser:
 

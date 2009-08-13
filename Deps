@@ -19,3 +19,5 @@ Perl:
 - DBIx::Class
 - Test::HTTP
 - Socialtext::WikiTest (unreleased)
+- Net::Twitter
+- mocked

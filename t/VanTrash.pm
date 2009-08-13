@@ -6,6 +6,7 @@ use FindBin;
 use Fatal qw/mkdir symlink/;
 use Test::More;
 use File::Slurp;
+use mocked 'Net::Twitter';
 use namespace::clean -except => 'meta';
 
 BEGIN {
@@ -48,6 +49,14 @@ sub email_content {
 
 sub clear_email {
     unlink $ENV{VT_EMAIL};
+}
+
+sub clear_twitters {
+    @Net::Twitter::MESSAGES = ();
+}
+
+sub twitters {
+    return [ @Net::Twitter::MESSAGES ];
 }
 
 sub set_time {

@@ -2,12 +2,14 @@ package App::VanTrash::Notifier;
 use Moose;
 use DateTime;
 use App::VanTrash::Log;
+use App::VanTrash::Twitter;
 use namespace::clean -except => 'meta';
 
 has 'mailer'         => (is => 'ro', isa => 'Object', required   => 1);
 has 'reminders'      => (is => 'ro', isa => 'Object', required   => 1);
 has 'pickups'        => (is => 'ro', isa => 'Object', required   => 1);
 has 'sender_factory' => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'twitter'        => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
@@ -64,6 +66,7 @@ sub notify {
 {
     my %target_map = (
         email => \&_send_notification_email,
+        twitter => \&_send_notification_tweet,
     );
 
     sub _send_notification {
@@ -79,7 +82,7 @@ sub notify {
         my ($type, $dest) = ($1, $2);
         my $func = $target_map{$type};
         unless ($func) {
-            warn "No such target: $func for " . $self->nice_name;
+            warn "No such target: $type for " . $rem->nice_name;
             return;
         }
 
@@ -106,6 +109,23 @@ sub _send_notification_email {
         },
     );
 }
+
+sub _send_notification_tweet {
+    my $self = shift;
+    my %args = @_;
+
+    my $msg = "It is garbage day on " . $args{pickup}->day;
+    if ($args{pickup}->flags eq 'Y') {
+        $msg .= " - yard trimmings will be picked up";
+    }
+    else {
+        $msg .= " - no yard trimming pickup today";
+    }
+
+    $self->twitter->new_direct_message($args{target}, $msg);
+}
+
+sub _build_twitter { App::VanTrash::Twitter->new }
 
 # Tests can override this
 sub now { time() }
