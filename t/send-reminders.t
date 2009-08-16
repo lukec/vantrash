@@ -54,6 +54,18 @@ Create_and_send_reminder: {
         is scalar(@$reminders), 0, 'no more notifications needed';
     }
 
+    Unknown_target: {
+        # Set up reminder to be able to do another update
+        $robj->target('unknown:monkey');
+        $robj->last_notified(0);
+        $robj->update;
+
+        my $reminders = $model->notifier->need_notification( as_of => $pud);
+        is scalar(@$reminders), 1, 'reminder needs notification again';
+        eval { $model->notifier->notify($reminders->[0]) };
+        like $@, qr/No such target/, 'error was raised';
+    }
+
     Twitter: {
         # Set up reminder to be able to do another update
         $robj->target('twitter:lukec');
@@ -67,6 +79,20 @@ Create_and_send_reminder: {
         is scalar(@$tweets), 1, '1 tweet message found';
         is $tweets->[0]{to}, 'lukec', 'to correct user';
         like $tweets->[0]{msg}, qr/It is garbage day on \d{4}-\d\d?-\d\d?/, 'message is correct';
+    }
+
+    WebHooks: {
+        # Set up reminder to be able to do another update
+        $robj = $model->reminders->by_id($robj->id);
+        $robj->target('webhook:http://example.com/your-special-webhook-here');
+        $robj->last_notified(0);
+        $robj->update;
+
+        my $reminders = $model->notifier->need_notification( as_of => $pud, debug => 1);
+        is scalar(@$reminders), 1, 'reminder needs notification again';
+        $model->notifier->notify($reminders->[0]);
+        my $reqs = t::VanTrash->http_requests;
+        is scalar(@$reqs), 1, '1 http request found';
     }
 }
 

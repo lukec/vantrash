@@ -3,6 +3,7 @@ use Moose;
 use DateTime;
 use App::VanTrash::Log;
 use App::VanTrash::Twitter;
+use JSON qw/encode_json/;
 use namespace::clean -except => 'meta';
 
 has 'mailer'         => (is => 'ro', isa => 'Object', required   => 1);
@@ -48,7 +49,7 @@ sub need_notification {
 
 sub notify {
     my $self = shift;
-    my $rem  = shift;
+    my $rem  = shift or die "reminder is undef!";
 
     my $pobj = $self->pickups->by_epoch($rem->zone, $rem->next_pickup);
     unless ($pobj) {
@@ -63,36 +64,29 @@ sub notify {
 }
 
 
-{
-    my %target_map = (
-        email => \&_send_notification_email,
-        twitter => \&_send_notification_tweet,
-    );
+sub _send_notification {
+    my $self   = shift;
+    my $rem    = shift;
+    my $pickup = shift;
 
-    sub _send_notification {
-        my $self   = shift;
-        my $rem    = shift;
-        my $pickup = shift;
-
-        my $target = $rem->target;
-        unless ($target =~ m/^(\w+):(.+)/) {
-            warn "Could not understand target: '$target' for " . $self->nice_name;
-            return;
-        }
-        my ($type, $dest) = ($1, $2);
-        my $func = $target_map{$type};
-        unless ($func) {
-            warn "No such target: $type for " . $rem->nice_name;
-            return;
-        }
-
-        $self->log("Sending $type notification to $dest");
-        $func->($self, 
-            reminder => $rem,
-            pickup   => $pickup,
-            target   => $dest,
-        );
+    my $target = $rem->target;
+    unless ($target =~ m/^(\w+):(.+)/) {
+        warn "Could not understand target: '$target' for " . $self->nice_name;
+        return;
     }
+    my ($type, $dest) = ($1, $2);
+    my $method = "_send_notification_$type";
+    unless ($self->can($method)) {
+        die "No such target: $type for " . $rem->nice_name;
+        return;
+    }
+
+    $self->log("Sending $type notification to $dest");
+    $self->$method(
+        reminder => $rem,
+        pickup   => $pickup,
+        target   => $dest,
+    );
 }
 
 sub _send_notification_email {
@@ -110,7 +104,7 @@ sub _send_notification_email {
     );
 }
 
-sub _send_notification_tweet {
+sub _send_notification_twitter {
     my $self = shift;
     my %args = @_;
 
@@ -124,6 +118,27 @@ sub _send_notification_tweet {
     }
 
     $self->twitter->new_direct_message($args{target}, $msg);
+}
+
+sub _send_notification_webhook {
+    my $self = shift;
+    my %args = @_;
+
+    my $body = encode_json {
+        reminder => $args{reminder}->to_hash,
+        pickup => $args{pickup}->to_hash,
+    };
+
+    $self->http_post( $args{target}, $body );
+}
+
+sub http_post {
+    my $self = shift;
+    my $url  = shift;
+    my $body = shift;
+
+    my $ua = LWP::UserAgent->new;
+    $ua->post( $url, payload => $body );
 }
 
 sub _build_twitter { App::VanTrash::Twitter->new }

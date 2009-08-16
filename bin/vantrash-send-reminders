@@ -27,7 +27,8 @@ for my $r (@$reminders) {
         print "Would have notified " . $r->target . "\n";
         next;
     }
-    $model->notifier->notify($r);
+    eval { $model->notifier->notify($r) };
+    warn $@ if $@;
 }
 
 exit;
