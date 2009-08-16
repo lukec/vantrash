@@ -51,6 +51,9 @@ h1 {
     font-style: italic;
 }
 
+#imageContainer {
+    background-color: #FFF;
+}
 #mainContent.lightbox {
     padding: 0;
 }

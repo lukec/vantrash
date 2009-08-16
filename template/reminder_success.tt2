@@ -1,13 +1,16 @@
 [% WRAPPER wrapper.tt2 %]
 <div class="content">
-    <strong>Your reminder has been successfully added!</strong>
+    <strong>
+        <h3>Congratulations!</h3>
+        <p>You successfully added your reminder.</p>
+        <p>You will soon receive an email to confirm that the email address you entered is your email.</p>
+        
+        <br/>
+        <p>Thanks.</p>
 
-    <p>VanTrash is created for you by Kevin Jones and Luke Closs with lots of help from David Eaves.  We count on your support to help cover the cost of the resources needed to run this service.</p>
-
-    <p>We recommend a donation of $12/year if you use the reminder service.</p>
-
-    <p>If you just like the site and want to support us, perhaps you'd consider a $5 donation, about the same price as buying us a beer!</p>
-
-    [% INCLUDE paypal_form.tt2 %]
+        <a class="button" onclick="closeLightbox();return false" href="#">
+            <img src="/images/close.png"/>
+        </a>
+    </strong>
 </div>
 [% END %]

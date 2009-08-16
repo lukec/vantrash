@@ -3,6 +3,8 @@
  * Version 0.5 - 11/29/2007
  * @author Warren Krewenki
  *
+ * Patched heavily so support iframes by Kevin Jones
+ *
  * This package is distributed under the BSD license.
  * For full license information, see LICENSE.TXT
  *
@@ -37,24 +39,24 @@
 
             var outerImage = '<div id="outerImageContainer"><div id="imageContainer"><iframe id="lightboxIframe"></iframe><div id="loading"><a href="javascript://" id="loadingLink"><img src="'+opts.fileLoadingImage+'"></a></div></div></div>';
 
-            var imageData = '<div id="imageDataContainer" class="clearfix"><div id="imageData"><div id="imageDetails"><span id="caption"></span><span id="numberDisplay"></span></div></div></div>';
-
             var string;
 
             if (opts.navbarOnTop) {
-              string = '<div id="overlay"></div><div id="lightbox">' + imageData + outerImage + '</div>';
+              string = '<div id="overlay"></div><div id="lightbox">' + outerImage + '</div>';
               $("body").append(string);
-              $("#imageDataContainer").addClass('ontop');
             } else {
-              string = '<div id="overlay"></div><div id="lightbox">' + outerImage + imageData + '</div>';
+              string = '<div id="overlay"></div><div id="lightbox">' + outerImage + '</div>';
               $("body").append(string);
             }
 
             $("#overlay").click(function(){ end(); }).hide();
             $("#lightbox").click(function(){ end();}).hide();
             $("#loadingLink").click(function(){ end(); return false;});
-            $('#outerImageContainer').width(opts.widthCurrent).height(opts.heightCurrent);
-            $('#imageDataContainer').width(opts.widthCurrent);
+            /*
+            $('#outerImageContainer')
+                .width(opts.widthCurrent)
+                .height(opts.heightCurrent);
+                */
         };
         
         function getPageSize() {
@@ -127,7 +129,6 @@
             var lightboxLeft = arrayPageScroll[0];
             $('#lightbox').css({top: lightboxTop+'px', left: lightboxLeft+'px'}).show();
 
-
             changeImage(imageNum);
         };
         
@@ -147,23 +148,15 @@
         };
         
         function doChangeImage() {
-            var width = opts.width ||
-                        window.innerWidth ||
-                        document.documentElement.clientWidth ||
-                        document.body.clientWidth;
-            var height = opts.height ||
-                         window.innerHeight ||
-                         document.documentElement.clientHeight ||
-                         document.body.clientHeight;
-            width *= (opts.widthFactor || 0.9);
-            height *= (opts.heightFactor || 0.7);
             $('#lightboxIframe')
                 .attr('src', opts.src)
-                .height(height)
-                .width(width)
-                .css('border', 'none')
+                .css({
+                    border: 'none',
+                    height: '100%',
+                    width: '100%'
+                })
                 .load(function() {
-                    resizeImageContainer(width, height);
+                    resize();
                     var win;
                     try { win = this.contentWindow } catch (e) {}
                     if (win) win.closeLightbox = end;
@@ -176,42 +169,30 @@
             $('select, object, embed').show();
         };
         
-        function resizeImageContainer(imgWidth, imgHeight) {
-            // get current width and height
-            opts.widthCurrent = $("#outerImageContainer").outerWidth();
-            opts.heightCurrent = $("#outerImageContainer").outerHeight();
-            
-            // get new width and height
-            var widthNew = Math.max(350, imgWidth  + (opts.borderSize * 2));
-            var heightNew = (imgHeight  + (opts.borderSize * 2));
+        function resize() {
+            var windowWidth = window.innerWidth ||
+                              document.documentElement.clientWidth ||
+                              document.body.clientWidth;
+            var windowHeight = window.innerHeight ||
+                              document.documentElement.clientHeight ||
+                              document.body.clientHeight;
+            var desiredWidth = windowWidth * (opts.widthFactor || 0.9);
+            var desiredHeight = windowHeight * (opts.HeightFactor || 0.4);
+            desiredWidth += (opts.borderSize * 2);
+            desiredHeight += (opts.borderSize * 2);
 
-            // scalars based on change from old to new
-            opts.xScale = ( widthNew / opts.widthCurrent) * 100;
-            opts.yScale = ( heightNew / opts.heightCurrent) * 100;
+            var win = $('#lightboxIframe').get(0).contentWindow;
 
-            // calculate size difference between new and old image, and resize if necessary
-            wDiff = opts.widthCurrent - widthNew;
-            hDiff = opts.heightCurrent - heightNew;
-
-            $('#imageDataContainer')
-                .animate({width: widthNew}, opts.resizeSpeed, 'linear');
             $('#outerImageContainer')
                 .animate(
-                    {width: widthNew}, opts.resizeSpeed, 'linear',
+                    {width: desiredWidth}, opts.resizeSpeed, 'linear',
                     function() {
                         $('#outerImageContainer').animate(
-                            {height: heightNew},opts.resizeSpeed,'linear',
-                            function(){ showIframe(); }
+                            {height: desiredHeight}, opts.resizeSpeed, 'linear',
+                            function(){ showIframe(); return false }
                         );
-                    })
-                ;
-
-            // if new and old image are same size and 
-            // no scaling transition is necessary,
-            // do a quick pause to prevent image flicker.
-            if((hDiff == 0) && (wDiff == 0)){
-                if (jQuery.browser.msie){ pause(250); } else { pause(100);}
-            }
+                        return false;
+                    });
         };
         
         function showIframe() {
