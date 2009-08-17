@@ -1,6 +1,9 @@
 [% WRAPPER wrapper.tt2 javascript=['/javascript/vantrash-compiled.js'] %]
     <h2>Garbage Reminder Request</h2>
-    <div class="warning">Warning: This feature is in development and does not work properly yet</div>
+    <div class="warning">
+      <p>Please note: This feature is still in development.</p>
+      <p>We appreciate your patience and assistance with testing!</p>
+    </div>
 
     <div class="wizard">
         <form method="POST">
