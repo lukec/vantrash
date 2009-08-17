@@ -22,7 +22,7 @@ TrashReminders.prototype = {
 
     showLightbox: function($node) {
         $.lightbox({
-            src: '/new_reminder.html?lightbox=1&zone=' + this.zone,
+            src: '/reminder_new.html?lightbox=1&zone=' + this.zone,
             widthFactor: 0.4
         });
     }

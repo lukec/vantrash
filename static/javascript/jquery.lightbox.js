@@ -34,29 +34,25 @@
             $('#overlay').remove();
             $('#lightbox').remove();
             opts.inprogress = false;
-            
-            var mainNode = '<img id="lightboxImage">';
 
-            var outerImage = '<div id="outerImageContainer"><div id="imageContainer"><iframe id="lightboxIframe"></iframe><div id="loading"><a href="javascript://" id="loadingLink"><img src="'+opts.fileLoadingImage+'"></a></div></div></div>';
+            $('<div id="overlay"></div>').appendTo('body');
+            $('<div id="lightbox"></div>').appendTo('body').append(
+                $('<div id="lightboxContent"></div>')
+            );
+            $('#lightboxContent').append(
+                $('<iframe id="lightboxIframe"></iframe>'),
+                $('<div id="loading"></div>')
+                    .html('<a href="javascript://" id="loadingLink"><img src="'+opts.fileLoadingImage+'"></a>')
+            );
 
-            var string;
-
-            if (opts.navbarOnTop) {
-              string = '<div id="overlay"></div><div id="lightbox">' + outerImage + '</div>';
-              $("body").append(string);
-            } else {
-              string = '<div id="overlay"></div><div id="lightbox">' + outerImage + '</div>';
-              $("body").append(string);
-            }
+            $('<a id="closeButton" class="button" href="#"></a>')
+                .html('<img src="/images/close.gif" />')
+                .appendTo('#lightboxContent');
 
             $("#overlay").click(function(){ end(); }).hide();
+            $("#closeButton").click(function(){ end(); }).hide();
             $("#lightbox").click(function(){ end();}).hide();
             $("#loadingLink").click(function(){ end(); return false;});
-            /*
-            $('#outerImageContainer')
-                .width(opts.widthCurrent)
-                .height(opts.heightCurrent);
-                */
         };
         
         function getPageSize() {
@@ -183,11 +179,11 @@
 
             var win = $('#lightboxIframe').get(0).contentWindow;
 
-            $('#outerImageContainer')
+            $('#lightboxContent')
                 .animate(
                     {width: desiredWidth}, opts.resizeSpeed, 'linear',
                     function() {
-                        $('#outerImageContainer').animate(
+                        $('#lightboxContent').animate(
                             {height: desiredHeight}, opts.resizeSpeed, 'linear',
                             function(){ showIframe(); return false }
                         );
@@ -197,27 +193,17 @@
         
         function showIframe() {
             $('#loading').hide();
-            $('#lightboxIframe').fadeIn("fast");
+            $('#lightboxIframe').fadeIn("fast", function() {
+                $('#closeButton').show();
+            });
             opts.inprogress = false;
         };
     };
         
-    $.lightbox.parseJsonData = function(data) {
-        var imageArray = [];
-        
-        $.each(data, function(){
-            imageArray.push(new Array(this.url, this.title));
-        });
-        
-        return imageArray;
-    };
-
     $.lightbox.defaults = {
         fileLoadingImage : 'images/loading.gif',
         overlayOpacity : 0.8,
         borderSize : 10,
-        imageArray : new Array,
-        activeImage : null,
         inprogress : false,
         resizeSpeed : 350,
         widthCurrent: 250,

@@ -83,16 +83,11 @@
                     <option value="+5">5AM the day of</option>
                     <option value="+6">6AM the day of</option>
                 </select>
-
-                <a id="submit" class="button" href="#">
-                    <img src="/images/remind_me_big.png"/>
-                </a>
             </div>
         </form>
     </div>
 
     <script>
-
         $('#simpleOffset').change(function() {
             if ($(this).val() == 'custom') {
                 $(this).hide();
@@ -112,16 +107,7 @@
             nextButton: '/images/next.png',
             backButton: '/images/back.png',
             submitButton: '/images/remind_me_big.png',
-            cancelButton: '/images/cancel.png',
             firstStep: [% zone ? 1 : 0 %],
-            cancel: function() {
-                if (typeof(closeLightbox) != 'undefined') {
-                    closeLightbox();
-                }
-                else {
-                    window.location = '/';
-                }
-            },
             submit: function($form) {
                 var reminders = new TrashReminders();
 
