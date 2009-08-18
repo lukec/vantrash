@@ -57,13 +57,12 @@ h1 {
 #mainContent {
     padding-right: 10px;
     padding-top: 10px;
-    padding-left: 20%;
+    padding-left: 27%;
     text-align:left;
 }
 #leftNav {
-    width: 18%;
+    width: 26%;
     float: left;
-    margin-top: 20px;
     padding: 0 10px;
     text-align: left;
 }
@@ -262,4 +261,3 @@ h1 {
     top: 10px;
     right: 8px;
 }
-
