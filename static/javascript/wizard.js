@@ -11,8 +11,9 @@ $.fn.wizard = function() {
     var currentStep = opts.firstStep;
 
     var self = this;
+    var $form = $(this).parents('form');
+
     $(this).hide().each(function(i) {
-        var $form = $(this).parents('form');
         var $buttons = $('<div class="lbButtons"></div>').appendTo(this);
         if (i > opts.firstStep) {
             make_button(opts.backButton, 'back')
@@ -29,20 +30,19 @@ $.fn.wizard = function() {
                 .click(function() { $form.submit(); return false; })
                 .appendTo($buttons);
         }
-
-        if ($form.size()) {
-            $form.submit(function() {
-                if (currentStep < steps.length-1) {
-                    showStep(currentStep+1);
-                }
-                else if ($.isFunction(opts.submit)) {
-                    opts.submit($form);
-                };
-                return false;
-            });
-        }
-
     });
+
+    if ($form.size()) {
+        $form.submit(function() {
+            if (currentStep < steps.length-1) {
+                showStep(currentStep+1);
+            }
+            else if ($.isFunction(opts.submit)) {
+                opts.submit($form);
+            };
+            return false;
+        });
+    }
 
     function showStep(newStep) {
         $(steps[currentStep]).hide();

@@ -112,6 +112,7 @@
                 var reminders = new TrashReminders();
 
                 reminders.add({
+                    name: 'emailReminder',
                     email: $('*[name=email]', $form).val(),
                     offset: $('*[name=offset]', $form).val(),
                     zone: [% IF zone %]"[% zone %]"[% ELSE %]$('*[name=zone]', $form).val()[% END %],

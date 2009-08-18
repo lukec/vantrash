@@ -166,16 +166,22 @@
         };
         
         function resize() {
-            var windowWidth = window.innerWidth ||
-                              document.documentElement.clientWidth ||
-                              document.body.clientWidth;
-            var windowHeight = window.innerHeight ||
-                              document.documentElement.clientHeight ||
-                              document.body.clientHeight;
-            var desiredWidth = windowWidth * (opts.widthFactor || 0.9);
-            var desiredHeight = windowHeight * (opts.HeightFactor || 0.4);
-            desiredWidth += (opts.borderSize * 2);
-            desiredHeight += (opts.borderSize * 2);
+            var desiredHeight = opts.height;
+            var desiredWidth = opts.width;
+            if (!desiredHeight) {
+                var windowHeight = window.innerHeight ||
+                                  document.documentElement.clientHeight ||
+                                  document.body.clientHeight;
+                desiredHeight = windowHeight * (opts.HeightFactor || 0.4);
+                desiredHeight += (opts.borderSize * 2);
+            }
+            if (!desiredWidth) {
+                var windowWidth = window.innerWidth ||
+                                  document.documentElement.clientWidth ||
+                                  document.body.clientWidth;
+                desiredWidth = windowWidth * (opts.widthFactor || 0.9);
+                desiredWidth += (opts.borderSize * 2);
+            }
 
             var win = $('#lightboxIframe').get(0).contentWindow;
 
