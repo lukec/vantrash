@@ -25,6 +25,7 @@ sub need_notification {
     my @due;
     for my $rem (@{ $self->reminders->all('objects') }) {
         my $name = $rem->nice_name;
+        warn "Examining $name ...\n" if $debug;
         unless ($rem->confirmed) {
             warn "reminder is not yet confirmed: $name\n" if $debug;
             next;
