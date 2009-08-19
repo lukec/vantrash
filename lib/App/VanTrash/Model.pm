@@ -45,8 +45,8 @@ sub ical {
         $evt->add_properties(
             summary => $summary,
             dtstart => Date::ICal->new(
+                hour => 7, offset => "-0800",
                 map { $_ => $day->{$_} } qw/year month day/,
-                offset => "-0800",
             )->ical,
         );
         $ical->add_entry($evt);
