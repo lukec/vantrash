@@ -95,8 +95,8 @@ sub next_dow_change {
         my $dow = $dt->day_of_week;
         if ($tonight < $dt and $prev_dow != $dow) {
             return (
-                last => $prev_day, 
-                first => $dt,
+                last => $prev_day->epoch, 
+                first => $dt->epoch,
             );
         }
         $prev_dow = $dow;
