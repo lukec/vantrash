@@ -7,7 +7,9 @@ TrashMap = function(opts) {
 
 TrashMap.prototype = {
     descriptions: {},
-    center: [ 49.26422,-123.138542 ],
+    center: function() {
+        return new GLatLng(49.26422, -123.138542);
+    },
 
     getZoneInfo: function(name, color, callback) {
         var self = this;
@@ -101,9 +103,7 @@ TrashMap.prototype = {
     render: function(node) {
         var self = this;
         this.map = new GMap2(node);
-        this.map.setCenter(
-            new GLatLng(this.center[0], this.center[1]), 13
-        );
+        this.map.setCenter(this.center(),9);
         this.map.setUIToDefault();
         this.loadKML();
     },

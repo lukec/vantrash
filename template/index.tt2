@@ -4,9 +4,7 @@
 %]
     <div id="mapCanvas"></div>
     <script>
-        $(function(){
-            map = new TrashMap();
-            map.render($('#mapCanvas').get(0));
-        });
+        map = new TrashMap();
+        map.render($('#mapCanvas').get(0));
     </script>
 [% END %]

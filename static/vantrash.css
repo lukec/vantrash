@@ -1,11 +1,20 @@
 html {
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 body { 
     font: 10pt helvetica, georgia, sans-serif;
     text-align:center;
     line-height: 1.1;
+    padding:0;
+    margin:0;
+    height: 100%;
+}
+
+div {
+    margin:0;
+    padding:0;
 }
 
 #activebar-container {
@@ -59,6 +68,10 @@ h1 {
     padding-top: 10px;
     padding-left: 28%;
     text-align:left;
+    height: 100%;
+}
+.clear {
+    clear: both;
 }
 #leftNav {
     width: 26%;
@@ -86,8 +99,7 @@ h1 {
     text-decoration: underline;
 }
 #mapCanvas {
-    height:80%;
-    margin:auto;
+    height: 80%;
 }
 
 .balloon {
