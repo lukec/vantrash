@@ -40,7 +40,7 @@
                 $('<div id="lightboxContent"></div>')
             );
             $('#lightboxContent').append(
-                $('<iframe id="lightboxIframe"></iframe>'),
+                $('<iframe frameborder="0" id="lightboxIframe"></iframe>'),
                 $('<div id="loading"></div>')
                     .html('<a href="javascript://" id="loadingLink"><img src="'+opts.fileLoadingImage+'"></a>')
             );
