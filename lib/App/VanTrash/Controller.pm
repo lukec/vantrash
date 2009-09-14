@@ -370,7 +370,7 @@ sub tell_friends {
         }
 
         $tmpl_params->{success} = "Email sent.  Thanks!";
-        $self->log("TELLAFRIEND");
+        $self->log("TELLAFRIEND " . scalar(@emails));
     }
     
     my $resp = $self->process_template('tell-a-friend.tt2', $tmpl_params);

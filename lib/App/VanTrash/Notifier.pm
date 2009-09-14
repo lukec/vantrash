@@ -82,7 +82,7 @@ sub _send_notification {
         return;
     }
 
-    $self->log("Sending $type notification to $dest");
+    $self->log("SENDING $type notification to $dest");
     $self->$method(
         reminder => $rem,
         pickup   => $pickup,
