@@ -369,7 +369,7 @@ sub tell_friends {
             );
         }
 
-        $tmpl_params->{success} = "Sent emails.  Thanks!";
+        $tmpl_params->{success} = "Email sent.  Thanks!";
         $self->log("TELLAFRIEND");
     }
     
