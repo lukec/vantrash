@@ -1,0 +1,110 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Chart::Clicker;
+use Fatal qw/open close/;
+
+my $log_file = '/var/log/vantrash.log';
+
+my $data = parse_logfile($log_file);
+
+my $zones = delete $data->{hits}{zones};
+print "API: ZONES:\tHTML=$zones->{HTML}\tTXT=$zones->{TXT}\tJSON=$zones->{JSON}\n";
+
+for my $type ( qw/zone zonedays zonenextdowchange zonenextpickup/ ) {
+    my $sum = 0;
+    for my $zone (sort keys %{ $data->{hits}{$type} }) {
+        my $h = delete $data->{hits}{$type}{$zone};
+        my $html = $h->{HTML} || 0;
+        my $txt = $h->{TXT} || 0;
+        my $json = $h->{JSON} || 0;
+        my $total = $html + $txt + $json;
+        $sum += $total;
+        printf "API: %20s %30s - Total=$total\tHTML=$html\tTXT=$txt\tJSON=$json\n",
+            $type, $zone;
+    }
+    printf "API: %20s - total requests: $sum\n", $type;
+}
+
+for my $action (qw/add confirm confirm_fail/) {
+    my $sum = 0;
+    for my $zone (sort keys %{ $data->{hits}{$action} }) {
+        my $count = delete $data->{hits}{$action}{$zone};
+        $sum += $count;
+        printf "Action: %30s $action $count\n", $zone;
+    }
+    printf "Action: %15s - total: $sum\n", $action;
+}
+
+for my $type (keys %{ $data->{hits}{sent} }) {
+    my $count = delete $data->{hits}{sent}{$type};
+    print "Sent $count $type reminders.\n";
+}
+
+
+exit;
+
+sub parse_logfile {
+    my $filename = shift;
+    open(my $fh, $filename);
+    my %data;
+    while (my $line = <$fh>) {
+        next unless $line =~ m/^(\w+) (\w+) (\d+) ([\d:]+) (\d+): (.+)$/;
+        my ($dow, $month, $day, $time, $year, $comment)
+            = ($1, $2, $3, $4, $5, $6);
+
+        next if $comment =~ m/^Found \d+ reminders due/;
+
+        if    ($comment =~ m/^ZONES (\S+)/) {
+            my $format = $1;
+            $data{hits}{zones}{$format}++;
+        }
+        elsif ($comment =~ m/^ZONE (\S+) (\w+)/) {
+            my $zone_id = $1;
+            my $format = $2;
+            $data{hits}{zone}{$zone_id}{$format}++;
+        }
+        elsif ($comment =~ m/^ZONEDAYS (\S+) (\w+)/) {
+            my $zone_id = $1;
+            my $format = $2;
+            $data{hits}{zonedays}{$zone_id}{$format}++;
+        }
+        elsif ($comment =~ m/^ZONENEXTDOWCHANGE (\S+) (\w+)/) {
+            my $zone_id = $1;
+            my $format = $2;
+            $data{hits}{zonenextdowchange}{$zone_id}{$format}++;
+        }
+        elsif ($comment =~ m/^ZONENEXTPICKUP (\S+) (\w+)/) {
+            my $zone_id = $1;
+            my $format = $2;
+            $data{hits}{zonenextpickup}{$zone_id}{$format}++;
+        }
+        elsif ($comment =~ m/^TELLAFRIEND(?: (\d+))?/) {
+            my $count = $1 || 1;
+            $data{hits}{tellafriend} += $count;
+        }
+        elsif ($comment =~ m/^ADD (\S+)/) {
+            my $zone_id = $1;
+            $data{hits}{add}{$zone_id}++;
+        }
+        elsif ($comment =~ m/^CONFIRM (\S+)/) {
+            my $zone_id = $1;
+            $data{hits}{confirm}{$zone_id}++;
+        }
+        elsif ($comment =~ m/^CONFIRM_FAIL (\S+)/) {
+            my $zone_id = $1;
+            $data{hits}{confirm_fail}{$zone_id}++;
+        }
+        elsif ($comment =~ m/^SENDING (\w+) notification/i) {
+            my $type = $1;
+            $data{hits}{sent}{$type}++;
+        }
+        else {
+            warn "Unknown: $comment";
+        }
+    }
+    return \%data;
+}
+
+
+
