@@ -67,6 +67,7 @@
         <div [% IF lightbox %]class="lightbox"[% END %] id="mainContent">
             [% content %]
         </div>
+        <div class="clear"></div>
 
         <!-- Google Analytics -->
         <script type="text/javascript">

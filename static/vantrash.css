@@ -1,20 +1,30 @@
-html {
-    margin: 0;
-    padding: 0;
+/* CSS Reset Start */ 
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+html, body {
     height: 100%;
 }
 body { 
     font: 10pt helvetica, georgia, sans-serif;
     text-align:center;
     line-height: 1.1;
-    padding:0;
-    margin:0;
-    height: 100%;
-}
-
-div {
-    margin:0;
-    padding:0;
 }
 
 #activebar-container {
@@ -27,6 +37,9 @@ a img {
 
 h1 {
     margin:4px;
+}
+.clear {
+    clear: both;
 }
 .warning {
     color: #d34f40;
@@ -64,11 +77,11 @@ h1 {
     padding: 0;
 }
 #mainContent {
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-left: 28%;
+    margin-top: 10px;
     text-align:left;
-    height: 100%;
+    float: left;
+    width: 70%;
+    height: 80%;
 }
 .clear {
     clear: both;
@@ -76,11 +89,14 @@ h1 {
 #leftNav {
     width: 26%;
     float: left;
-    padding: 0 10px;
+    padding: 5px 10px;
     text-align: left;
 }
+#leftNav p {
+    margin: 4px 0;
+}
 #leftNav ul {
-    padding-left:0;
+    margin-top: 5px;
 }
 #leftNav li {
     padding: 4px 0;
@@ -99,7 +115,7 @@ h1 {
     text-decoration: underline;
 }
 #mapCanvas {
-    height: 80%;
+    height: 100%;
 }
 
 .balloon {
