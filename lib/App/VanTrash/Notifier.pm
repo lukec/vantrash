@@ -118,7 +118,11 @@ sub _send_notification_twitter {
         $msg .= " - no yard trimming pickup today";
     }
 
-    $self->twitter->new_direct_message($args{target}, $msg);
+    unless ($self->twitter->new_direct_message($args{target}, $msg)) {
+        if (my $error = $self->twitter->get_error()) {
+            warn "Error sending tweet! $error";
+        }
+    }
 }
 
 sub _send_notification_webhook {
