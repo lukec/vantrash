@@ -42,7 +42,7 @@ Calendar.prototype = {
             .click(function() { self.prevMonth() })
             .appendTo($('<td></td>').appendTo($tr));
         $('<td>month</td>')
-            .attr('colspan', 5)
+            .attr('colSpan', '5')
             .addClass('month')
             .appendTo($tr);
         $('<a href="#"></a>')

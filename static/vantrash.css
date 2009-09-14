@@ -17,6 +17,10 @@ table, caption, tbody, tfoot, thead, tr, th, td {
 	font-family: inherit;
 	vertical-align: baseline;
 }
+table {
+    table-layout: fixed;
+}
+/* Done CSS Reset */
 
 html, body {
     height: 100%;
@@ -119,7 +123,8 @@ h1 {
 }
 
 .balloon {
-    height: 200px;
+    height: 220px;
+    width: 220px;
     text-align: center;
 }
 .balloon .buttons {
@@ -128,6 +133,7 @@ h1 {
     margin-right: 7px;
     float: right;
     width: 100px;
+    z-index: 100;
 }
 .balloon a img {
     margin-bottom:  4px;
@@ -147,6 +153,8 @@ h1 {
 .legend {
     margin-top: 10px;
     float: left;
+    text-align: left;
+    width: 100px;
 }
 .legend table {
     border-collapse: collapse;
