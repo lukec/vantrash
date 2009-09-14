@@ -2,3 +2,4 @@
 #  This sends out vantrash reminders.
 
 1 * * * *     www-data   /var/www/vantrash/bin/vantrash-send-reminders >> /var/log/vantrash-email.log 2>&1
+50 * * * * www-data cd /var/www/vantrash && ./bin/vantrash-backup >> /var/log/vantrash-backup.log 2>&1
