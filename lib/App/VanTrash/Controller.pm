@@ -431,7 +431,10 @@ sub process_template {
     my $html;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;
-    return HTTP::Engine::Response->new(body => $html);
+    my $res = HTTP::Engine::Response->new(body => $html);
+    # Force IE8 to emulate IE7
+    $res->headers->header('X-UA-Compatible', 'IE=EmulateIE7');
+    return $res;
 }
 
 sub _static_file {
