@@ -5,7 +5,8 @@ use Net::Twitter;
 use namespace::clean -except => 'meta';
 
 has 'config' => (is => 'ro', lazy_build => 1);
-has 'twitter' => (is => 'ro', lazy_build => 1, handles => ['new_direct_message']);
+has 'twitter' => (is => 'ro', lazy_build => 1, 
+    handles => ['new_direct_message', 'get_error']);
 
 sub _build_twitter {
     my $self = shift;
