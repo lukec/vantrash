@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BACKUP=backup
+if [[ ! -d $BACKUP ]]; then
+    mkdir $BACKUP
+    cd $BACKUP;
+    git init
+    touch vantrash.dump
+    git add vantrash.dump
+    git commit -m 'initial commit'
+    cd ..
+fi
+
+echo '.dump' | sqlite3 data/vantrash.db > $BACKUP/vantrash.dump
+cd $BACKUP;
+git commit -a -m 'backup'
