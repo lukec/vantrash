@@ -47,10 +47,9 @@ TrashMap.prototype = {
             var days = cal.daysUntil(nextDay);
             $div.append(
                 $('<div class="next"></div>').append(
-                    '<span class="title">Next pickup: </span>',
-                    days == 1 ?
-                        '<span class="day">Tomorrow+</span>' :
-                        '<span class="day">'+cal.formatDate(nextDay)+'</span>'
+                    $('<span class="title"></span>').text('Next pickup: '),
+                    $('<span class="day"></span>')
+                        .text(days == 1 ? 'Tomorrow' : cal.formatDate(nextDay))
                 )
             );
         }
