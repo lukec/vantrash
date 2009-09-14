@@ -315,7 +315,7 @@ sub put_reminder {
         },
     );
     my $id = $reminder->id;
-    $self->log("ADD $zone $args->{offset} $id");
+    $self->log("ADD $zone " . $reminder->offset . " $id");
     my $uri = "/zones/$zone/reminders/" . $id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
