@@ -290,8 +290,10 @@ sub confirm_reminder {
         return $resp;
     }
 
-    $self->model->confirm_reminder($rem);
-    $self->log("CONFIRM $zone $hash");
+    unless ($rem->confirmed()) {
+        $self->model->confirm_reminder($rem);
+        $self->log("CONFIRM $zone $hash");
+    }
     my %param = (
         reminder => $rem,
     );
