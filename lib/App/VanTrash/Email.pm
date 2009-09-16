@@ -3,6 +3,8 @@ use Moose;
 use Email::Send;
 use Email::MIME;
 use Email::MIME::Creator;
+use Email::Send::IO;
+use Email::Send::Sendmail;
 use App::VanTrash::Template;
 use namespace::clean -except => 'meta';
 
@@ -45,13 +47,10 @@ sub _build_mailer {
 
     my $class;
     if (my $file = $ENV{VT_EMAIL}) {
-        require Email::Send::IO;
-        no warnings 'redefine';
         @Email::Send::IO::IO = ($file);
         $class = 'IO';
     }
     else {
-        require Email::Send::Sendmail;
         $Email::Send::Sendmail::SENDMAIL = '/usr/sbin/sendmail';
         $class = 'Sendmail';
     }

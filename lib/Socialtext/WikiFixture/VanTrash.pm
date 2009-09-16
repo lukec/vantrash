@@ -4,7 +4,6 @@ use App::VanTrash::Model;
 use IPC::Run qw/start finish/;
 use Test::More;
 use File::Path qw/mkpath rmtree/;
-use IO::All;
 
 has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
 has 'http_server' => (is => 'rw', isa => 'HashRef');
@@ -86,7 +85,13 @@ sub email_like {
 sub email_contents {
     my $self = shift;
     return '' unless -e $self->email_file;
-    return scalar(io($self->email_file)->slurp);
+    open(my $fh, $self->email_file);
+    my $content;
+    {
+        local $/;
+        $content = <$fh>;
+    }
+    return $content;
 }
 
 sub set_url_from_email {

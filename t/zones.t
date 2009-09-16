@@ -28,12 +28,12 @@ Next_pickup: {
 Next_dow_change: {
     my $model = t::VanTrash->model;
     my %days = $model->next_dow_change('vancouver-south-red');
-    is $days{last}->ymd,  '2009-09-03', 'next-day-change';
-    is $days{first}->ymd, '2009-09-11', 'next-day-change';
+    is $days{last},  '1251961200', 'next-day-change';
+    is $days{first}, '1252652400', 'next-day-change';
     $ENV{VANTRASH_NOW}->set( day => 11 );
     %days = $model->next_dow_change('vancouver-south-red');
-    is $days{last}->ymd,  '2009-10-09', 'next-day-change';
-    is $days{first}->ymd, '2009-10-19', 'next-day-change';
+    is $days{last},  '1255071600', 'next-day-change';
+    is $days{first}, '1255935600', 'next-day-change';
 }
 
 
