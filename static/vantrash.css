@@ -1,9 +1,9 @@
 /* CSS Reset Start */ 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
+a, abbr, acronym, address, big, cite,
 del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
+small, strike, sub, sup, tt, var,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {
@@ -222,6 +222,9 @@ h1 {
 .tellfriends label {
     font-size: 120%;
 }
+.tellfriends h1 {
+    font-size: 130%;
+}
 .tellfriends textarea {
     border: 3px solid #cccccc;
     padding: 5px;
@@ -300,4 +303,41 @@ h1 {
     position: absolute;
     top: 10px;
     right: 8px;
+}
+#mainContent h1 {
+    font-size: 180%;
+    padding: 6px;
+    padding-left: 0px;
+}
+#mainContent h2 {
+    font-size: 150%;
+    padding: 6px;
+    padding-left: 0px;
+}
+#mainContent h3 {
+    font-size: 130%;
+    padding: 6px;
+    padding-left: 0px;
+}
+#mainContent h4 {
+    font-size: 120%;
+    padding: 6px;
+    padding-left: 0px;
+}
+.wiki {
+    padding: 10px;
+}
+.donate {
+    padding: 10px;
+    font-size: 110%;
+}
+#mainContent p {
+    padding: 6px;
+}
+.donatebtn {
+    padding: 20px;
+}
+.api ul {
+    padding: 8px;
+    padding-left: 20px;
 }

@@ -1,10 +1,14 @@
 [% WRAPPER wrapper.tt2 %]
+  <div class="api">
     <h1>VanTrash API</h1>
     This page defines the simple REST API that exposes collection times data.
 
       <div class="content">
         <h2>List of Zones</h2>
-        The zones are defined on the Vancouver city website. There are 2 zones: <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm">North</a> and <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm">South</a>.  The API lists the available zones at:
+        <p>
+        The zones are defined on the Vancouver city website. There are 2 schedules: <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm">North</a> and <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm">South</a>.<br />
+        The API lists the available zones at:
+        </p>
         <ul>
             <li><a href="/zones">/zones</a> - <code>text/html</code></li>
             <li><a href="/zones.txt">/zones.txt</a> - <code>text/plain</code></li>
@@ -26,7 +30,8 @@
             <li><a href="/zones/vancouver-north-blue/nextpickup">Next Pickup</a> - The next pickup day for this zone</li>
             <li><a href="/zones/vancouver-north-blue/nextdowchange">Next Day of Week Change</a> - The next pickup day that occurs on a different day of the week than its previous pickup</li>
         </ul>
-        This data is also has text and JSON representations:
+        </p>
+        <p>This data is also has text and JSON representations:</p>
         <ul>
             <li>Pickup Days:<a href="/zones/vancouver-north-blue/pickupdays.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/pickupdays.json"><code>application/json</code></a>,
@@ -36,7 +41,7 @@
             <li>Next DOW Change: <a href="/zones/vancouver-north-blue/nextdowchange.txt"><code>text/plain</code></a>, 
                 <a href="/zones/vancouver-north-blue/nextdowchange.json"><code>application/json</code></a></li>
         </ul>
-        Dates are expressed as <code>YYYY-MM-DD[ F]</code>.  The <code>F</code> is an optional flag (separated from the date with a single space).  The only supported flag currently is <code>Y</code> which means a 'Yard Trimmings Collection' also occurs on that day.</p>
+        <p>Dates are expressed as <code>YYYY-MM-DD[ F]</code>.  The <code>F</code> is an optional flag (separated from the date with a single space).  The only supported flag currently is <code>Y</code> which means a 'Yard Trimmings Collection' also occurs on that day.</p>
         <p>
         The <code>nextpickup</code> request accepts a <code>limit</code> GET parameter to show the next several pickups.<br />
         (eg: <code>/zones/vancouver-north-blue/nextpickup.txt?limit=5).
@@ -46,7 +51,7 @@
         <p><strong>Note: Reminders are currently not fully implemented, and should not be considered ready for use.</strong></p>
         <p>You can add and remove reminders through the API as follows.</p>
         <h4>Adding a reminder</h4>
-        Submit a HTTP PUT request to <code>/zones/:zone_id/reminders</code> containing a JSON payload with the following elements in the body:
+        <p>Submit a HTTP PUT request to <code>/zones/:zone_id/reminders</code> containing a JSON payload with the following elements in the body:</p>
         <ul>
             <li><code>id</code> - A unique identifier for this reminder. Must be 3-30 characters alphanumeric.</li>
             <li><code>password</code> - An optional password for this reminder</li>
@@ -54,16 +59,20 @@
             <li><code>offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
             <li><code>target</code> - (Optional) Notification delivery target.  Defaults to an email target.  See below for more targets.</li>
         </ul>
+        <p>
         This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.<br />
-        <strong>Reminder targets</strong><br />
+        <h4>Reminder targets</h4><br />
         Reminders have a target which is how the reminder should notify the user.  The default target is <code>email:user@example.com</code> (with the email address of the user).  Here are the available reminder targets:<br />
+        </p>
         <ul>
             <li><code>email:email_address</code> - Sends a regular email notification to the address.</li>
             <li><code>twitter:twitter_username</code> - Sends a direct message to the twitter user. They must follow <a href="http://twitter.com/vantrash">VanTrash</a> to receive the DM.</li>
+            <li><code>webhook:http://example.com</code> - Sends a HTTP POST request with a JSON payload that contains details about the reminder to the URL specified.</li>
         </ul>
         <h4>Deleting a reminder</h4>
-        Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.  Returns 204 on successful delete, 400 on failure.
+        <p>Submit a HTTP DELETE request to <code>/zones/:zone_id/reminders/:id</code>.  Returns 204 on successful delete, 400 on failure.</p>
         <br />
-        This will send an email to confirm the reminder deletion by loading a confirmation link.
+        <p>This will send an email to confirm the reminder deletion by loading a confirmation link.</p>
       </div>
+  </div>
 [% END %]
