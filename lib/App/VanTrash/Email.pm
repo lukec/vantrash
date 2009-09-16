@@ -46,6 +46,7 @@ sub _build_mailer {
     my $class;
     if (my $file = $ENV{VT_EMAIL}) {
         require Email::Send::IO;
+        no warnings 'redefine';
         @Email::Send::IO::IO = ($file);
         $class = 'IO';
     }

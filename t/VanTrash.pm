@@ -20,7 +20,10 @@ END { unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL} }
 has 'base_path' => (is => 'ro', lazy_build => 1);
 
 my @http_requests;
-*App::VanTrash::Notifier::http_post = sub { push @http_requests, \@_ };
+{
+    no warnings 'redefine';
+    *App::VanTrash::Notifier::http_post = sub { push @http_requests, \@_ };
+}
 
 sub _build_base_path {
     my $self = shift;
