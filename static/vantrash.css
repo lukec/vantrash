@@ -214,10 +214,10 @@ h1 {
 }
 .firststep {
     font-weight: bold;
-    padding: 15px;
+    padding: 15px 0;
 }
 .ad {
-    padding: 5px;
+    padding: 5px 0;
 }
 .tellfriends label {
     font-size: 120%;
