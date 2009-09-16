@@ -341,3 +341,8 @@ h1 {
     padding: 8px;
     padding-left: 20px;
 }
+.example {
+    padding: 10px;
+    padding-left: 30px;
+    font-family: Courier;
+}
