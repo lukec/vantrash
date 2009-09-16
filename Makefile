@@ -25,13 +25,12 @@ JS_MAP_FILES=\
 	 $(JS_DIR)/map.js \
 
 WIKI_PAGES=about_us faq
-WIKI_HTMLS=$(WIKI_PAGES:%=template/%.html)
 CRONJOB=etc/cron.d/vantrash
 
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI) $(WIKI_HTMLS)
+all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI)
 
 clean:
 	rm -f $(JS_MINI) $(JS_TARGET) $(JS_MAP_TARGET) $(JS_MAP_MINI)
@@ -40,10 +39,6 @@ clean:
 
 .js-mini.js:
 	$(MINIFY) $< > $@
-
-$(WIKI_HTMLS): Makefile
-	rm -f $@;
-	bin/fetch-from-wiki $(@:template/%.html=%) > $@
 
 $(JS_TARGET): $(JS_FILES) Makefile
 	rm -f $@;
@@ -59,11 +54,6 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 
 $(INSTALL_DIR)/%:
 	mkdir $@
-
-refresh: $(WIKI_HTMLS)
-	bin/fetch-from-wiki $(WIKI_HTMLS:template/%.html=%) > $(WIKI_HTMLS)
-	
-
 
 install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
     	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
