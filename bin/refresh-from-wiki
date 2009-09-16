@@ -1,0 +1,4 @@
+#!/bin/bash
+
+bin/fetch-from-wiki faq > template/faq.html
+bin/fetch-from-wiki about_us > template/about_us.html
