@@ -216,6 +216,9 @@ h1 {
     font-weight: bold;
     padding: 15px;
 }
+.ad {
+    padding: 5px;
+}
 .tellfriends label {
     font-size: 120%;
 }
