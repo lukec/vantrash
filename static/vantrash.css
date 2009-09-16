@@ -31,6 +31,15 @@ body {
     line-height: 1.1;
 }
 
+h1, h2, h3, h4 {
+    padding: 6px;
+    padding-left: 0px;
+}
+h1 { font-size: 180% }
+h2 { font-size: 150% }
+h3 { font-size: 130% }
+h4 { font-size: 120% }
+
 #activebar-container {
     text-align: left;
 }
@@ -303,26 +312,6 @@ h1 {
     position: absolute;
     top: 10px;
     right: 8px;
-}
-#mainContent h1 {
-    font-size: 180%;
-    padding: 6px;
-    padding-left: 0px;
-}
-#mainContent h2 {
-    font-size: 150%;
-    padding: 6px;
-    padding-left: 0px;
-}
-#mainContent h3 {
-    font-size: 130%;
-    padding: 6px;
-    padding-left: 0px;
-}
-#mainContent h4 {
-    font-size: 120%;
-    padding: 6px;
-    padding-left: 0px;
 }
 .wiki {
     padding: 10px;
