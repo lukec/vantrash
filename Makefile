@@ -69,7 +69,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
-	chown www-data:www-data $(INSTALL_DIR)/data/vantrash.db
+	chown -R www-data:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
 	/etc/init.d/apache2 restart
 	/etc/init.d/nginx reload
 
