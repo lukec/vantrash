@@ -80,6 +80,7 @@ sub next_pickup {
 sub next_dow_change {
     my $self = shift;
     my $zone = shift;
+    my $return_dt   = shift;
 
     my $days = $self->days($zone);
     die "Not a valid zone: '$zone'\n" unless @$days;
@@ -95,8 +96,8 @@ sub next_dow_change {
         my $dow = $dt->day_of_week;
         if ($tonight < $dt and $prev_dow != $dow) {
             return (
-                last => $prev_day->epoch, 
-                first => $dt->epoch,
+                last => ($return_dt ? $prev_day : $prev_day->epoch), 
+                first => ($return_dt ? $dt : $dt->epoch),
             );
         }
         $prev_dow = $dow;

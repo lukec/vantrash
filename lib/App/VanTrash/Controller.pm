@@ -249,7 +249,7 @@ sub zone_next_dow_change_html {
     my %param = (
         zone => $zone,
         uri_append => '/nextdowchange',
-        $self->model->next_dow_change($zone),
+        $self->model->next_dow_change($zone, 'return datetime'),
     );
     return $self->process_template('zones/zone_next_dow_change.html', \%param);
 }
@@ -260,7 +260,7 @@ sub zone_next_dow_change_txt {
     my $zone = shift;
     $self->log("ZONENEXTDOWCHANGE $zone TXT");
 
-    my %days = $self->model->next_dow_change($zone);
+    my %days = $self->model->next_dow_change($zone, 'return datetime');
     my $body = "Last pickup day before change: " . $days{last}->ymd . "\n"
              . "First pickup day on the new schedule: " . $days{first}->ymd . "\n";
     return $self->response('text/plain' => $body);
