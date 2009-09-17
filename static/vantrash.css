@@ -32,8 +32,7 @@ body {
 }
 
 h1, h2, h3, h4 {
-    padding: 6px;
-    padding-left: 0px;
+    padding: 6px 0;
     font-weight: bold;
 }
 h1 { font-size: 180% }
@@ -66,13 +65,20 @@ input.btn {
     line-height: 1.5;
 }
 
+.border {
+    border: 3px solid #cccccc;
+    padding: 0 5px;
+    font-size: 160%;
+}
+
+.border.email {
+    width: 300px;
+}
+
 a img {
     border: none;
 }
 
-h1 {
-    margin:4px;
-}
 .clear {
     clear: both;
 }
@@ -234,7 +240,6 @@ h1 {
 
 .wizard {
     color: #333;
-    width: 400px;
 }
 .wizard .title {
     font-size: 110%;
@@ -267,23 +272,8 @@ h1 {
 .tellfriends h1 {
     font-size: 130%;
 }
-.tellfriends textarea {
-    border: 3px solid #cccccc;
-    padding: 5px;
-    font-size: 160%;
-}
-.tellfriends input {
-    padding: 5px;
-    padding-left: 30px;
-    font-size: 130%;
-}
-.question input {
-    padding-left: 3px;
-    padding-top: 5px;
-    font-size: 180%;
-}
 .question {
-    padding: 15px;
+    padding: 15px 2px;
 }
 
 #customOffset {

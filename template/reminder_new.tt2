@@ -45,12 +45,12 @@
 
             <div class="section">
                 <span class="title">Remind me by email: </span>
-                <input type="text" name="email"/>
+                <input class="border email" type="text" name="email"/>
             </div>
 
             <div class="section">
                 <span class="title">When: </span>
-                <select id="simpleOffset">
+                <select class="border" id="simpleOffset">
                     <option value="-12">Noon the day before</option>
                     <option value="-6">6PM the day before</option>
                     <option value="+6">6AM the day of</option>

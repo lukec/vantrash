@@ -15,23 +15,23 @@
        <div class="question">
          <label for="friend_emails">Enter the email addresses of the people you'd like to introduce to this site:</label>
          <br />
-         <textarea name="friend_emails" rows="5" cols="40"></textarea>
+         <textarea class="border"name="friend_emails" rows="5" cols="40"></textarea>
        </div>
 
        <div class="question">
          <label for="sender_email">Enter your email address:</label>
           <br />
-         <textarea name="sender_email" rows="1" cols="40"></textarea>
+         <textarea class="border" name="sender_email" rows="1" cols="40"></textarea>
        </div>
 
 
        <div class="question">
          <label for="skilltesting">To prove you are a human, please type the 2-letter code for the province Vancouver is in:</label>
           <br />
-         <input type="text" name="skilltesting" size="2"/>
+         <input type="text" class="border" name="skilltesting" size="2"/>
        </div>
 
-       <input type="submit" name="submit" value="Invite!"/>
+       <input class="btn" type="submit" name="submit" value="Invite!"/>
 
      </form>
    </div>
