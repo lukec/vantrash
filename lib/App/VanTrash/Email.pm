@@ -3,8 +3,9 @@ use Moose;
 use Email::Send;
 use Email::MIME;
 use Email::MIME::Creator;
-use Email::Send::IO;
-use Email::Send::Sendmail;
+use Email::Send::Gmail;
+use Net::SMTP::SSL;
+use YAML;
 use App::VanTrash::Template;
 use namespace::clean -except => 'meta';
 
@@ -41,21 +42,15 @@ sub send_email {
 
 sub _build_mailer {
     my $self = shift;
-
-# Forces testing mode ON, set by unit tests.
-#    $ENV{VT_EMAIL} ||= '/tmp/email';
-
-    my $class;
-    if (my $file = $ENV{VT_EMAIL}) {
-        @Email::Send::IO::IO = ($file);
-        $class = 'IO';
-    }
-    else {
-        $Email::Send::Sendmail::SENDMAIL = '/usr/sbin/sendmail';
-        $class = 'Sendmail';
-    }
-
-    return Email::Send->new( { mailer => $class } );
+    my $config = YAML::LoadFile("/etc/vantrash_mail.yaml");
+    my $mailer = Email::Send->new({
+        mailer => 'Gmail',
+        mailer_args => [
+            username => delete $config->{username},
+            password => delete $config->{password},
+        ]
+    });
+    return $mailer;
 }
 
 sub _build_template {

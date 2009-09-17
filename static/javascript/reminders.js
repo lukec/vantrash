@@ -7,7 +7,7 @@ TrashReminders = function(opts) {
 TrashReminders.prototype = {
     add: function (opts) {
         var data = {
-            name: opts.name || 'reminder',
+            name: (new Date).getTime(),
             email: opts.email,
             offset: opts.offset
         };
