@@ -24,19 +24,32 @@ if ($reminder) {
     exit;
 }
 
-my $zones = $model->zones;
-print "Zones: " . @$zones . "\n";
-for my $z (@$zones) {
-    print "  $z\n";
-}
-
 my $reminders = $model->reminders->all;
 print "Reminders: " . @$reminders . "\n";
+my @confirmed;
+my @unconfirmed;
 for my $r (@$reminders) {
-    my $id = $r->id;
-    my $email = $r->email;
-    my $zone = $r->zone;
-    my $next_pickup = DateTime->from_epoch(epoch => $r->next_pickup);
-    my $confirmed = $r->confirmed ? 'confirmed' : 'unconfirmed';
-    print "  $id - $zone - $email (" . $next_pickup->ymd . ") - $confirmed\n";
+    if ($r->{confirmed}) {
+        push @confirmed, $r;
+    }
+    else {
+        push @unconfirmed, $r;
+    }
+}
+
+print "Unconfirmed reminders:\n";
+for my $r (@unconfirmed) {
+    my $date = DateTime->from_epoch(epoch => $r->{created_at});
+    print "  $r->{id} $r->{zone} - $r->{email} ($r->{target}) created: " 
+        . $date->ymd . " " . $date->hms . "\n";
+}
+
+print "\nConfirmed reminders:\n";
+for my $r (@confirmed) {
+    my $last = DateTime->from_epoch(epoch => $r->{last_notified});
+    $last = join(' ', $last->ymd, $last->hms);
+    my $next = DateTime->from_epoch(epoch => $r->{next_pickup});
+    $next = join(' ', $next->ymd, $next->hms);
+    print "  $r->{zone} - $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
+        . "\n";
 }
