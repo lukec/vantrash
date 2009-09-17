@@ -127,6 +127,7 @@ sub add_reminder {
         template_args => {
             zone => $robj->zone,
             confirm_url => $robj->confirm_url,
+            delete_url => $robj->delete_url,
         },
     );
     return $robj;
