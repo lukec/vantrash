@@ -112,6 +112,9 @@ sub add_reminder {
     unless ($self->zones->by_name($rem->{zone})) {
         croak "Sorry, '$rem->{zone}' is not a valid zone!";
     }
+    unless ($rem->{email}) {
+        croak "You must enter an email address.";
+    }
 
     my $next_pickup_dt = $self->next_pickup($rem->{zone}, 1, 'dt');
     $rem->{next_pickup} = $next_pickup_dt->epoch;
