@@ -14,6 +14,7 @@ use Date::ICal;
 use DateTime;
 use Fatal qw/rename/;
 use YAML qw/LoadFile DumpFile/;
+use Data::Dumper;
 use namespace::clean -except => 'meta';
 
 has 'base_path' => (is => 'ro', isa => 'Str',    required   => 1);
@@ -128,6 +129,7 @@ sub add_reminder {
         if (my @rem = $self->reminders->by_email($rem->{email})) {
             for my $r (@rem) {
                 next if $r->confirmed;
+                warn "Duplicate reminder, but we found this unconfirmed reminder for $rem->{email}";
                 $robj = $r;
                 last;
             }
