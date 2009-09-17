@@ -135,23 +135,23 @@ sub add_reminder {
             }
         }
     }
+    die $@ unless $robj;
 
-    if ($robj) {
-        $self->send_reminder_confirm_email($robj);
-        return $robj;
-    }
-    return undef;
+    $self->send_reminder_confirm_email($robj);
+    return $robj;
 }
 
 sub send_reminder_confirm_email {
     my $self = shift;
     my $robj = shift;
+    my %opts = @_;
 
     $self->mailer->send_email(
         to => $robj->email,
         subject => 'VanTrash Reminder Confirmation',
         template => 'reminder-confirm.html',
         template_args => {
+            ($opts{message} ? (message => $opts{message}) : ()),
             zone => $robj->zone,
             confirm_url => $robj->confirm_url,
             delete_url => $robj->delete_url,
