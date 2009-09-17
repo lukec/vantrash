@@ -197,6 +197,7 @@ sub _build_notifier {
         reminders => $self->reminders,
         mailer    => $self->mailer,
         pickups   => $self->pickups,
+        model     => $self,
     );
 }
 

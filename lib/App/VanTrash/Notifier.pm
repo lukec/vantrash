@@ -6,6 +6,7 @@ use App::VanTrash::Twitter;
 use JSON qw/encode_json/;
 use namespace::clean -except => 'meta';
 
+has 'model'          => (is => 'ro', isa => 'Object', required   => 1);
 has 'mailer'         => (is => 'ro', isa => 'Object', required   => 1);
 has 'reminders'      => (is => 'ro', isa => 'Object', required   => 1);
 has 'pickups'        => (is => 'ro', isa => 'Object', required   => 1);
@@ -30,7 +31,15 @@ sub need_notification {
             warn "reminder is not yet confirmed: $name\n" if $debug;
             next;
         }
+        
         my $garbage_epoch = $rem->next_pickup;
+        if ($garbage_epoch + 24*3600 < time()) {
+            my $next = $self->model->next_pickup($rem->zone, 1, 'dt');
+            warn "The next_pickup is out of date - next pickup is " 
+                . $next->ymd . "\n";
+            $rem->next_pickup($garbage_epoch = $next->epoch);
+            $rem->update unless $debug;
+        }
         my $rem_time = $garbage_epoch + $rem->offset * 3600;
         if ($rem->last_notified > $rem_time) {
             warn "reminder notification already sent for $name\n" if $debug;
