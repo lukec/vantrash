@@ -156,7 +156,7 @@ h1 {
 
 .balloon {
     height: 220px;
-    width: 240px;
+    width: 220px;
     text-align: center;
 }
 .balloon .buttons {
@@ -207,6 +207,7 @@ h1 {
     border-collapse: collapse;
     font-size: 90%;
     height: 123px;
+    width: 220px;
 }
 .calendar td {
     text-align:center;
