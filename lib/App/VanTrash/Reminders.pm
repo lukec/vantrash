@@ -8,6 +8,7 @@ has 'schema' => (is => 'rw', required => 1);
 
 sub by_id   { shift->search_by(id           => @_)->first }
 sub by_hash { shift->search_by(confirm_hash => @_)->first }
+sub by_email { shift->search_by(email => @_)->all }
 
 sub add {
     my $self = shift;

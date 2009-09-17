@@ -120,18 +120,34 @@ sub add_reminder {
     my $next_pickup_dt = $self->next_pickup($rem->{zone}, 1, 'dt');
     $rem->{next_pickup} = $next_pickup_dt->epoch;
 
-    my $robj = $self->reminders->add($rem);
-    $self->mailer->send_email(
-        to => $robj->email,
-        subject => 'VanTrash Reminder Confirmation',
-        template => 'reminder-confirm.html',
-        template_args => {
-            zone => $robj->zone,
-            confirm_url => $robj->confirm_url,
-            delete_url => $robj->delete_url,
-        },
-    );
-    return $robj;
+    my $robj = eval { $self->reminders->add($rem) };
+    if ($@) {
+        warn "Error inserting reminder: " . Dumper($rem);
+
+        # Perhaps the reminder exists already?
+        if (my @rem = $self->reminders->by_email($rem->{email})) {
+            for my $r (@rem) {
+                next if $r->confirmed;
+                $robj = $r;
+                last;
+            }
+        }
+    }
+
+    if ($robj) {
+        $self->mailer->send_email(
+            to => $robj->email,
+            subject => 'VanTrash Reminder Confirmation',
+            template => 'reminder-confirm.html',
+            template_args => {
+                zone => $robj->zone,
+                confirm_url => $robj->confirm_url,
+                delete_url => $robj->delete_url,
+            },
+        );
+        return $robj;
+    }
+    return undef;
 }
 
 sub confirm_reminder {
