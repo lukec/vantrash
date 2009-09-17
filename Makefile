@@ -55,7 +55,7 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 $(INSTALL_DIR)/%:
 	mkdir $@
 
-install: $(INSTALL_DIR)/* $(JS_MINI) $(SOURCE_files) $(LIB) \
+install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
     	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
 	rm -rf $(INSTALL_DIR)/root/*
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
