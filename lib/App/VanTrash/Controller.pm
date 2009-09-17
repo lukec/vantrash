@@ -334,10 +334,12 @@ sub delete_reminder_html {
         my $resp = $self->process_template('zones/reminders/good_delete.html', {
             reminder => $rem,
         });
+        $self->log("DELETE $zone $id");
         $resp->status(200);
         return $resp;
     }
 
+    $self->log("DELETE_FAIL $zone $id");
     my $resp = $self->process_template('zones/reminders/bad_delete.html');
     $resp->status(404);
     return $resp;
