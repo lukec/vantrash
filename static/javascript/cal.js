@@ -189,7 +189,8 @@ Calendar.prototype = {
                 $('<td></td>').addClass('key').appendTo($tr),
                 item
             );
-            $('<td></td>').text(key).appendTo($tr);
+            $('<td class="label"></td>').text(key).appendTo($tr);
+            $('<tr><td class="padding"></td></tr>').appendTo($table);
         });
     },
 

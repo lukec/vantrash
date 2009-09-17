@@ -62,22 +62,18 @@ TrashMap.prototype = {
         // Buttons
         $div.append(
             $('<div class="buttons"></div>').append(
-                $('<a href="#"></a>')
-                    .attr('href', '/zones/' + name + '/pickupdays.ics')
-                    .append(
-                        $('<img/>')
-                            .attr('src', '/images/ical.png')
-                    ),
-                $('<a href="#"></a>')
+                $('<input type="button" class="smallbtn"/>')
+                    .val("Add to calendar")
+                    .click(function() {
+                        window.location = '/zones/' + name + '/pickupdays.ics';
+                    }),
+                $('<input type="button" class="smallbtn"/>')
+                    .val('Remind me')
                     .click(function() {
                         var reminders = new TrashReminders({zone: name});
                         reminders.showLightbox();
                         return false;
                     })
-                    .append(
-                        $('<img/>')
-                            .attr('src', '/images/remind_me.png')
-                    )
             )
         );
 

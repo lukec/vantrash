@@ -16,17 +16,17 @@ $.fn.wizard = function() {
     $(this).hide().each(function(i) {
         var $buttons = $('<div class="lbButtons"></div>').appendTo(this);
         if (i > opts.firstStep) {
-            make_button(opts.backButton, 'back')
+            make_button('Back')
                 .click(function() { showStep(i-1); return false; })
                 .appendTo($buttons);
         }
         if (i < self.length-1) {
-            make_button(opts.nextButton, 'next')
+            make_button('Next')
                 .click(function() { showStep(i+1); return false; })
                 .appendTo($buttons);
         }
         if (i+1 == self.length) {
-            make_button(opts.submitButton, 'submit')
+            make_button('Submit')
                 .click(function() { $form.submit(); return false; })
                 .appendTo($buttons);
         }
@@ -52,11 +52,10 @@ $.fn.wizard = function() {
 
     $($(this).get(currentStep)).show();
 
-    function make_button(src, klass) {
-        return $('<a href="#"></a>')
-            .addClass('button')
-            .addClass(klass)
-            .append($('<img/>').attr('src', src));
+    function make_button(text) {
+        return $('<input class="btn" type="button"/>')
+            .val(text)
+            .addClass(text);
     }
 };
 

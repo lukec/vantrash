@@ -1,14 +1,9 @@
 [% WRAPPER wrapper.tt2 %]
 <div class="content">
-    <strong>
-        <h3>Wait! You're not done yet!</h3>
-        <p>You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.</p>
-        <br/>
-        <p>Thanks.</p>
+    <h3>Wait! You're not done yet!</h3>
+    <br/>
+    <p>You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.</p>
 
-        <a class="button" onclick="closeLightbox();return false" href="#">
-            <img src="/images/close.png"/>
-        </a>
-    </strong>
+    <input onclick="closeLightbox()" class="btn" type="button" value="Close"/>
 </div>
 [% END %]
