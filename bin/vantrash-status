@@ -37,19 +37,21 @@ for my $r (@$reminders) {
     }
 }
 
-print "Unconfirmed reminders:\n";
+my $un_count = @unconfirmed;
+print "Unconfirmed reminders: ($un_count)\n";
 for my $r (@unconfirmed) {
     my $date = DateTime->from_epoch(epoch => $r->{created_at});
-    print "  $r->{id} $r->{zone} - $r->{email} ($r->{target}) created: " 
+    print "  $r->{id} $r->{zone}\t- $r->{email} ($r->{target}) created: " 
         . $date->ymd . " " . $date->hms . "\n";
 }
 
-print "\nConfirmed reminders:\n";
+my $count = @confirmed;
+print "\nConfirmed reminders: ($count)\n";
 for my $r (@confirmed) {
     my $last = DateTime->from_epoch(epoch => $r->{last_notified});
     $last = join(' ', $last->ymd, $last->hms);
     my $next = DateTime->from_epoch(epoch => $r->{next_pickup});
     $next = join(' ', $next->ymd, $next->hms);
-    print "  $r->{zone} - $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
+    print " $r->{zone}\t- $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
         . "\n";
 }
