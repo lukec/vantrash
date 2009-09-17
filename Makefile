@@ -70,7 +70,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
 	chown -R www-data:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
-	/etc/init.d/apache2 restart
+	/etc/init.d/apache2 reload-modules
 	/etc/init.d/nginx reload
 
 test: $(TESTS)
