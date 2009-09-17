@@ -64,7 +64,7 @@ h1 {
     width:100%;
     text-align: left;
     height: 97px;
-    background-color: #B4D293;
+    background: url(/images/header_bg.png) top left repeat;
 }
 #headerLeft {
     padding-left: 10px;
