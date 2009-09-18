@@ -43,12 +43,10 @@ sub ical {
         my $evt = Data::ICal::Entry::Event->new;
         my $summary = 'Garbage pickup day';
         $summary .= ' & Yard trimmings day' if $day->{flags} eq 'Y';
+        my $date = join('', map { $day->{$_} } qw(year month day));
         $evt->add_properties(
             summary => $summary,
-            dtstart => Date::ICal->new(
-                hour => 7, offset => "-0800",
-                map { $_ => $day->{$_} } qw/year month day/,
-            )->ical,
+            dtstart => $date,
         );
         $ical->add_entry($evt);
     }
