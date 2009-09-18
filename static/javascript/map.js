@@ -65,7 +65,9 @@ TrashMap.prototype = {
                 $('<input type="button" class="smallbtn"/>')
                     .val("Add to calendar")
                     .click(function() {
-                        window.location = '/zones/' + name + '/pickupdays.ics';
+                        location = "webcal://"
+                                 + location.host
+                                 + '/zones/' + name + '/pickupdays.ics';
                     }),
                 $('<input type="button" class="smallbtn"/>')
                     .val('Remind me')
