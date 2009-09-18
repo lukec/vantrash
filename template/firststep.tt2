@@ -1,0 +1,8 @@
+<div class="firststep">
+    To start, simply click on the zone in which you live or search for your address below, then click "Remind me".
+</div>
+
+<form id="address">
+    <input class="border text initial" type="text"/>
+    <input class="btn" type="submit" value="search"/>
+</form>

@@ -1,10 +1,20 @@
 [% WRAPPER wrapper.tt2
     javascript=["http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5rEMciNjzck_9F910WRZkxQkGglP5O4HpwzXzPkg1mrDd6_pIhQOrRhaNFw0NJs0Y9o2jCPcHNE8Sw", "/javascript/vantrash-compiled-mini.js", "/javascript/vantrash-map-compiled-mini.js"]
-    firststep='To start, simply click on the zone in which you live on the map to the right, then click "Remind me!"'
+    extranav='firststep.tt2'
 %]
     <div id="mapCanvas"></div>
     <script>
         map = new TrashMap();
         map.render($('#mapCanvas').get(0));
+        $('#address .initial')
+            .val('123 Main St')
+            .click(function() {
+                $(this).removeClass('initial').val('');
+            });
+        $('#address')
+            .submit(function() {
+                map.findLocation($('.text', this).val());
+                return false;
+            });
     </script>
 [% END %]

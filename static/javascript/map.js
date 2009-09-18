@@ -100,10 +100,13 @@ TrashMap.prototype = {
         this.map = new GMap2(node);
         this.map.setCenter(this.center(),9);
         this.map.setUIToDefault();
-        this.loadKML();
+        this.loadKML(function() {
+            self.bounds = self.map.getBounds();
+            self.setCurrentLocation();
+        });
     },
 
-    loadKML: function(url) {
+    loadKML: function(callback) {
         var self = this;
         this.zones = [];
         this.exml = new EGeoXml("exml", this.map, "zones.kml", {
@@ -120,7 +123,7 @@ TrashMap.prototype = {
             }
         });
         GEvent.addListener(this.exml, 'parsed', function() {
-            self.setCurrentLocation();
+            if ($.isFunction(callback)) { callback() };
         });
         this.exml.parse();
     },
@@ -148,27 +151,52 @@ TrashMap.prototype = {
         return myIcon;
     },
 
+    showScheduleForLocation: function (latlng) {
+        var marker = new GMarker(latlng, {
+            icon: this.createHomeIcon()
+        });
+        this.map.addOverlay(marker);
+        this.map.setCenter(latlng);
+
+        var self = this;
+        $.each(this.zones, function(i,zone) {
+            if (zone.Contains(latlng)) {
+                self.showSchedule(marker, zone.name, zone.color);
+            }
+        });
+    },
+
     setCurrentLocation: function () {
         var self = this;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                if (self._location) return;
-                self._location = new GLatLng(
+                if (self._done_curloc) return;
+                self._done_curloc = true;
+                self.showScheduleForLocation(new GLatLng(
                     position.coords.latitude, position.coords.longitude
-                );
-                var marker = new GMarker(self._location, {
-                    icon: self.createHomeIcon()
-                });
-                self.map.addOverlay(marker);
-
-                $.each(self.zones, function(i,zone) {
-                    if (zone.Contains(self._location)) {
-                        self.showSchedule(marker, zone.name, zone.color);
-                        self._clicked_curloc = true;
-                    }
-                });
+                ));
             });
         }
+    },
+
+    findLocation: function(address) {
+        var self = this;
+        if (!this.bounds) return;
+        var geocoder = new GClientGeocoder();
+        geocoder.setViewport(this.map.getBounds());
+        geocoder.getLatLng(address, function(point) {
+            if (! point) {
+                alert("Not found");
+            }
+            else {
+                if (self.bounds.contains(point)) {
+                    self.showScheduleForLocation(point);
+                }
+                else {
+                    alert("Sorry, I couldn't find that address within this map view. Please try again"); 
+                }
+            }
+        });
     },
 
     logClicks: function() {

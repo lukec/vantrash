@@ -361,3 +361,15 @@ a img {
     padding-left: 30px;
     font-family: Courier;
 }
+#address .btn {
+    vertical-align: middle;
+    display: inline;
+}
+#address .text {
+    width: 200px;
+    vertical-align: middle;
+}
+#address .text.initial {
+    font-style: italic;
+    color: #666;
+}

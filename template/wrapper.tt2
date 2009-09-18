@@ -39,7 +39,7 @@
                     or set a reminder to your email.
                     Never forget to take the garbage out again.
                 </p>
-                <div class="firststep">[% firststep %]</div>
+                [% IF extranav %][% INCLUDE $extranav %][% END %]
             </div>
             <ul>
                 <li><a href="/">Map</a></li>
