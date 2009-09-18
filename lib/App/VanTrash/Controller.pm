@@ -292,7 +292,7 @@ sub confirm_reminder {
 
     unless ($rem->confirmed()) {
         $self->model->confirm_reminder($rem);
-        $self->log("CONFIRM $zone $hash");
+        $self->log(join ' ', 'CONFIRM', $zone, $rem->id, $rem->email );
     }
     my %param = (
         reminder => $rem,
@@ -317,7 +317,7 @@ sub put_reminder {
         },
     );
     my $id = $reminder->id;
-    $self->log("ADD $zone " . $reminder->offset . " $id");
+    $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email );
     my $uri = "/zones/$zone/reminders/" . $id;
     my $resp = HTTP::Engine::Response->new( status => 201);
     $resp->headers->header( Location => $uri );
