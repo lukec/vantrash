@@ -16,7 +16,7 @@
         </ul>
         <h2>Zone Data</h2>
         <p>
-        Each zone has it's own resource page. Right now it is very simple, but more data could be added.<br />
+        Each zone has its own resource page. Right now it is very simple, but more data could be added.<br />
         The zone names are listed at <a href="/zones">/zones</a>, and the URL will look like: <br />
         </p>
         <div class="example"><a href="/zones/vancouver-north-blue">/zones/vancouver-north-blue</a></div>
