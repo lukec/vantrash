@@ -60,7 +60,7 @@ input.smallbtn {
 }
 
 input.btn {
-    padding: 5px;
+    height: 30px;
     font-size: 120%;
     line-height: 1.5;
 }
@@ -98,11 +98,14 @@ a img {
     padding-left: 10px;
     height: 97px;
     background: url(/images/header_left.png) top left no-repeat;
+    margin-left: 5px;
+    margin-top: 5px;
 }
 #headerRight {
     padding-right: 10px;
     height: 97px;
     background: url(/images/header_right.png) top right no-repeat;
+    margin-right: 5px;
 }
 #header .tagline {
     position: absolute;
