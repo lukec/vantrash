@@ -3,8 +3,6 @@
     <strong>Error adding reminder: [% error %]</strong>
 </div>
 <div class="lbButtons">
-    <a class="button" onclick="closeLightbox();return false" href="#">
-        <img src="/images/close.png"/>
-    </a>
+    <input onclick="closeLightbox()" class="btn" type="button" value="Close"/>
 </div>
 [% END %]
