@@ -12,6 +12,7 @@ Add_a_reminder: {
 
     my $zones = $model->zones->all;
     isa_ok $zones, 'ARRAY';
+    @$zones = sort { $a->{name} cmp $b->{name} } @$zones;
     my $zone = shift @$zones;
 
     is_deeply $model->reminders->all, [], 'is empty';
@@ -26,6 +27,7 @@ Add_a_reminder: {
     is $rem->name,  'Test Reminder', 'name';
     is $rem->email, 'test@vantrash.ca', 'email';
     like $rem->id,  qr/^[\w\d-]+$/, 'id';
+    is $rem->nice_zone, 'Vancouver-North-Blue', 'nice zone name';
     is scalar(@{ $model->reminders->all }), 1, 'one reminder';
 }
 

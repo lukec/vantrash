@@ -18,6 +18,7 @@ has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
 
 has 'nice_name'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
+has 'nice_zone'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'confirm_url' => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'delete_url'  => (is => 'ro', isa => 'Str',  lazy_build => 1);
 has 'base_url'    => (is => 'ro', isa => 'Str',  lazy_build => 1);
@@ -26,6 +27,13 @@ sub _build_nice_name {
     my $self = shift;
     return join('-', $self->zone, $self->email, $self->name)
         . " (" . $self->target . ")";
+}
+
+sub _build_nice_zone {
+    my $self = shift;
+    my $zone = $self->zone;
+    $zone =~ s/(\w+)/ucfirst($1)/eg;
+    return $zone;
 }
 
 sub _build_confirm_url {
