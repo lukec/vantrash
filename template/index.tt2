@@ -7,8 +7,8 @@
         map = new TrashMap();
         map.render($('#mapCanvas').get(0));
         $('#address .initial')
-            .val('123 Main St')
-            .click(function() {
+            .val('149 West 4th')
+            .one('click', function() {
                 $(this).removeClass('initial').val('');
             });
         $('#address')

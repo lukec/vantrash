@@ -184,8 +184,10 @@ TrashMap.prototype = {
     findLocation: function(address) {
         var self = this;
         if (!this.bounds) return;
+        if (!address.match(/vancouver/i)) address += ', Vancouver';
         var geocoder = new GClientGeocoder();
         geocoder.setViewport(this.map.getBounds());
+        geocoder.setBaseCountryCode('ca');
         geocoder.getLatLng(address, function(point) {
             if (! point) {
                 alert("Not found");
