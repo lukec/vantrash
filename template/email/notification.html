@@ -1,14 +1,16 @@
-Just a friendly reminder that garbage in the [% reminder.zone %] will be picked up on: [% garbage_day.day %]
+Just a friendly reminder that garbage in the [% reminder.nice_zone %] zone will be picked up on: [% garbage_day.day %]
 
 [% IF garbage_day.flags == 'Y' -%]
-The city will be collecting yard trimmings today.
+The city will be collecting yard trimmings in this pickup.
 [% ELSE -%]
-The city will not be collecting yard trimmings today.
+The city will not be collecting yard trimmings in this pickup.
 [%- END %]
 
 Don't forget to take out your garbage and your recycling!
 
-Click here to your friends about VanTrash!
+Click here to tell your friends about VanTrash:
+
+  http://vantrash.ca/tell-a-friend.html
 
 Cheers,
 The VanTrash Team
