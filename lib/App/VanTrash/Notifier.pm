@@ -20,7 +20,7 @@ sub need_notification {
     my %args = @_;
     my $debug = $args{debug} || $ENV{VT_DEBUG};
 
-    my $as_of = $args{as_of} || DateTime->now;
+    my $as_of = $args{as_of} || $self->model->now;
     $as_of = $as_of->epoch;
 
     my @due;
@@ -33,7 +33,7 @@ sub need_notification {
         }
         
         my $garbage_epoch = $rem->next_pickup;
-        if ($garbage_epoch + 24*3600 < time()) {
+        if ($garbage_epoch + 24*3600 < $self->model->now->epoch) {
             my $next = $self->model->next_pickup($rem->zone, 1, 'dt');
             warn "The next_pickup is out of date - next pickup is " 
                 . $next->ymd . "\n";
