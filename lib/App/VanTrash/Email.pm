@@ -23,7 +23,7 @@ sub send_email {
         || die $self->template->error;
 
     my %headers = (
-        From => $args{from} || '"VanTrash" <help@vantrash.ca>',
+        From => $args{from} || '"VanTrash" <noreply@vantrash.ca>',
         To => $args{to},
         Subject => $args{subject},
     );
