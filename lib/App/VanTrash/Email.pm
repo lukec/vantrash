@@ -42,6 +42,15 @@ sub send_email {
 
 sub _build_mailer {
     my $self = shift;
+
+    if ($ENV{VT_EMAIL}) {
+        require Email::Send::IO;
+        @Email::Send::IO::IO = ($ENV{VT_EMAIL});
+        return Email::Send->new({
+            mailer => 'IO',
+        });
+    }
+
     my $config = YAML::LoadFile("/etc/vantrash_mail.yaml");
     my $mailer = Email::Send->new({
         mailer => 'Gmail',
