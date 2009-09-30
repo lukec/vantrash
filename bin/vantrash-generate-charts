@@ -3,8 +3,20 @@ use strict;
 use warnings;
 use Chart::Clicker;
 use Fatal qw/open close/;
+use FindBin;
+use Getopt::Long;
 
 my $log_file = '/var/log/vantrash.log';
+my $dev_log = "$FindBin::Bin/vantrash.log";
+$log_file = $dev_log if -e $dev_log;
+
+my $summary;
+GetOptions(
+    's|summary' => \$summary,
+    'f|file=s'  => \$log_file,
+) or die <<EOT;
+USAGE: $0 [--summary]
+EOT
 
 my $data = parse_logfile($log_file);
 
@@ -21,7 +33,7 @@ for my $type ( qw/zone zonedays zonenextdowchange zonenextpickup/ ) {
         my $total = $html + $txt + $json;
         $sum += $total;
         printf "API: %20s %30s - Total=$total\tHTML=$html\tTXT=$txt\tJSON=$json\n",
-            $type, $zone;
+            $type, $zone unless $summary;
     }
     printf "API: %20s - total requests: $sum\n", $type;
 }
@@ -31,16 +43,19 @@ for my $action (qw/add confirm confirm_fail/) {
     for my $zone (sort keys %{ $data->{hits}{$action} }) {
         my $count = delete $data->{hits}{$action}{$zone};
         $sum += $count;
-        printf "Action: %30s $action $count\n", $zone;
+        printf "Action: %30s $action $count\n", $zone unless $summary;;
     }
     printf "Action: %15s - total: $sum\n", $action;
 }
 
 for my $type (keys %{ $data->{hits}{sent} }) {
     my $count = delete $data->{hits}{sent}{$type};
-    print "Sent $count $type reminders.\n";
+    print "Sent $count $type reminders.\n" unless $summary;;
 }
 
+for my $type (keys %{ $data->{hits_by_type} }) {
+    print "Overall by type: $type - $data->{hits_by_type}{$type}\n";
+}
 
 exit;
 
@@ -54,6 +69,10 @@ sub parse_logfile {
             = ($1, $2, $3, $4, $5, $6);
 
         next if $comment =~ m/^Found \d+ reminders due/;
+
+        if ($comment =~ m/(TXT|HTML|JSON|ICAL)/) {
+            $data->{hits_by_type}{$1}++;
+        }
 
         if    ($comment =~ m/^ZONES (\S+)/) {
             my $format = $1;
@@ -97,6 +116,14 @@ sub parse_logfile {
         }
         elsif ($comment =~ m/^SENDING (\w+) notification/i) {
             my $type = $1;
+            $data{hits}{sent}{$type}++;
+        }
+        elsif ($comment =~ m/^DELETE (\S+) (\S+)/) {
+            my $type = $2;
+            $data{hits}{sent}{$type}++;
+        }
+        elsif ($comment =~ m/^DELETE_FAIL (\S+) (\S+)/) {
+            my $type = $2;
             $data{hits}{sent}{$type}++;
         }
         else {
