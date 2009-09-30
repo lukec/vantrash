@@ -28,7 +28,10 @@ for my $r (@$reminders) {
         next;
     }
     eval { $model->notifier->notify($r) };
-    warn $@ if $@;
+    if ($@) {
+        my $now = localtime;
+        warn "$now: $@";
+    }
 }
 
 exit;
