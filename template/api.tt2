@@ -75,6 +75,9 @@
         <br />
         <p>This will send an email to confirm the reminder deletion by loading a confirmation link.</p>
 
+        <h2>Linking to a zone</h2>
+        <p>Zones can be linked to by passing the CGI parameter <code>zone</code>. Therefore, <a href="http://vantrash.ca/?zone=vancouver-south-blue">http://vantrash.ca/?zone=vancouver-south-blue</a> will link to the UI with the Vancouver South Blue zone pre-clicked.</p>
+
         <h2>Automated Test Specification</h2>
         <p>We have developed the Vantrash API with the help of a executable test specification of how the API should perform.  You can find it in our <a href="http://github.com/lukec/vantrash">VanTrash Github Repo</a> <a href="http://github.com/lukec/vantrash/blob/master/t/wikitests/reminders.wiki">here</a>.</p>
       </div>
