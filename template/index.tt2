@@ -4,7 +4,9 @@
 %]
     <div id="mapCanvas"></div>
     <script>
-        map = new TrashMap();
+        map = new TrashMap({
+            startingZone: "[% zone %]"
+        });
         map.render($('#mapCanvas').get(0));
         $('#address .initial')
             .val('149 West 4th')
@@ -13,7 +15,7 @@
             });
         $('#address')
             .submit(function() {
-                map.findLocation($('.text', this).val());
+                map.search($('.text', this).val());
                 return false;
             });
     </script>

@@ -82,6 +82,22 @@ TrashMap.prototype = {
         return $div.get(0);
     },
 
+    render: function(node) {
+        var self = this;
+        this.map = new GMap2(node);
+        this.map.setCenter(this.center(),9);
+        this.map.setUIToDefault();
+        this.loadKML(function() {
+            self.bounds = self.map.getBounds();
+            if (self.startingZone) {
+                self.showScheduleForZone(self.startingZone);
+            }
+            else {
+                self.setCurrentLocation();
+            }
+        });
+    },
+
     showSchedule: function(node, name, color) {
         var self = this;
 
@@ -97,15 +113,41 @@ TrashMap.prototype = {
         });
     },
 
-    render: function(node) {
+    showScheduleForZone: function(zone_name) {
         var self = this;
-        this.map = new GMap2(node);
-        this.map.setCenter(this.center(),9);
-        this.map.setUIToDefault();
-        this.loadKML(function() {
-            self.bounds = self.map.getBounds();
-            self.setCurrentLocation();
+        $.each(this.zones, function(i,zone) {
+            if (zone.name == zone_name) {
+                self.showSchedule(zone, zone.name, zone.color);
+            }
         });
+    },
+
+    showScheduleForLocation: function (latlng) {
+        var marker = new GMarker(latlng, {
+            icon: this.createHomeIcon()
+        });
+        this.map.addOverlay(marker);
+        this.map.setCenter(latlng);
+
+        var self = this;
+        $.each(this.zones, function(i,zone) {
+            if (zone.Contains(latlng)) {
+                self.showSchedule(marker, zone.name, zone.color);
+            }
+        });
+    },
+
+    setCurrentLocation: function () {
+        var self = this;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                if (self._done_curloc) return;
+                self._done_curloc = true;
+                self.showScheduleForLocation(new GLatLng(
+                    position.coords.latitude, position.coords.longitude
+                ));
+            });
+        }
     },
 
     loadKML: function(callback) {
@@ -153,35 +195,7 @@ TrashMap.prototype = {
         return myIcon;
     },
 
-    showScheduleForLocation: function (latlng) {
-        var marker = new GMarker(latlng, {
-            icon: this.createHomeIcon()
-        });
-        this.map.addOverlay(marker);
-        this.map.setCenter(latlng);
-
-        var self = this;
-        $.each(this.zones, function(i,zone) {
-            if (zone.Contains(latlng)) {
-                self.showSchedule(marker, zone.name, zone.color);
-            }
-        });
-    },
-
-    setCurrentLocation: function () {
-        var self = this;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                if (self._done_curloc) return;
-                self._done_curloc = true;
-                self.showScheduleForLocation(new GLatLng(
-                    position.coords.latitude, position.coords.longitude
-                ));
-            });
-        }
-    },
-
-    findLocation: function(address) {
+    search: function(address) {
         var self = this;
         if (!this.bounds) return;
         if (!address.match(/vancouver/i)) address += ', Vancouver';
