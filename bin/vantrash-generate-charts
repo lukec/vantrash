@@ -2,12 +2,22 @@
 use strict;
 use warnings;
 use Chart::Clicker;
-use Fatal qw/open close/;
+use File::Path qw/mkpath/;
+use Fatal qw/open close mkpath/;
 use FindBin;
 use Getopt::Long;
+use Chart::Clicker;
+use Chart::Clicker::Context;
+use Chart::Clicker::Data::DataSet;
+use Chart::Clicker::Data::Marker;
+use Chart::Clicker::Data::Series;
+use Chart::Clicker::Renderer::Pie;
+use Geometry::Primitive::Rectangle;
+use Graphics::Color::RGB;
+
 
 my $log_file = '/var/log/vantrash.log';
-my $dev_log = "$FindBin::Bin/vantrash.log";
+my $dev_log = "$FindBin::Bin/../vantrash.log";
 $log_file = $dev_log if -e $dev_log;
 
 my $summary;
@@ -20,41 +30,102 @@ EOT
 
 my $data = parse_logfile($log_file);
 
-my $zones = delete $data->{hits}{zones};
-print "API: ZONES:\tHTML=$zones->{HTML}\tTXT=$zones->{TXT}\tJSON=$zones->{JSON}\n";
+my @now = localtime;
+my $data_dir = "$FindBin::Bin/../root/reports";
+mkpath $data_dir unless -d $data_dir;
 
-for my $type ( qw/zone zonedays zonenextdowchange zonenextpickup/ ) {
-    my $sum = 0;
-    for my $zone (sort keys %{ $data->{hits}{$type} }) {
-        my $h = delete $data->{hits}{$type}{$zone};
-        my $html = $h->{HTML} || 0;
-        my $txt = $h->{TXT} || 0;
-        my $json = $h->{JSON} || 0;
-        my $total = $html + $txt + $json;
-        $sum += $total;
-        printf "API: %20s %30s - Total=$total\tHTML=$html\tTXT=$txt\tJSON=$json\n",
-            $type, $zone unless $summary;
+create_images($data_dir);
+create_detailed_stats("$data_dir/details.html");
+
+exit;
+
+sub create_images {
+    my $data_dir = shift;
+
+    my $confirmed = $data->{hits}{confirm};
+    my $cc = Chart::Clicker->new(width => 500, height => 400);
+     
+    my @series;
+    for my $key (keys %$confirmed) {
+        my $val = $confirmed->{$key};
+        print "$key -> $val\n";
+        push @series, Chart::Clicker::Data::Series->new(
+            keys => [ $val ],
+            values  => [ $val ],
+            name => $key,
+        );
     }
-    printf "API: %20s - total requests: $sum\n", $type;
+
+    my $ds = Chart::Clicker::Data::DataSet->new(series => \@series);
+    $cc->add_to_datasets($ds);
+     
+    my $defctx = $cc->get_context('default');
+    $defctx->renderer(Chart::Clicker::Renderer::Pie->new);
+    $defctx->domain_axis->hidden(1);
+    $defctx->range_axis->hidden(1);
+    $cc->plot->grid->visible(0);
+    $cc->write_output("$data_dir/reminders-by-zone.png")
+
 }
 
-for my $action (qw/add confirm confirm_fail/) {
-    my $sum = 0;
-    for my $zone (sort keys %{ $data->{hits}{$action} }) {
-        my $count = delete $data->{hits}{$action}{$zone};
-        $sum += $count;
-        printf "Action: %30s $action $count\n", $zone unless $summary;;
+sub create_detailed_stats {
+    my $file = shift;
+    open(my $fh, ">$file");
+    my $zones = delete $data->{hits}{zones};
+    print $fh <<EOT;
+<html>
+    <head>
+        <title>VanTrash Statistics</title>
+    </head>
+    <body>
+      <div>
+        <img src="/reports/reminders-by-zone.png" />
+      </div>
+      <pre>
+EOT
+    print $fh "API: ZONES:\tHTML=$zones->{HTML}\tTXT=$zones->{TXT}\tJSON=$zones->{JSON}\n";
+
+    for my $type ( qw/zone zonedays zonenextdowchange zonenextpickup/ ) {
+        my $sum = 0;
+        for my $zone (sort keys %{ $data->{hits}{$type} }) {
+            my $h = delete $data->{hits}{$type}{$zone};
+            my $html = $h->{HTML} || 0;
+            my $txt = $h->{TXT} || 0;
+            my $json = $h->{JSON} || 0;
+            my $total = $html + $txt + $json;
+            $sum += $total;
+            printf $fh "API: %20s %30s - Total=$total\tHTML=$html\tTXT=$txt\tJSON=$json\n",
+                $type, $zone unless $summary;
+        }
+        printf $fh "API: %20s - total requests: $sum\n", $type;
     }
-    printf "Action: %15s - total: $sum\n", $action;
-}
 
-for my $type (keys %{ $data->{hits}{sent} }) {
-    my $count = delete $data->{hits}{sent}{$type};
-    print "Sent $count $type reminders.\n" unless $summary;;
-}
+    for my $action (qw/add confirm confirm_fail/) {
+        my $sum = 0;
+        for my $zone (sort keys %{ $data->{hits}{$action} }) {
+            my $count = delete $data->{hits}{$action}{$zone};
+            $sum += $count;
+            printf $fh "Action: %30s $action $count\n", $zone unless $summary;;
+        }
+        printf $fh "Action: %15s - total: $sum\n", $action;
+    }
 
-for my $type (keys %{ $data->{hits_by_type} }) {
-    print "Overall by type: $type - $data->{hits_by_type}{$type}\n";
+    for my $type (keys %{ $data->{hits}{sent} }) {
+        my $count = delete $data->{hits}{sent}{$type};
+        print $fh "Sent $count $type reminders.\n" unless $summary;;
+    }
+
+    for my $type (keys %{ $data->{hits_by_type} }) {
+        print $fh "Overall by type: $type - $data->{hits_by_type}{$type}\n";
+    }
+
+    print $fh <<EOT;
+      </pre>
+    </body>
+</html>
+EOT
+    close $fh;
+    print "Created $file\n";
 }
 
 exit;
