@@ -53,6 +53,7 @@ sub handle_request {
                     \&confirm_reminder ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
                     \&delete_reminder_html ],
+            [ qr{^/reports/(.+)$} => \&show_report ],
         ],
 
         POST => [
@@ -441,9 +442,21 @@ sub process_template {
     return $res;
 }
 
+sub show_report {
+    my $self = shift;
+    my $req  = shift;
+    my $path_name = shift;
+
+    $path_name = 'index.html' if $path_name =~ m#/#;
+    return $self->_static_file($self->base_path . '/root/reports/' . $path_name);
+}
+
 sub _static_file {
     my $self = shift;
-    my $file = $self->base_path . "/static/" . shift;
+    my $filename = shift;
+    my $file = $filename =~ m#/#
+        ? $filename
+        : $self->base_path . "/static/" . $filename;
     if (-f $file) {
         open(my $fh, $file);
         my $resp = HTTP::Engine::Response->new(body => $fh);
@@ -452,6 +465,7 @@ sub _static_file {
         return $resp;
     }
     else {
+        warn "Couldn't find $file";
         return HTTP::Engine::Response->new(
             status => 404,
             body => "Sorry, that path doesn't exist!",
