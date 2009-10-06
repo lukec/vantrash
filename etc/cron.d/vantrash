@@ -4,3 +4,4 @@ MAILTO=lukecloss@gmail.com
 
 1 * * * *     www-data   /var/www/vantrash/bin/vantrash-send-reminders 2>&1 | tee -a /var/log/vantrash-email.log
 50 * * * * www-data cd /var/www/vantrash && ./bin/vantrash-backup >> /var/log/vantrash-backup.log
+20 * * * * www-data /var/www/vantrash/bin/vantrash-generate-charts
