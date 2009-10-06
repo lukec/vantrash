@@ -14,6 +14,7 @@ use Chart::Clicker::Data::Series;
 use Chart::Clicker::Renderer::Pie;
 use Geometry::Primitive::Rectangle;
 use Graphics::Color::RGB;
+use YAML qw/DumpFile/;
 
 
 my $log_file = '/var/log/vantrash.log';
@@ -28,35 +29,58 @@ GetOptions(
 USAGE: $0 [--summary]
 EOT
 
-my $data = parse_logfile($log_file);
-
 my @now = localtime;
 my $data_dir = "$FindBin::Bin/../root/reports";
 mkpath $data_dir unless -d $data_dir;
 
-create_images($data_dir);
-create_detailed_stats("$data_dir/details.html");
+{
+    my $data = parse_logfile($log_file);
+    DumpFile("$data_dir/details.yaml", $data);
+    create_images($data_dir, $data);
+    create_detailed_stats("$data_dir/details.html", $data);
+}
 
 exit;
 
 sub create_images {
     my $data_dir = shift;
+    my $data = shift;
 
-    my $confirmed = $data->{hits}{confirm};
-    my $cc = Chart::Clicker->new(width => 500, height => 400);
-     
-    my @series;
-    for my $key (keys %$confirmed) {
-        my $val = $confirmed->{$key};
-        print "$key -> $val\n";
-        push @series, Chart::Clicker::Data::Series->new(
-            keys => [ $val ],
-            values  => [ $val ],
-            name => $key,
-        );
+    {
+        my $hits_by_type = $data->{hits_by_type};
+        my @series;
+        for my $key (sort { $hits_by_type->{$b} <=> $hits_by_type->{$a} }
+                        keys %$hits_by_type) {
+            my $val = $hits_by_type->{$key};
+            push @series, Chart::Clicker::Data::Series->new(
+                keys => [ $val ],
+                values  => [ $val ],
+                name => "$key ($val)",
+            );
+        }
+        create_png(\@series, "$data_dir/api-by-type.png");
     }
+    {
+        my $confirmed = $data->{hits}{confirm};
+        my @series;
+        for my $key (sort {$confirmed->{$b} <=> $confirmed->{$a}} keys %$confirmed) {
+            my $val = $confirmed->{$key};
+            push @series, Chart::Clicker::Data::Series->new(
+                keys => [ $val ],
+                values  => [ $val ],
+                name => "$key ($val)",
+            );
+        }
+        create_png(\@series, "$data_dir/reminders-by-zone.png");
+    }
+}
 
-    my $ds = Chart::Clicker::Data::DataSet->new(series => \@series);
+sub create_png {
+    my $series = shift;
+    my $filename = shift;
+    my $ds = Chart::Clicker::Data::DataSet->new(series => $series);
+
+    my $cc = Chart::Clicker->new(width => 500, height => 400);
     $cc->add_to_datasets($ds);
      
     my $defctx = $cc->get_context('default');
@@ -64,22 +88,41 @@ sub create_images {
     $defctx->domain_axis->hidden(1);
     $defctx->range_axis->hidden(1);
     $cc->plot->grid->visible(0);
-    $cc->write_output("$data_dir/reminders-by-zone.png")
-
+    $cc->write_output($filename);
 }
 
 sub create_detailed_stats {
     my $file = shift;
+    my $data = shift;
     open(my $fh, ">$file");
-    my $zones = delete $data->{hits}{zones};
+    my $zones = $data->{hits}{zones};
+
+    my $short_summary = '';
+    for my $type (keys %{ $data->{hits}{sent} }) {
+        $short_summary ||= '<strong>Reminders sent:</strong><br />';
+        my $count = $data->{hits}{sent}{$type};
+        $short_summary .= "Sent $count $type reminders.<br />\n";
+    }
+    $short_summary .= "$data->{reminders}{added} reminders added<br />\n";
+    $short_summary .= "$data->{reminders}{confirmed} reminders confirmed<br />\n";
+    $short_summary .= "$data->{reminders}{deleted} reminders deleted<br />\n";
+
     print $fh <<EOT;
 <html>
     <head>
         <title>VanTrash Statistics</title>
     </head>
     <body>
+      <div class="summary">$short_summary</div>
+      <a href="/reports/details.yaml">Details as YAML</a>
+
       <div>
+        <h2>Confirmed reminders by zone:</h2>
         <img src="/reports/reminders-by-zone.png" />
+        <br />
+        <h2>API Requests by Content Type:</h2>
+        <img src="/reports/api-by-type.png" />
+        <br />
       </div>
       <pre>
 EOT
@@ -88,14 +131,12 @@ EOT
     for my $type ( qw/zone zonedays zonenextdowchange zonenextpickup/ ) {
         my $sum = 0;
         for my $zone (sort keys %{ $data->{hits}{$type} }) {
-            my $h = delete $data->{hits}{$type}{$zone};
+            my $h = $data->{hits}{$type}{$zone};
             my $html = $h->{HTML} || 0;
             my $txt = $h->{TXT} || 0;
             my $json = $h->{JSON} || 0;
             my $total = $html + $txt + $json;
             $sum += $total;
-            printf $fh "API: %20s %30s - Total=$total\tHTML=$html\tTXT=$txt\tJSON=$json\n",
-                $type, $zone unless $summary;
         }
         printf $fh "API: %20s - total requests: $sum\n", $type;
     }
@@ -103,20 +144,10 @@ EOT
     for my $action (qw/add confirm confirm_fail/) {
         my $sum = 0;
         for my $zone (sort keys %{ $data->{hits}{$action} }) {
-            my $count = delete $data->{hits}{$action}{$zone};
+            my $count = $data->{hits}{$action}{$zone};
             $sum += $count;
-            printf $fh "Action: %30s $action $count\n", $zone unless $summary;;
         }
         printf $fh "Action: %15s - total: $sum\n", $action;
-    }
-
-    for my $type (keys %{ $data->{hits}{sent} }) {
-        my $count = delete $data->{hits}{sent}{$type};
-        print $fh "Sent $count $type reminders.\n" unless $summary;;
-    }
-
-    for my $type (keys %{ $data->{hits_by_type} }) {
-        print $fh "Overall by type: $type - $data->{hits_by_type}{$type}\n";
     }
 
     print $fh <<EOT;
@@ -135,14 +166,18 @@ sub parse_logfile {
     open(my $fh, $filename);
     my %data;
     while (my $line = <$fh>) {
-        next unless $line =~ m/^(\w+) (\w+) (\d+) ([\d:]+) (\d+): (.+)$/;
+        unless (
+            $line =~ m/^(\w+)\s+(\w+)\s+(\d+)\s+([\d:]+)\s+(\d+):\s+(.+)$/) {
+            warn "Ignoring: $line";
+            next;
+        }
         my ($dow, $month, $day, $time, $year, $comment)
             = ($1, $2, $3, $4, $5, $6);
 
         next if $comment =~ m/^Found \d+ reminders due/;
 
         if ($comment =~ m/(TXT|HTML|JSON|ICAL)/) {
-            $data->{hits_by_type}{$1}++;
+            $data{hits_by_type}{$1}++;
         }
 
         if    ($comment =~ m/^ZONES (\S+)/) {
@@ -176,10 +211,12 @@ sub parse_logfile {
         elsif ($comment =~ m/^ADD (\S+)/) {
             my $zone_id = $1;
             $data{hits}{add}{$zone_id}++;
+            $data{reminders}{added}++;
         }
         elsif ($comment =~ m/^CONFIRM (\S+)/) {
             my $zone_id = $1;
             $data{hits}{confirm}{$zone_id}++;
+            $data{reminders}{confirmed}++;
         }
         elsif ($comment =~ m/^CONFIRM_FAIL (\S+)/) {
             my $zone_id = $1;
@@ -190,12 +227,13 @@ sub parse_logfile {
             $data{hits}{sent}{$type}++;
         }
         elsif ($comment =~ m/^DELETE (\S+) (\S+)/) {
-            my $type = $2;
-            $data{hits}{sent}{$type}++;
+            my $zone = $1;
+            $data{hits}{delete}{$zone}++;
+            $data{reminders}{deleted}++;
         }
         elsif ($comment =~ m/^DELETE_FAIL (\S+) (\S+)/) {
-            my $type = $2;
-            $data{hits}{sent}{$type}++;
+            my $zone = $1;
+            $data{hits}{delete_fail}{$zone}++;
         }
         else {
             warn "Unknown: $comment";
