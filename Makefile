@@ -57,7 +57,10 @@ $(INSTALL_DIR)/%:
 
 install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
     	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
-	rm -rf $(INSTALL_DIR)/root/*
+	rm -rf $(INSTALL_DIR)/root/css
+	rm -rf $(INSTALL_DIR)/root/images
+	rm -rf $(INSTALL_DIR)/root/javascript
+	if [ ! -d $(INSTALL_DIR)/root/reports ]; then mkdir $(INSTALL_DIR)/root/reports; fi
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	rm -f $(INSTALL_DIR)/root/*.html
