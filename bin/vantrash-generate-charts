@@ -156,7 +156,6 @@ EOT
 </html>
 EOT
     close $fh;
-    print "Created $file\n";
 }
 
 exit;
