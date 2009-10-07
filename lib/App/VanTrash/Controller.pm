@@ -32,6 +32,7 @@ sub handle_request {
             [ qr{^/zones$}                          => \&zones_html ],
             [ qr{^/zones\.txt$}                     => \&zones_txt ],
             [ qr{^/zones\.json$}                    => \&zones_json ],
+            [ qr{^/zones/([-.\d]+),([-.\d]+)}       => \&zone_at_latlng ],
             [ qr{^/zones/([^./]+)$}                 => \&zone_html ],
             [ qr{^/zones/([^/]+)\.txt$}             => \&zone_txt ],
             [ qr{^/zones/([^/]+)\.json$}            => \&zone_json ],
@@ -119,6 +120,27 @@ sub zones_json {
 
     my $body = encode_json $self->model->zones->all;
     return $self->response('application/json' => $body);
+}
+
+sub zone_at_latlng {
+    my $self = shift;
+    my $req  = shift;
+    my $lat  = shift;
+    my $lng  = shift;
+
+    my $zone = $self->model->kml->find_zone_for_latlng($lat,$lng);
+    if ($zone) {
+        return HTTP::Engine::Response->new(
+            headers => [ Location => "/zones/$zone" ],
+            status => 302,
+        );
+    }
+    else {
+        return HTTP::Engine::Response->new(
+            status => 404,
+            body => "Sorry, no zone exists at $lat,$lng!",
+        );
+    }
 }
 
 sub zone_html {

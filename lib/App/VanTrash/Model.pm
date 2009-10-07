@@ -7,6 +7,7 @@ use App::VanTrash::Pickups;
 use App::VanTrash::Zones;
 use App::VanTrash::Reminders;
 use App::VanTrash::Notifier;
+use App::VanTrash::KML;
 use Carp qw/croak/;
 use Data::ICal;
 use Data::ICal::Entry::Event;
@@ -25,6 +26,7 @@ has 'mailer'    => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'reminders' => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'schema'    => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'notifier'  => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'kml'       => (is => 'ro', isa => 'Object', lazy_build => 1);
 
 sub days {
     my $self = shift;
@@ -256,6 +258,13 @@ sub _build_zones {
 sub _build_pickups {
     my $self = shift;
     return App::VanTrash::Pickups->new( schema => $self->schema );
+}
+
+sub _build_kml {
+    my $self = shift;
+    return App::VanTrash::KML->new(
+        filename => $self->base_path . "/static/zones.kml",
+    );
 }
 
 __PACKAGE__->meta->make_immutable;
