@@ -24,16 +24,32 @@ JS_MAP_FILES=\
 	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/map.js \
 
+JS_MOBILE_TARGET=$(JS_DIR)/vantrash-mobile.js
+JS_MOBILE_MINI=$(JS_DIR)/vantrash-mobile-mini.js
+JS_MOBILE_FILES=\
+	 $(JS_DIR)/jquery-latest.js \
+	 $(JS_DIR)/jquery-json-1.3.js \
+	 $(JS_DIR)/cal.js \
+	 $(JS_DIR)/map.js \
+	 $(JS_DIR)/reminders.js \
+	 $(JS_DIR)/gears_init.js \
+
 WIKI_PAGES=about_us faq
 CRONJOB=etc/cron.d/vantrash
 
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: $(JS_MINI) $(JS_MAP_TARGET) $(JS_MAP_MINI)
+all: \
+    $(JS_MINI) \
+    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
+    $(JS_MOBILE_MINI) $(JS_MOBILE_TARGET)
 
 clean:
-	rm -f $(JS_MINI) $(JS_TARGET) $(JS_MAP_TARGET) $(JS_MAP_MINI)
+	rm -f \
+	    $(JS_MINI) $(JS_TARGET) \
+	    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
+	    $(JS_MOBILE_TARGET) $(JS_MOBILE_MINI)
 
 .SUFFIXES: .js -mini.js
 
@@ -49,6 +65,12 @@ $(JS_TARGET): $(JS_FILES) Makefile
 $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 	rm -f $@;
 	for js in $(JS_MAP_FILES); do \
+	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
+	done
+
+$(JS_MOBILE_TARGET): $(JS_MOBILE_FILES) Makefile
+	rm -f $@;
+	for js in $(JS_MOBILE_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 

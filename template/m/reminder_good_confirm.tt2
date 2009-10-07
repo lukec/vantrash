@@ -1,0 +1,7 @@
+[% WRAPPER m/wrapper.tt2 %]
+<div class="elem">
+    <p>Thank you for confirming your email, [% reminder.email %].</p>
+    <p>I will send you an email with all the details. --VanTrash</p>
+</div>
+<a class="elem last" href="/m/index.html">Home</a>
+[% END %]

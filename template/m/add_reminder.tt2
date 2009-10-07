@@ -1,0 +1,22 @@
+[% WRAPPER m/wrapper.tt2
+    javascript=["/javascript/vantrash-mobile-mini.js"]
+%]
+
+<form method="GET" action="/m/add_reminder2.html">
+    <input type="hidden" name="zone" value="[% zone %]"/>
+    <div class="elem">
+        <span class="title">Email address: </span>
+        <input class="email" type="text" name="email"/>
+    </div>
+
+    <a class="elem" id="submit" href="#">Next</a>
+    <a class="elem last" href="/m/index.html">Back</a>
+</form>
+
+<script>
+    $('#submit').click(function() {
+        $(this).parents('form').submit();
+        return false;
+    });
+</script>
+[% END %]

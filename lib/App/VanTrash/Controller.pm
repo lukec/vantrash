@@ -24,15 +24,18 @@ sub handle_request {
     my $self = shift;
     my $req = shift;
 
+    my $coord = qr{[+-]?\d+\.\d+};
+
     my $path = $req->path;
     my %func_map = (
         GET => [
             [ qr{^/$}                               => \&ui_html ],
-            [ qr{^/([^/]+)\.html$}                  => \&ui_html ],
+            [ qr{^/m/?$}                            => \&ui_html ],
+            [ qr{^/(.+)\.html$}                     => \&ui_html ],
             [ qr{^/zones$}                          => \&zones_html ],
             [ qr{^/zones\.txt$}                     => \&zones_txt ],
             [ qr{^/zones\.json$}                    => \&zones_json ],
-            [ qr{^/zones/([-.\d]+),([-.\d]+)}       => \&zone_at_latlng ],
+            [ qr{^/zones/($coord),($coord)(.*)?}    => \&zone_at_latlng ],
             [ qr{^/zones/([^./]+)$}                 => \&zone_html ],
             [ qr{^/zones/([^/]+)\.txt$}             => \&zone_txt ],
             [ qr{^/zones/([^/]+)\.json$}            => \&zone_json ],
@@ -88,10 +91,23 @@ sub handle_request {
     return $self->_static_file($path);
 }
 
+sub is_mobile {
+    my ($self, $req) = @_;
+    my $headers = $req->headers;
+    return $headers->{'user-agent'} =~ m{Android|iPhone|BlackBerry}i ? 1 : 0;
+}
+
+sub default_page {
+    my ($self, $req) = @_;
+    return $self->is_mobile($req) ? 'm/index' : 'index';
+}
+
 sub ui_html {
     my ($self, $req, $tmpl) = @_;
-    $tmpl ||= 'index';
+    $tmpl ||= $self->default_page($req);
     my $params = $req->params;
+    $params->{zones} = $self->model->zones->all;
+    $params->{host_port} = $req->uri->host_port;
     return $self->process_template("$tmpl.tt2", $params);
 }
 
@@ -127,11 +143,12 @@ sub zone_at_latlng {
     my $req  = shift;
     my $lat  = shift;
     my $lng  = shift;
+    my $rest = shift || "";
 
     my $zone = $self->model->kml->find_zone_for_latlng($lat,$lng);
     if ($zone) {
         return HTTP::Engine::Response->new(
-            headers => [ Location => "/zones/$zone" ],
+            headers => [ Location => "/zones/$zone$rest" ],
             status => 302,
         );
     }
@@ -304,10 +321,16 @@ sub confirm_reminder {
     my $req  = shift;
     my $zone = shift;
     my $hash = shift;
+            
+    my $is_mobile = $self->is_mobile($req);
 
     my $rem = $self->model->reminders->by_hash($hash);
     unless ($rem) {
-        my $resp = $self->process_template('zones/reminders/bad_confirm.html');
+        my $resp = $self->process_template(
+            $is_mobile
+                ? 'm/reminder_bad_confirm.tt2'
+                : 'zones/reminders/bad_confirm.html'
+        );
         $resp->status(404);
         $self->log("CONFIRM_FAIL $zone $hash");
         return $resp;
@@ -320,7 +343,12 @@ sub confirm_reminder {
     my %param = (
         reminder => $rem,
     );
-    return $self->process_template('zones/reminders/good_confirm.html', \%param);
+    return $self->process_template(
+        $is_mobile
+            ? 'm/reminder_good_confirm.tt2'
+            : 'zones/reminders/good_confirm.html',
+        \%param,
+    );
 }
 
 sub put_reminder {

@@ -1,0 +1,23 @@
+[% WRAPPER m/wrapper.tt2
+    javascript=["/javascript/vantrash-mobile-mini.js"]
+%]
+<div class="elem" id="schedule">
+    <img src="/images/loading.gif"/>
+</div>
+<a class="elem last" href="/m/index.html">Home</a>
+
+<script>
+    var map = new TrashMap();
+    try {
+        map.findCurrentLocation(function(lat,lng) {
+            var zone = [lat,lng].join(',');
+            $.getJSON('/zones/' + zone + '.json', function(data) {
+                window.location = "/m/zone.html?zone=" + data.name;
+            });
+        });
+    }
+    catch(e) {
+        $('#schedule').html(e.message);
+    }
+</script>
+[% END %]

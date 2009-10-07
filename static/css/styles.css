@@ -167,6 +167,7 @@ a img {
     height: 220px;
     width: 220px;
     text-align: center;
+    margin: auto;
 }
 .balloon .buttons {
     margin-top: 4px;
@@ -375,4 +376,42 @@ a img {
 #address .text.initial {
     font-style: italic;
     color: #666;
+}
+
+#mobile {
+    width: 100%;
+    background-color: #ddd;
+    font-size: 105%;
+}
+
+#mobile .balloon { width: 230px }
+#mobile .legend { width: 120px }
+#mobile .buttons { display: none }
+
+#mobile .logo {
+    font-size: 120%;
+    text-decoration: none;
+}
+#mobile .logo img {
+    height: 20px;
+    vertical-align: middle
+}
+
+#mobile input,
+#mobile select {
+    vertical-align: middle;
+    padding: 5px;
+}
+#mobile input {
+    border: 1px solid #666;
+}
+
+#mobile .elem {
+    display: block;
+    padding: 10px;
+    border-top: 1px solid #666;
+    color: #000;
+}
+#mobile .last {
+    border-bottom: 1px solid #666;
 }

@@ -1,5 +1,4 @@
 (function($) {
-
 TrashMap = function(opts) {
     if (!arguments.length) opts = {};
     $.extend(this, opts);
@@ -11,7 +10,7 @@ TrashMap.prototype = {
         return new GLatLng(49.26422, -123.138542);
     },
 
-    getZoneInfo: function(name, color, callback) {
+    getZoneInfo: function(name, color, desc, callback) {
         var self = this;
         $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
             var cal = new Calendar();
@@ -29,17 +28,15 @@ TrashMap.prototype = {
                 'Garbage day': { color: color },
                 'Yard pickup': { color: color, image: '/images/yard.png' }
             });
-            callback(self.createInfoNode(cal, name));
+            callback(self.createInfoNode(cal, name, desc));
         });
     },
 
-    createInfoNode: function (cal, name) {
+    createInfoNode: function (cal, name, desc) {
         var $div = $('<div class="balloon"></div>')
 
         // Zone Title
-        $div.append(
-            $('<div class="zoneName"></div>') .text(this.descriptions[name])
-        );
+        $div.append( $('<div class="zoneName"></div>').text(desc) );
 
         // Next pickup date
         var nextDay = cal.nextMarkedDate();
@@ -82,26 +79,30 @@ TrashMap.prototype = {
         return $div.get(0);
     },
 
-    render: function(node) {
-        var self = this;
+    createMap: function(node) {
         this.map = new GMap2(node);
         this.map.setCenter(this.center(),9);
         this.map.setUIToDefault();
+    },
+
+    render: function(node) {
+        var self = this;
+        this.createMap(node);
         this.loadKML(function() {
-            self.bounds = self.map.getBounds();
             if (self.startingZone) {
                 self.showScheduleForZone(self.startingZone);
             }
             else {
-                self.setCurrentLocation();
+                self.showScheduleForCurrentLocation();
             }
         });
     },
 
     showSchedule: function(node, name, color) {
         var self = this;
+        var descs = this.descriptions;
 
-        this.getZoneInfo(name, color, function(result) {
+        this.getZoneInfo(name, color, descs[name], function(result) {
             if (!node) throw new Error("Node required");
             if (node.openInfoWindow) {
                 node.openInfoWindow(result);
@@ -115,11 +116,18 @@ TrashMap.prototype = {
 
     showScheduleForZone: function(zone_name) {
         var self = this;
+        var matchedZone;
         $.each(this.zones, function(i,zone) {
             if (zone.name == zone_name) {
-                self.showSchedule(zone, zone.name, zone.color);
+                matchedZone = zone;
             }
         });
+        if (matchedZone) {
+            self.showSchedule(matchedZone, matchedZone.name, matchedZone.color);
+        }
+        else {
+            throw new Error("Can't find zone!");
+        }
     },
 
     showScheduleForLocation: function (latlng) {
@@ -129,31 +137,60 @@ TrashMap.prototype = {
         this.map.addOverlay(marker);
         this.map.setCenter(latlng);
 
-        var self = this;
+        var zone = this.containingZone(latlng);
+        this.showSchedule(marker, zone.name, zone.color);
+    },
+
+    containingZone: function (latlng) {
+        var containingZone;
+
         $.each(this.zones, function(i,zone) {
             if (zone.Contains(latlng)) {
-                self.showSchedule(marker, zone.name, zone.color);
+                containingZone = zone;
             }
+        });
+        return containingZone;
+    },
+
+    showScheduleForCurrentLocation: function () {
+        var self = this;
+        this.findCurrentLocation(function(lat, lng) {
+            var latlng = new GLatLng(lat, lng);
+            self.showScheduleForLocation(latlng);
         });
     },
 
-    setCurrentLocation: function () {
+    findCurrentLocation: function (callback) {
         var self = this;
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                if (self._done_curloc) return;
-                self._done_curloc = true;
-                self.showScheduleForLocation(new GLatLng(
-                    position.coords.latitude, position.coords.longitude
-                ));
-            });
+        var error;
+        var geo = navigator.geolocation;
+        if (!geo && google && google.gears) {
+            geo = google.gears.factory.create('beta.geolocation');
         }
+                  
+        if (geo) {
+            geo.getCurrentPosition(
+                function(pos) {
+                    if (self._done_curloc) return;
+                    self._done_curloc = true;
+                    var coords = pos.coords ? pos.coords : pos;
+                    callback(coords.latitude, coords.longitude);
+                },
+                function () {
+                    error = "Sorry, this feature seems to be disabled on this device";
+                }
+            );
+        }
+        else {
+            error = "Sorry, this device does not support this feature";
+        }
+        if (error) throw new Error(error);
     },
 
     loadKML: function(callback) {
         var self = this;
         this.zones = [];
-        this.exml = new EGeoXml("exml", this.map, "zones.kml", {
+        this.exml = new EGeoXml("exml", this.map, "/zones.kml", {
             createpolygon: function (pts,sc,sw,so,fc,fo,pl,name,desc) {
                 var zone = new GPolygon(pts, sc, sw, so, fc, fo);
                 GEvent.addListener(zone, 'click', function() {
@@ -167,6 +204,7 @@ TrashMap.prototype = {
             }
         });
         GEvent.addListener(this.exml, 'parsed', function() {
+            self.bounds = self.map.getBounds();
             if ($.isFunction(callback)) { callback() };
         });
         this.exml.parse();

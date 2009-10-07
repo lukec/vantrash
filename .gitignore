@@ -1,6 +1,7 @@
 *.swp
 *.swo
 static/javascript/vantrash-*compiled*
+static/javascript/vantrash-*mobile*
 static/about.html
 static/api.html
 static/index.html

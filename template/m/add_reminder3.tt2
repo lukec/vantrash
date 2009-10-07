@@ -1,0 +1,11 @@
+[% WRAPPER m/wrapper.tt2
+    javascript=["/javascript/vantrash-mobile-mini.js"]
+%]
+<div class="elem">
+<b>Wait! You're not done yet!</b>
+<br/>
+<br/>
+You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.
+</div>
+<a class="elem last" href="/m/index.html">Home</a>
+[% END %]

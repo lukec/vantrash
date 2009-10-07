@@ -1,0 +1,26 @@
+[% WRAPPER m/wrapper.tt2
+    javascript=["/javascript/vantrash-mobile-mini.js"]
+%]
+<div class="elem" id="schedule">
+    <img src="/images/loading.gif"/>
+</div>
+<a class="elem" href="http://[% host_port %]/zones/[% zone %]/pickupdays.ics">
+    Add to Calendar
+</a>
+<a class="elem" href="/m/add_reminder.html?zone=[% zone %]">
+    Create Reminder
+</a>
+<a class="elem last" href="/m/index.html">Home</a>
+
+<script>
+    var map = new TrashMap();
+    $.getJSON('/zones/[% zone %].json', function(data) {
+        map.getZoneInfo(data.name, data.colour, data.desc, function(node) {
+            $('#schedule')
+                .empty()
+                .append(node)
+                .append('<div class="clear"></div>');
+        });
+    });
+</script>
+[% END %]
