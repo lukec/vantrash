@@ -262,9 +262,11 @@ sub _build_pickups {
 
 sub _build_kml {
     my $self = shift;
-    return App::VanTrash::KML->new(
-        filename => $self->base_path . "/static/zones.kml",
-    );
+    my $base = $self->base_path;
+    my $filename = -d "$base/root"
+            ? "$base/root/zones.kml"
+            : "$base/static/zones.kml";
+    return App::VanTrash::KML->new(filename => $filename);
 }
 
 __PACKAGE__->meta->make_immutable;
