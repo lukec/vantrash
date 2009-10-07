@@ -504,9 +504,12 @@ sub show_report {
 sub _static_file {
     my $self = shift;
     my $filename = shift;
-    my $file = $filename =~ m#/#
-        ? $filename
-        : $self->base_path . "/static/" . $filename;
+
+    # This majorly breaks stuff:
+    #my $file = $filename =~ m#/#
+    #    ? $filename
+    #    : $self->base_path . "/static/" . $filename;
+    my $file = $self->base_path . "/static/" . $filename;
     if (-f $file) {
         open(my $fh, $file);
         my $resp = HTTP::Engine::Response->new(body => $fh);
