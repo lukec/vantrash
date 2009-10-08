@@ -94,7 +94,8 @@ sub handle_request {
 sub is_mobile {
     my ($self, $req) = @_;
     my $headers = $req->headers;
-    return $headers->{'user-agent'} =~ m{Android|iPhone|BlackBerry}i ? 1 : 0;
+    my $ua_str = $headers->{'user-agent'} || '';
+    return $ua_str =~ m{Android|iPhone|BlackBerry}i ? 1 : 0;
 }
 
 sub default_page {
