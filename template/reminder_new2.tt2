@@ -1,0 +1,60 @@
+[% WRAPPER wrapper.tt2 javascript=['/javascript/vantrash-compiled.js'] %]
+    <h2>Garbage Reminder Request</h2>
+
+    <div class="wizard">
+        <form id="reminderForm" action="reminder_new3.html" method="GET">
+            <input type="hidden" name="email" value="[% email %]"/>
+            <input type="hidden" name="zone" value="[% zone %]"/>
+            <input type="hidden" name="lightbox" value="[% lightbox %]"/>
+            <div class="section">
+                <h4>Remind me by...</h4>
+                <p>
+                    <input name="target" value="email:[% email %] id="emailTarget" checked="checked" type="radio"/>
+                    <span class="title">sending an email to <i>[% email %]</i> </span>
+                </p>
+                <p>
+                    <input name="target" value="twitter" type="radio"/>
+                    <span class="title">Sending a twitter direct message to </span>
+                    <input disabled="true" class="border twitter" type="text" name="twitter_name"/>
+                </p>
+            </div>
+
+            <div class="lbButtons">
+                <input class="btn Next" type="submit" value="Next"/>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Error handling
+        $("#reminderForm").submit(function() {
+            var tgt = $("input[name=target]:checked").val();
+            if (tgt == "twitter") {
+                var twitter_name =
+                    $("input[name=twitter_name]").val().replace(/^\@/, '');
+                if (!$("input[name=twitter_name]").val()) {
+                    alert("You need to provide a proper twitter name");
+                    return false;
+                }
+                else {
+                    $("input[name=target]").val("twitter:"+twitter_name);
+                }
+            }
+        });
+
+        // disable/enable fields
+        $("input[name=target]").click(function() {
+            $("input.email").attr("disabled", true);
+            $("input.twitter").attr("disabled", true);
+            if ($(this).val() == "email") {
+                $("input.email").attr("disabled", false);
+            }
+            else if ($(this).val() == "twitter") {
+                $("input.twitter").attr("disabled", false).focus();
+                if (!$("input.twitter").val()) {
+                    $("input.twitter").val('@');
+                }
+            }
+        });
+    </script>
+[% END %]

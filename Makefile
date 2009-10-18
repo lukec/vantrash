@@ -15,7 +15,6 @@ JS_FILES=\
 	 $(JS_DIR)/jquery.lightbox.js \
 	 $(JS_DIR)/cal.js \
 	 $(JS_DIR)/reminders.js \
-	 $(JS_DIR)/wizard.js \
 
 JS_MAP_TARGET=$(JS_DIR)/vantrash-map-compiled.js
 JS_MAP_MINI=$(JS_DIR)/vantrash-map-compiled-mini.js

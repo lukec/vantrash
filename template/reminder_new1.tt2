@@ -1,0 +1,28 @@
+[% WRAPPER wrapper.tt2 javascript=['/javascript/vantrash-compiled.js'] %]
+    <h2>Garbage Reminder Request</h2>
+
+    <div class="wizard">
+        <form id="reminderForm" action="reminder_new2.html" method="GET">
+            <input type="hidden" name="zone" value="[% zone %]"/>
+            <input type="hidden" name="lightbox" value="[% lightbox %]"/>
+            <div class="section">
+                <h4>Please enter your email address:</h4>
+                <input class="border email" type="text" name="email"/>
+            </div>
+
+            <div class="lbButtons">
+                <input class="btn Next" type="submit" value="Next"/>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Error handling
+        $("#reminderForm").submit(function() {
+            if (!$("input.email").val()) {
+                alert("You need to provide a proper email address");
+                return false;
+            }
+        });
+    </script>
+[% END %]

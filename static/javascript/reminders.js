@@ -7,22 +7,22 @@ TrashReminders = function(opts) {
 TrashReminders.prototype = {
     add: function (opts) {
         var data = {
-            name: (new Date).getTime(),
+            offset: opts.offset,
             email: opts.email,
-            offset: opts.offset
+            target: opts.target
         };
-        $.ajax(
-            $.extend({
-                type: 'PUT',
-                url: '/zones/' + opts.zone + '/reminders',
-                data: $.toJSON(data, true)
-            }, opts)
-        );
+        $.ajax({
+            type: 'PUT',
+            url: '/zones/' + opts.zone + '/reminders',
+            data: $.toJSON(data, true),
+            error: opts.error,
+            success: opts.success
+        });
     },
 
     showLightbox: function($node) {
         $.lightbox({
-            src: '/reminder_new.html?lightbox=1&zone=' + this.zone,
+            src: '/reminder_new1.html?lightbox=1&zone=' + this.zone,
             widthFactor: 0.4,
             height: 220
         });

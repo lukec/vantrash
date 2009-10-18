@@ -2,48 +2,7 @@
     <h2>Garbage Reminder Request</h2>
 
     <div class="wizard">
-        <form method="POST">
-            <div class="section">
-                <span class="title">Your zone: </span>
-                <select name="zone">
-                    <option value="vancouver-north-red">
-                        Vancouver Red North
-                    </option>
-                    <option value="vancouver-north-blue">
-                        Vancouver Blue North
-                    </option>
-                    <option value="vancouver-north-purple">
-                        Vancouver Purple North
-                    </option>
-                    <option value="vancouver-north-yellow">
-                        Vancouver Yellow North
-                    </option>
-                    <option value="vancouver-north-green">
-                        Vancouver Green North
-                    </option>
-                    <option value="vancouver-south-red">
-                        Vancouver Red South
-                    </option>
-                    <option value="vancouver-south-blue">
-                        Vancouver Blue South
-                    </option>
-                    <option value="vancouver-south-purple">
-                        Vancouver Purple South
-                    </option>
-                    <option value="vancouver-south-yellow">
-                        Vancouver Yellow South
-                    </option>
-                    <option value="vancouver-south-green">
-                        Vancouver Green South
-                    </option>
-                </select>
-            </div>
-
-            <div class="section">
-                <span class="title">Remind me by email: </span>
-                <input class="border email" type="text" name="email"/>
-            </div>
-
+        <form id="reminderForm" method="POST">
             <div class="section">
                 <span class="title">When: </span>
                 <select class="border" id="simpleOffset">
@@ -80,6 +39,11 @@
                     <option value="+6">6AM the day of</option>
                 </select>
             </div>
+
+            <div class="lbButtons">
+                <input class="btn Back" type="button" value="Back" onclick="window.back()"/>
+                <input id="submit" class="btn Submit" type="button" value="Submit"/>
+            </div>
         </form>
     </div>
 
@@ -95,31 +59,21 @@
         }).trigger('change');
 
         $('#submit').click(function() {
-            $(this).parents('form').submit();
+            var reminders = new TrashReminders();
+            reminders.add({
+                offset: $('select[name=offset]').val(),
+                zone: "[% zone %]",
+                email: "[% email.replace('"', '') %]",
+                target: "[% target %]",
+                name: 'reminder' + (new Date).getTime(),
+                success: function() {
+                    location = '/reminder_success.html?lightbox=1';
+                },
+                error: function(req) {
+                    location = '/reminder_error.html?lightbox=1&error=' + req.responseText;
+                }
+            });
             return false;
-        });
-
-        $('.wizard .section').wizard({
-            nextButton: '/images/next.png',
-            backButton: '/images/back.png',
-            submitButton: '/images/remind_me_big.png',
-            firstStep: [% zone ? 1 : 0 %],
-            submit: function($form) {
-                var reminders = new TrashReminders();
-
-                reminders.add({
-                    name: 'emailReminder',
-                    email: $('*[name=email]', $form).val(),
-                    offset: $('*[name=offset]', $form).val(),
-                    zone: [% IF zone %]"[% zone %]"[% ELSE %]$('*[name=zone]', $form).val()[% END %],
-                    success: function() {
-                        location = '/reminder_success.html?lightbox=1';
-                    },
-                    error: function(req) {
-                        location = '/reminder_error.html?lightbox=1&error=' + req.responseText;
-                    }
-                });
-            }
         });
     </script>
 [% END %]

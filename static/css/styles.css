@@ -75,6 +75,10 @@ input.btn {
     width: 300px;
 }
 
+.border.twitter {
+    width: 170px;
+}
+
 a img {
     border: none;
 }
