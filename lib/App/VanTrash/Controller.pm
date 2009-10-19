@@ -20,7 +20,7 @@ has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
-our $VERSION = 1.1;
+our $VERSION = 1.2;
 
 sub handle_request {
     my $self = shift;
