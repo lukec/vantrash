@@ -9,6 +9,7 @@ TrashReminders.prototype = {
         var data = {
             offset: opts.offset,
             email: opts.email,
+            name: "reminder" + (new Date).getTime(),
             target: opts.target
         };
         $.ajax({

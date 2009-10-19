@@ -65,7 +65,6 @@
                 zone: "[% zone %]",
                 email: "[% email.replace('"', '') %]",
                 target: "[% target %]",
-                name: 'reminder' + (new Date).getTime(),
                 success: function() {
                     location = '/reminder_success.html?lightbox=1';
                 },

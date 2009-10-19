@@ -122,7 +122,8 @@ sub add_reminder {
     $rem->{next_pickup} = $next_pickup_dt->epoch;
 
     my $robj = eval { $self->reminders->add($rem) };
-    if ($@) {
+    my $err = "Unknown error";
+    if ($err = $@) {
         warn "Error inserting reminder: " . Dumper($rem);
 
         # Perhaps the reminder exists already?
@@ -135,7 +136,7 @@ sub add_reminder {
             }
         }
     }
-    die $@ unless $robj;
+    die $err unless $robj;
 
     $self->send_reminder_confirm_email($robj);
     return $robj;
