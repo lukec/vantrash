@@ -13,6 +13,12 @@ server {
     root   /var/www/vantrash/root;
     index  index.html;
 
+    location ~ ^/(javascript|css) {
+        rewrite ^/(javascript|css)\/(?:\d+\.\d+)/(.*\.js|css)$ /$1/$2;  
+        expires max;  
+        break;  
+    }  
+
     location / {
         proxy_redirect false;
         proxy_set_header   Host             $host;
