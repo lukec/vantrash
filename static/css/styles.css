@@ -233,6 +233,7 @@ a img {
 .calendar .day {
     border: 1px solid black;
     width: 27px;
+    padding-top: 3px;
 }
 
 .success {
