@@ -1,4 +1,4 @@
-[% WRAPPER wrapper.tt2 javascript=['/javascript/vantrash-compiled.js'] %]
+[% WRAPPER wrapper.tt2 javascript=["/javascript/$version/vantrash-compiled.js"] %]
     <h2>Garbage Reminder Request</h2>
 
     <div class="wizard">

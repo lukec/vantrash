@@ -20,6 +20,8 @@ has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
+our $VERSION = 1.1;
+
 sub handle_request {
     my $self = shift;
     my $req = shift;
@@ -485,6 +487,7 @@ sub process_template {
     my $template = shift;
     my $param = shift;
     my $html;
+    $param->{version} = $VERSION;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;
     my $res = HTTP::Engine::Response->new(body => $html);
@@ -505,6 +508,8 @@ sub show_report {
 sub _static_file {
     my $self = shift;
     my $filename = shift;
+
+    $filename =~ s{^/(javascript|css)/\d+\.\d+}{$1};
 
     # This majorly breaks stuff:
     #my $file = $filename =~ m#/#
