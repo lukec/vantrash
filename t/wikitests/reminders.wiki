@@ -6,13 +6,13 @@
 | clear-reminders |             |                  |
 | set             | email       | test@vantrash.ca |
 
-* Add a reminder
+Add a reminder
 
 | PUT_json    | /zones/vancouver-north-blue/reminders | {"email":"%%email%%","name":"%%start_time%%"}           |
 | code-is     | 201                                   |                                                         |
 | header-like | Location                              | qr/\/zones\/vancouver-north-blue\/reminders\/[\w\d\-]+/ |
 
-* Look for the confirmation email
+Look for the confirmation email
 
 | email-like         | To: %%email%%                                           |
 | email-like         | From: "VanTrash" <noreply@vantrash.ca>                  |
@@ -22,7 +22,7 @@
 | set_url_from_email | confirm_url                                             |
 | clear-email        |                                                         |
 
-* Confirm the reminder
+Confirm the reminder
 
 | get                | %%confirm_url%%                                        |
 | code-is            | 200                                                    |
@@ -34,24 +34,24 @@
 | email-like         | qr/vancouver-north-blue\/reminders\/[\w\d\-]+\/delete/ |
 | set_url_from_email | delete_url                                             |
 
-* Confirm a second time does nothing
+Confirm a second time does nothing
 
 | get     | %%confirm_url%% |
 | code-is | 200             |
 
-* Delete the reminder
+Delete the reminder
 
 | GET       | %%delete_url%%                                   |
 | code-is   | 200                                              |
 | body-like | The following garbage reminder has been deleted: |
 
-* Delete a second time does nothing.
+Delete a second time does nothing.
 
 | GET       | %%delete_url%% |
 | code-is   | 404            |
 | body-like | Sorry          |
 
-* Confirm a fake hash
+Confirm a fake hash
 
 | get       | /zones/vancouver-north-blue/reminders/deadbeef/confirm |
 | code-is   | 404                                                    |
