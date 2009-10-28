@@ -57,3 +57,8 @@ Confirm a fake hash
 | code-is   | 404                                                    |
 | body-like | Sorry                                                  |
 
+Use a bad email address
+
+| PUT_json  | /zones/vancouver-north-blue/reminders | {"email":"not an email address","name":"2%%start_time%%"} |
+| code-is   | 400                                   |                                                           |
+| body-like | Bad email address                                 |                                                           |

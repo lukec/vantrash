@@ -8,6 +8,7 @@ use App::VanTrash::Template;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
 use App::VanTrash::Log;
+use Email::Valid;
 use namespace::clean -except => 'meta';
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
@@ -362,9 +363,15 @@ sub put_reminder {
     my $args = eval { decode_json $req->raw_body };
     return HTTP::Engine::Response->new( status => 400, body => "Bad JSON" ) if $@;
 
+    my $addr = Email::Valid->address($args->{email});
+    return HTTP::Engine::Response->new( 
+        status => 400, 
+        body => "Bad email address",
+    ) unless $addr;
+
     my $reminder = $self->model->add_reminder({
             name => $args->{name},
-            email => $args->{email},
+            email => $addr,
             offset => $args->{offset},
             target => $args->{target},
             zone => $zone,

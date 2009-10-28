@@ -21,3 +21,4 @@ Perl:
 - Socialtext::WikiTest (unreleased)
 - Net::Twitter
 - mocked
+- Email::Valid
