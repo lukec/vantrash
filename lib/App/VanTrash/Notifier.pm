@@ -67,10 +67,10 @@ sub notify {
         return;
     }
     
-    $self->_send_notification($rem, $pobj);
-
-    $rem->last_notified( $self->now() );
-    $rem->update;
+    if ($self->_send_notification($rem, $pobj)) {
+        $rem->last_notified( $self->now() );
+        $rem->update;
+    }
 }
 
 
@@ -92,7 +92,7 @@ sub _send_notification {
     }
 
     $self->log("SENDING $type notification to $dest");
-    $self->$method(
+    return $self->$method(
         reminder => $rem,
         pickup   => $pickup,
         target   => $dest,
@@ -112,6 +112,7 @@ sub _send_notification_email {
             garbage_day => $args{pickup},
         },
     );
+    return 1;
 }
 
 sub _send_notification_twitter {
@@ -129,9 +130,28 @@ sub _send_notification_twitter {
 
     unless ($self->twitter->new_direct_message($args{target}, $msg)) {
         if (my $error = $self->twitter->get_error()) {
-            warn "Error sending tweet! $error";
+            if ($error->{error} =~ m/not following you/) {
+                $self->mailer->send_email(
+                    to            => $args{reminder}->email,
+                    subject       => 'Twitter VanTrash reminder failed!',
+                    template      => 'twitter-fail.html',
+                    template_args => {
+                        reminder    => $args{reminder},
+                        garbage_day => $args{pickup},
+                        target => $args{target},
+                    },
+                );
+                $self->log("Send Twitter fail email for $args{target}");
+
+                # Lets call this a success because we emailed the person, and 
+                # we don't want to keep emailing them over and over.
+                return 1;
+            }
+            warn "Error sending tweet: $error->{error}";
+            return 0;
         }
     }
+    return 1;
 }
 
 sub _send_notification_webhook {
@@ -144,6 +164,7 @@ sub _send_notification_webhook {
     };
 
     $self->http_post( $args{target}, $body );
+    return 1;
 }
 
 sub http_post {
