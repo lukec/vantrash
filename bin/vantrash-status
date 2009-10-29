@@ -59,5 +59,8 @@ unless ($summary) {
         $next = join(' ', $next->ymd, $next->hms);
         print " $r->{zone}\t- $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
             . "\n";
+        if ($verbose) {
+            print "   $r->{id}\n";
+        }
     }
 }
