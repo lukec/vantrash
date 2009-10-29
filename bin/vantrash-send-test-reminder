@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+use App::VanTrash::Model;
+use DateTime;
+use Getopt::Long;
+
+my %args;
+GetOptions( \%args,
+    'debug',
+    'base-path=s',
+);
+$args{debug} = 1 if $ENV{VT_DEBUG};
+
+my $base_path = $args{'base-path'} || "$FindBin::Bin/..";
+
+my $now = DateTime->now(time_zone => 'America/Vancouver');
+my $model = App::VanTrash::Model->new( base_path => $base_path);
+
+my $id = shift or die "No id given";
+my $r = $model->reminders->by_id($id);
+die "Could not find reminder with that id" unless $r;
+
+$model->notifier->notify($r);
+
+exit;
+
