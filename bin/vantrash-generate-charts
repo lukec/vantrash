@@ -234,6 +234,9 @@ sub parse_logfile {
             my $zone = $1;
             $data{hits}{delete_fail}{$zone}++;
         }
+        elsif ($comment =~ m/Send Twitter fail email/) {
+            $data{twitter_dm_fails}++;
+        }
         else {
             warn "Unknown: $comment";
         }
