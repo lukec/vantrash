@@ -531,7 +531,6 @@ sub _static_file {
         return $resp;
     }
     else {
-        warn "Couldn't find $file";
         return HTTP::Engine::Response->new(
             status => 404,
             body => "Sorry, that path doesn't exist!",
