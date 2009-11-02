@@ -242,14 +242,17 @@ a img {
     background-color: #a5c880;
 }
 .error {
-    padding: 60px;
-    font-size: 220%;
-    background-color: #FF4949;
+    color: #FF4949;
 }
 
-.wizard {
+.wizard .slide {
+    display: none;
     color: #333;
 }
+.wizard .slide.current {
+    display: block;
+}
+
 .wizard .title {
     font-size: 110%;
     font-weight: bold;
@@ -261,12 +264,6 @@ a img {
 }
 .button {
     margin-right: 4px;
-}
-.wizard .section {
-    padding-top: 5px;
-}
-.wizard .section .button img {
-    vertical-align: middle;
 }
 .firststep {
     font-weight: bold;

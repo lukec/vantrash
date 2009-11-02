@@ -7,18 +7,15 @@ MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS:
 MINIFY=cat
 
 JS_DIR=static/javascript
-JS_TARGET=$(JS_DIR)/vantrash-compiled.js
-JS_MINI=$(JS_DIR)/vantrash-compiled-mini.js
-JS_FILES=\
+
+JS_MAP_TARGET=$(JS_DIR)/vantrash-map.js
+JS_MAP_MINI=$(JS_DIR)/vantrash-map-mini.js
+JS_MAP_FILES=\
 	 $(JS_DIR)/jquery-latest.js \
 	 $(JS_DIR)/jquery-json-1.3.js \
 	 $(JS_DIR)/jquery.lightbox.js \
 	 $(JS_DIR)/cal.js \
 	 $(JS_DIR)/reminders.js \
-
-JS_MAP_TARGET=$(JS_DIR)/vantrash-map-compiled.js
-JS_MAP_MINI=$(JS_DIR)/vantrash-map-compiled-mini.js
-JS_MAP_FILES=\
 	 $(JS_DIR)/egeoxml.js \
 	 $(JS_DIR)/epoly.js \
 	 $(JS_DIR)/map.js \
@@ -33,6 +30,14 @@ JS_MOBILE_FILES=\
 	 $(JS_DIR)/reminders.js \
 	 $(JS_DIR)/gears_init.js \
 
+JS_REMINDER_TARGET=$(JS_DIR)/vantrash-reminder.js
+JS_REMINDER_MINI=$(JS_DIR)/vantrash-reminder-mini.js
+JS_REMINDER_FILES=\
+	 $(JS_DIR)/jquery-latest.js \
+	 $(JS_DIR)/jquery-json-1.3.js \
+	 $(JS_DIR)/reminders.js \
+	 $(JS_DIR)/wizard.js \
+
 WIKI_PAGES=about_us faq
 CRONJOB=etc/cron.d/vantrash
 
@@ -40,15 +45,16 @@ TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
 all: \
-    $(JS_MINI) \
     $(JS_MAP_TARGET) $(JS_MAP_MINI) \
-    $(JS_MOBILE_MINI) $(JS_MOBILE_TARGET)
+    $(JS_MOBILE_MINI) $(JS_MOBILE_TARGET) \
+    $(JS_REMINDER_MINI) $(JS_REMINDER_TARGET) \
 
 clean:
 	rm -f \
 	    $(JS_MINI) $(JS_TARGET) \
 	    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
 	    $(JS_MOBILE_TARGET) $(JS_MOBILE_MINI)
+	    $(JS_REMINDER_TARGET) $(JS_REMINDER_MINI)
 
 .SUFFIXES: .js -mini.js
 
@@ -70,6 +76,12 @@ $(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
 $(JS_MOBILE_TARGET): $(JS_MOBILE_FILES) Makefile
 	rm -f $@;
 	for js in $(JS_MOBILE_FILES); do \
+	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
+	done
+
+$(JS_REMINDER_TARGET): $(JS_REMINDER_FILES) Makefile
+	rm -f $@;
+	for js in $(JS_REMINDER_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 

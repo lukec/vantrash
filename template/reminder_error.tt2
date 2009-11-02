@@ -1,8 +1,0 @@
-[% WRAPPER wrapper.tt2 %]
-<div class="content">
-    <strong>Error adding reminder: [% error %]</strong>
-</div>
-<div class="lbButtons">
-    <input onclick="closeLightbox()" class="btn" type="button" value="Close"/>
-</div>
-[% END %]
