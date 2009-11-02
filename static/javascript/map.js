@@ -105,11 +105,11 @@ TrashMap.prototype = {
         this.getZoneInfo(name, color, descs[name], function(result) {
             if (!node) throw new Error("Node required");
             if (node.openInfoWindow) {
-                node.openInfoWindow(result);
+                node.openInfoWindow(result, {maxWidth: 220});
             }
             else {
                 var center = node.getBounds().getCenter();
-                self.map.openInfoWindow(center, result);
+                self.map.openInfoWindow(center, result, {maxWidth: 220});
             }
         });
     },
