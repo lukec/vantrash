@@ -128,6 +128,8 @@ sub _send_notification_twitter {
         $msg .= " - no yard trimming pickup today";
     }
 
+    $msg .= ". To unsubscribe click: " . $args{reminder}->short_delete_url;
+
     unless ($self->twitter->new_direct_message($args{target}, $msg)) {
         if (my $error = $self->twitter->get_error()) {
             if ($error->{error} =~ m/not following you/) {

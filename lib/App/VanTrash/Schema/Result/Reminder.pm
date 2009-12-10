@@ -2,6 +2,7 @@ package App::VanTrash::Schema::Result::Reminder;
 use base qw/DBIx::Class/;
 use Moose;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
+use WWW::Shorten::isgd;
 use Data::UUID;
 use namespace::clean -except => 'meta';
 
@@ -17,11 +18,12 @@ has 'next_pickup'   => (is => 'rw', isa => 'Int',  required => 1);
 has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
 
-has 'nice_name'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
-has 'nice_zone'   => (is => 'ro', isa => 'Str',  lazy_build => 1);
-has 'confirm_url' => (is => 'ro', isa => 'Str',  lazy_build => 1);
-has 'delete_url'  => (is => 'ro', isa => 'Str',  lazy_build => 1);
-has 'base_url'    => (is => 'ro', isa => 'Str',  lazy_build => 1);
+has 'nice_name'        => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'nice_zone'        => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'confirm_url'      => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'delete_url'       => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'short_delete_url' => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'base_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
 
 sub _build_nice_name {
     my $self = shift;
@@ -44,6 +46,11 @@ sub _build_confirm_url {
 sub _build_delete_url {
     my $self = shift;
     return $self->base_url . $self->id . '/delete';
+}
+
+sub _build_short_delete_url {
+    my $self = shift;
+    return makeashorterlink($self->delete_url);
 }
 
 sub _build_base_url {
