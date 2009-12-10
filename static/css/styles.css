@@ -92,24 +92,26 @@ a img {
     font-weight: bold;
     margin: 10px 0;
 }
-#header {
-    width:100%;
-    text-align: left;
-    height: 97px;
-    background: url(/images/header_bg.png) top left repeat;
-}
 #headerLeft {
-    padding-left: 10px;
-    height: 97px;
-    background: url(/images/header_left.png) top left no-repeat;
-    margin-left: 5px;
-    margin-top: 5px;
+    height: 100px;
+    background: url(/images/new/vantrash_header_bg.png) top left repeat-x;
+  position: relative;
 }
-#headerRight {
-    padding-right: 10px;
-    height: 97px;
-    background: url(/images/header_right.png) top right no-repeat;
-    margin-right: 5px;
+#headerLogo {
+    padding-left: 10px;
+    height: 100px;
+    width: 326px;
+    display: table-cell;
+    vertical-align: middle;
+    background: url(/images/new/vantrash_logo.png) center 20px no-repeat;
+}
+#searchBox {
+  height: 36px;
+  width: 248px;
+  background: url(/images/new/vantrash_search_bg.png) top left repeat-x;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 #header .tagline {
     position: absolute;

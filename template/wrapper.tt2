@@ -22,14 +22,8 @@
     <body>
         [% UNLESS lightbox %]
         <div id="headerLeft">
-            <div id="headerRight">
-                <div id="header">
-                    <a href="/"><img src="/images/logo.png"/></a>
-                    <span class="tagline">
-                        Never forget to take the trash out again!
-                    </span> 
-                </div>
-            </div>
+            <div id="headerLogo"></div>
+            <div id="searchBox"></div>
         </div>
         <div id="leftNav">
             <div>
