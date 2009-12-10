@@ -237,12 +237,15 @@ a img {
 }
 
 .success {
-    padding: 60px;
-    font-size: 220%;
-    background-color: #a5c880;
+    font-size: 120%;
 }
 .error {
     color: #FF4949;
+    font-size: 120%;
+}
+
+.pad {
+    padding: 60px;
 }
 
 .wizard .slide {

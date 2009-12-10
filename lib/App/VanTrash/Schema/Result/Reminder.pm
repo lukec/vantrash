@@ -23,7 +23,9 @@ has 'nice_zone'        => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'confirm_url'      => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'delete_url'       => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'short_delete_url' => (is => 'ro', isa => 'Str', lazy_build => 1);
-has 'base_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'zone_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
+
+has 'base_url' => (is => 'rw', isa => 'Str', default => 'http://vantrash.ca');
 
 sub _build_nice_name {
     my $self = shift;
@@ -40,12 +42,12 @@ sub _build_nice_zone {
 
 sub _build_confirm_url {
     my $self = shift;
-    return $self->base_url . $self->confirm_hash . '/confirm';
+    return join '/', $self->zone_url, $self->confirm_hash, 'confirm';
 }
 
 sub _build_delete_url {
     my $self = shift;
-    return $self->base_url . $self->id . '/delete';
+    return join '/', $self->zone_url,  $self->id, 'delete';
 }
 
 sub _build_short_delete_url {
@@ -53,10 +55,10 @@ sub _build_short_delete_url {
     return makeashorterlink($self->delete_url);
 }
 
-sub _build_base_url {
+sub _build_zone_url {
     my $self = shift;
     my $type = shift || 'id';
-    return 'http://vantrash.ca/zones/' . $self->zone . '/reminders/';
+    return join '/', $self->base_url, 'zones', $self->zone, 'reminders';
 }
 
 sub to_hash {

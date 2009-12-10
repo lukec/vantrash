@@ -18,6 +18,7 @@ has 'mimetypes' => (is => 'ro', lazy_build => 1);
 has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
 has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
 has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
+has 'request' => (is => 'rw', isa => 'HTTP::Engine::Request');
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
@@ -26,6 +27,8 @@ our $VERSION = 1.3;
 sub handle_request {
     my $self = shift;
     my $req = shift;
+
+    $self->request($req);
 
     my $coord = qr{[+-]?\d+\.\d+};
 
@@ -385,24 +388,39 @@ sub put_reminder {
     return $resp;
 }
 
+sub _remove_slash {
+    (my $url = shift) =~ s{/$}{};
+    return $url;
+}
+
 sub delete_reminder_html {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
     my $id   = shift;
 
-    if (my $rem = $self->model->delete_reminder($id)) {
-        my $resp = $self->process_template('zones/reminders/good_delete.html', {
-            reminder => $rem,
-        });
-        $self->log("DELETE $zone $id");
-        $resp->status(200);
+    my $rem = $self->model->reminders->by_id($id);
+    $rem->base_url(_remove_slash($req->base));
+    unless ($rem) {
+        $self->log("DELETE_FAIL $zone $id");
+        my $resp = $self->process_template(
+            'zones/reminders/bad_delete.html'
+        );
+        $resp->status(404);
         return $resp;
     }
 
-    $self->log("DELETE_FAIL $zone $id");
-    my $resp = $self->process_template('zones/reminders/bad_delete.html');
-    $resp->status(404);
+    my $template = 'zones/reminders/confirm_delete.html';
+    if ($req->params->{confirm}) {
+        $template = 'zones/reminders/good_delete.html';
+        $self->model->delete_reminder($id);
+        $self->log("DELETE $zone $id");
+    }
+
+    my $resp = $self->process_template($template, {
+        reminder => $rem,
+    });
+    $resp->status(200);
     return $resp;
 }
 
@@ -430,6 +448,8 @@ sub tell_friends {
                 template => 'tell-a-friend.html',
                 template_args => {
                     friend_email => $sender_email,
+                    base => _remove_slash($self->request->base),
+                    request_uri => $self->request->request_uri,
                 },
             );
         }
@@ -486,7 +506,10 @@ sub _build_engine {
 
 sub _build_model {
     my $self = shift;
-    return App::VanTrash::Model->new( base_path => $self->base_path );
+    return App::VanTrash::Model->new(
+        base_path => $self->base_path,
+        base_url => _remove_slash($self->request->base),
+    );
 }
 
 sub process_template {
@@ -495,6 +518,8 @@ sub process_template {
     my $param = shift;
     my $html;
     $param->{version} = $VERSION;
+    $param->{base} = _remove_slash($self->request->base);
+    $param->{request_uri} = $self->request->request_uri;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;
     my $res = HTTP::Engine::Response->new(body => $html);
