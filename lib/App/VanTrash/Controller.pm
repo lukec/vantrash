@@ -5,6 +5,7 @@ use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
 use App::VanTrash::Template;
+use App::VanTrash::Config;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
 use App::VanTrash::Log;
@@ -400,7 +401,6 @@ sub delete_reminder_html {
     my $id   = shift;
 
     my $rem = $self->model->reminders->by_id($id);
-    $rem->base_url(_remove_slash($req->base));
     unless ($rem) {
         $self->log("DELETE_FAIL $zone $id");
         my $resp = $self->process_template(
@@ -448,7 +448,7 @@ sub tell_friends {
                 template => 'tell-a-friend.html',
                 template_args => {
                     friend_email => $sender_email,
-                    base => _remove_slash($self->request->base),
+                    base => App::VanTrash::Config->base_url,
                     request_uri => $self->request->request_uri,
                 },
             );
@@ -508,7 +508,6 @@ sub _build_model {
     my $self = shift;
     return App::VanTrash::Model->new(
         base_path => $self->base_path,
-        base_url => _remove_slash($self->request->base),
     );
 }
 
@@ -518,7 +517,7 @@ sub process_template {
     my $param = shift;
     my $html;
     $param->{version} = $VERSION;
-    $param->{base} = _remove_slash($self->request->base);
+    $param->{base} = App::VanTrash::Config->base_url;
     $param->{request_uri} = $self->request->request_uri;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;

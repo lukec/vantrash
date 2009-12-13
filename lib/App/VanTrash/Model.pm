@@ -8,6 +8,7 @@ use App::VanTrash::Zones;
 use App::VanTrash::Reminders;
 use App::VanTrash::Notifier;
 use App::VanTrash::KML;
+use App::VanTrash::Config;
 use Carp qw/croak/;
 use Data::ICal;
 use Data::ICal::Entry::Event;
@@ -19,7 +20,6 @@ use Data::Dumper;
 use namespace::clean -except => 'meta';
 
 has 'base_path' => (is => 'ro', isa => 'Str',    required   => 1);
-has 'base_url'  => (is => 'ro', isa => 'Str',    required   => 1);
 has 'areas'     => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'zones'     => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'pickups'   => (is => 'ro', isa => 'Object', lazy_build => 1);
@@ -123,7 +123,6 @@ sub add_reminder {
     $rem->{next_pickup} = $next_pickup_dt->epoch;
 
     my $robj = eval { $self->reminders->add($rem) };
-    $robj->base_url($self->base_url);
     my $err = "Unknown error";
     if ($err = $@) {
         warn "Error inserting reminder: " . Dumper($rem);

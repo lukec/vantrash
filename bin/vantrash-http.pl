@@ -8,6 +8,8 @@ use App::VanTrash::Controller;
 my $port = 1009 + $<;
 warn "Starting up HTTP server on port $port\n";
 
+$ENV{DEV_ENV} = 1;
+
 App::VanTrash::Controller->new(
     http_module => 'ServerSimple',
     http_args => {

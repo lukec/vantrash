@@ -4,6 +4,7 @@ use Moose;
 use MooseX::Types::Common::String qw/NonEmptySimpleStr/;
 use WWW::Shorten::isgd;
 use Data::UUID;
+use App::VanTrash::Config;
 use namespace::clean -except => 'meta';
 
 has 'id'            => (is => 'ro', isa => 'Str',  required => 1);
@@ -24,8 +25,6 @@ has 'confirm_url'      => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'delete_url'       => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'short_delete_url' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'zone_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
-
-has 'base_url' => (is => 'rw', isa => 'Str', default => 'http://vantrash.ca');
 
 sub _build_nice_name {
     my $self = shift;
@@ -58,7 +57,7 @@ sub _build_short_delete_url {
 sub _build_zone_url {
     my $self = shift;
     my $type = shift || 'id';
-    return join '/', $self->base_url, 'zones', $self->zone, 'reminders';
+    return join '/', App::VanTrash::Config->base_url, 'zones', $self->zone, 'reminders';
 }
 
 sub to_hash {
