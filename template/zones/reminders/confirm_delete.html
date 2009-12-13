@@ -1,0 +1,9 @@
+[% WRAPPER wrapper.tt2 %]
+  <div class="pad success">
+      <p>Are you sure you want to unsubscribe [% reminder.zone %] from [% reminder.zone %] reminders?</p>
+      <p>
+        <input type="button" value="Yes" onclick="document.location = '[% request_uri %]?confirm=1'"/>
+        <input type="button" value="No" onclick="document.location = '[% base %]'"/>
+      </p>
+  </div>
+[% END %]
