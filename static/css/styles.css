@@ -361,7 +361,10 @@ a img {
 .donatebtn {
     padding: 20px;
 }
-.api ul {
+ul#nav {
+    padding: 0;
+}
+ul, ol {
     padding: 8px;
     padding-left: 20px;
 }
@@ -419,4 +422,11 @@ a img {
 }
 #mobile .last {
     border-bottom: 1px solid #666;
+}
+
+.copyright {
+    font-size: 80%;
+    margin-top: 4px;
+    display: block;
+    float: right;
 }

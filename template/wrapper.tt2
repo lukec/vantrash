@@ -41,7 +41,7 @@
                 </p>
                 [% IF extranav %][% INCLUDE $extranav %][% END %]
             </div>
-            <ul>
+            <ul id="nav">
                 <li><a href="/">Map</a></li>
                 <li><a href="/faq.html">Frequently Asked Questions</a></li>
                 <li><a href="/tell-a-friend.html">Tell a friend</a></li>

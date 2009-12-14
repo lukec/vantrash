@@ -19,4 +19,6 @@
                 return false;
             });
     </script>
+
+    <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a>
 [% END %]

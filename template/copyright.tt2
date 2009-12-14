@@ -1,0 +1,61 @@
+[% WRAPPER wrapper.tt2 %]
+
+<h1>Data</h1>
+All of the trash pickup data is scraped from the City of Vancouver's website:
+<ul>
+    <li>
+        <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm">
+            http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm
+        </a>
+    </li>
+    <li>
+        <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm">
+            http://vancouver.ca/ENGSVCS/solidwaste/garbage/southSched.htm
+        </a>
+    </li>
+</ul>
+
+<h1>Perl Code</h1>
+<p>The scraping codes and the reminder system codes are licensed under the folowing terms:</p>
+
+<p>Copyright &copy; 2009 by Luke Closs and Kevin Jones</p>
+
+<p>This package is free software; you can redistribute it and/or modify it under the following terms:</p>
+
+<ol>
+    <li>The GNU General Public License as published by the Free Software Foundation; either version 1, or (at your option) any later version</li>
+    <li>The original Artistic License, as published by Larry Wall.</li>
+    <li><a href="http://www.perlfoundation.org/legal/licenses/artistic-2_0.html">The Artistic License Version 2.0</a> or at your option any later version of it.</li>
+</ol>
+
+<h1>JavaScript</h1>
+
+<h2>VanTrash JavaScript</h2>
+<p>Copyright (C) 2009 by Luke Closs and Kevin Jones</p>
+
+<h2>Libraries</h2>
+
+<h3>jQuery</h3>
+<p>dually licensed under the MIT and GPL licenses</p>
+<p>Copyright (c) 2009 John Resig</p>
+<a href="http://docs.jquery.com/License">http://docs.jquery.com/License</a>
+
+<br/>
+<br/>
+
+<h3>EGeoXML and EPolygon</h3>
+<p>licenced under a <a href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Licence</a></p>
+
+<h1>Images</h1>
+<p>
+    The vantrash logo was created by Andy and was released under
+    <a href="http://creativecommons.org/licenses/publicdomain/">public domain</a>
+</p>
+
+<p>
+    It was originally downloaded from
+    <a href="http://openclipart.org/media/files/Andy/68">http://openclipart.org/media/files/Andy/68</a>
+</p>
+
+<p>All other images are Copyright (C) 2009 by Luke Closs and Kevin Jones</p>
+[% END %]
