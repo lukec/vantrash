@@ -4,7 +4,6 @@ Disallow: /m/
 Disallow: /new_reminder
 Disallow: /zones.json
 Disallow: /zones.txt
-Disallow: /zones/undefined/nextpickup.json
 Disallow: /zones/vancouver-blue-north.json
 Disallow: /zones/vancouver-blue-south.json
 Disallow: /zones/vancouver-green-north.json
@@ -111,7 +110,6 @@ Disallow: /zones/vancouver-south-purple/pickupdays.txt
 Disallow: /zones/vancouver-south-purple/reminders
 Disallow: /zones/vancouver-south-purple/reminders.json
 Disallow: /zones/vancouver-south-purple/reminders.txt
-Disallow: /zones/vancouver-south-red
 Disallow: /zones/vancouver-south-red.json
 Disallow: /zones/vancouver-south-red.txt
 Disallow: /zones/vancouver-south-red/nextdowchange
