@@ -23,7 +23,14 @@
         [% UNLESS lightbox %]
         <div id="headerLeft">
             <div id="headerLogo"></div>
-            <div id="searchBox"></div>
+            [% IF show_search %]
+            <div id="searchBox">
+                <form id="address">
+                    <input class="text initial" type="text"/>
+                    <input class="submit" type="submit" value=""/>
+                </form>
+            </div>
+            [% END %]
         </div>
         <div id="leftNav">
             <div>

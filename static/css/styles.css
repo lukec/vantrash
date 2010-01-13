@@ -95,7 +95,8 @@ a img {
 #headerLeft {
     height: 100px;
     background: url(/images/new/vantrash_header_bg.png) top left repeat-x;
-  position: relative;
+    position: relative;
+    text-align: left;
 }
 #headerLogo {
     padding-left: 10px;
@@ -104,14 +105,6 @@ a img {
     display: table-cell;
     vertical-align: middle;
     background: url(/images/new/vantrash_logo.png) center 20px no-repeat;
-}
-#searchBox {
-  height: 36px;
-  width: 248px;
-  background: url(/images/new/vantrash_search_bg.png) top left repeat-x;
-  position: absolute;
-  bottom: 0;
-  right: 0;
 }
 #header .tagline {
     position: absolute;
@@ -375,17 +368,41 @@ ul, ol {
     padding-left: 30px;
     font-family: Courier;
 }
-#address .btn {
-    vertical-align: middle;
-    display: inline;
+#searchBox {
+  height: 36px;
+  width: 248px;
+  background: url(/images/new/vantrash_search_bg.png) top left repeat-x;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
-#address .text {
-    width: 200px;
-    vertical-align: middle;
-}
-#address .text.initial {
+#searchBox .initial {
     font-style: italic;
     color: #666;
+}
+#searchBox form, #searchBox .submit, #searchBox .text {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+#searchBox .submit, #searchBox .text {
+    margin-top: 12px;
+    vertical-align: middle;
+}
+#searchBox .submit {
+    background: url(/images/search_submit.png) no-repeat left top;
+    margin: 12px 0 0 0;
+    padding: 0;
+    width: 21px;
+    height: 21px;
+}
+#searchBox .text {
+    background: url(/images/search_input.png) no-repeat left top;
+    padding: 3px 0 0 10px;
+    vertical-align: middle;
+    width: 174px;
+    height: 18px;
+    margin: 12px 0 0 20px;
 }
 
 #mobile {

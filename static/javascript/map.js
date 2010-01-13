@@ -181,9 +181,6 @@ TrashMap.prototype = {
                 }
             );
         }
-        else {
-            error = "Sorry, this device does not support this feature";
-        }
         if (error) throw new Error(error);
     },
 
