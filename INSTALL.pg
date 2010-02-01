@@ -1,0 +1,8 @@
+apt-get install postgresql82 postgresql82-dev
+
+Init your db:
+initdb -D PG_DIR -E UTF8
+sudo -u postgres pg_ctl -D /usr/local/pgsql/data/ start
+sudo -u postgres createdb vantrash_lukec
+sudo -u postgres createuser lukec
+
