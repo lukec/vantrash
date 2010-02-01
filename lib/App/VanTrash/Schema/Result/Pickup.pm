@@ -12,36 +12,6 @@ has 'day_str' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'pretty_day' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'datetime' => (is => 'ro', isa => 'DateTime', lazy_build => 1);
 
-sub to_hash {
-    my $self = shift;
-    my ($year, $month, $day) = split '-', $self->day;
-    return {
-        year => $year,
-        month => $month,
-        day => $day,
-        zone => $self->zone,
-        string => $self->string,
-        flags => $self->flags,
-    };
-}
-
-sub _build_string {
-    my $self = shift;
-    return join ' ', $self->day, ($self->flags ? $self->flags : ());
-}
-
-sub _build_pretty_day {
-    my $self = shift;
-    my $dt = $self->datetime;
-    return $dt->day_name . ', ' . $dt->month_name . ' ' . $dt->day;
-}
-
-sub _build_datetime {
-    my $self = shift;
-    my $hash = $self->to_hash;
-    return DateTime->new( map { $_ => $hash->{$_} } qw/year month day/ );
-}
-
 
 __PACKAGE__->load_components(qw/Core/);
 __PACKAGE__->table('pickup');

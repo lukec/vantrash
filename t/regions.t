@@ -4,44 +4,76 @@ use warnings;
 use Test::More;
 use t::VanTrash;
 
-No_areas_at_start: {
+No_regions_at_start: {
     my $model = t::VanTrash->model;
-    my $areas = $model->areas->all;
-    is_deeply $areas, [];
+    my $regions = $model->regions->all;
+    is_deeply $regions, [];
 }
 
-Add_an_area: {
+Add_a_region: {
     my $model = t::VanTrash->model;
-    my $area = $model->areas->add({
+    my $region = $model->regions->add({
             name => 'vancouver',
             desc => 'Vancouver',
             centre => '[ 49.26422,-123.138542 ]',
+            kml_file => 'vancouver.kml',
         }
     );
-    is $area->name, 'vancouver', 'name';
-    is $area->desc, 'Vancouver', 'desc';
+    is $region->name, 'vancouver', 'name';
+    is $region->desc, 'Vancouver', 'desc';
 
-    is_deeply $model->areas->all, [
+    is_deeply $model->regions->all, [
         {
+            region_id => 1,
             name => 'vancouver',
             desc => 'Vancouver',
             centre => '[ 49.26422,-123.138542 ]',
+            kml_file => 'vancouver.kml',
         },
     ];
 }
 
-Area_zones: {
+Region_districts: {
     my $model = t::VanTrash->model;
-    my $zones = $model->zones->all;
-    is_deeply $zones, [];
+    my $districts = $model->districts->all;
+    is_deeply $districts, [];
+}
+
+exit;
+
+Create_a_district: {
+    my $model = t::VanTrash->model;
+    my $yvr = $model->regions->by_name('vancouver');
+    my $district = $model->districts->add({
+            name => 'vancouver',
+            desc => 'Vancouver',
+            centre => '[ 49.26422,-123.138542 ]',
+            region => $yvr,
+            kml_file => 'vancouver.kml',
+        }
+    );
+    is $district->name, 'vancouver', 'name';
+    is $district->desc, 'Vancouver', 'desc';
+    is $district->region->name, 'vancouver', 'region name';
+
+    is_deeply $yvr->districts->all, [
+        {
+            name => 'vancouver',
+            desc => 'Vancouver',
+            centre => '[ 49.26422,-123.138542 ]',
+            kml_file => 'vancouver.kml',
+        },
+    ];
 }
 
 Area_zones_create: {
     my $model = t::VanTrash->model;
+    my $yvr = $model->regions->by_name('vancouver');
+    my $districts = $yvr->districts->all;
     my $zone_hash = {
         name => 'vancouver-north-blue',
         desc => 'North Blue',
-        area => 'vancouver',
+        district => $districts->[0],
         colour => 'blue',
     };
     $model->zones->add({

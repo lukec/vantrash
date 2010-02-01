@@ -1,11 +1,12 @@
 package App::VanTrash::Config;
-use base 'Exporter';
+use MooseX::Singleton;
 use YAML;
 use FindBin;
 
-my $CONFIG_FILE => '/etc/vantrash.yaml';
+my $IS_DEV = $FindBin::Bin && $FindBin::Bin =~ m{^/(home|Users)};
+my $CONFIG_FILE = $IS_DEV ? 'etc/vantrash.yaml' 
+                           : '/etc/vantrash.yaml';
 my $CONFIG = -e $CONFIG_FILE ? YAML::LoadFile($CONFIG_FILE) : {};
-my $IS_DEV = $FindBin::Bin && $FindBin::Bin =~ m{^/home};
 
 my $base_url;
 sub base_url {
@@ -18,6 +19,13 @@ sub base_url {
         $base_url .= ":$port";
     }
     return $base_url;
+}
+
+sub dsn {
+    my $class = shift;
+    my $db = 'vantrash' . ($IS_DEV ? "_$ENV{USER}" : '');
+    $db .= "_testing" if $ENV{HARNESS_VERSION};
+    return "dbi:Pg:dbname=$db";
 }
 
 1;

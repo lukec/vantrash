@@ -1,8 +1,8 @@
 package App::VanTrash::Model;
 use Moose;
 use App::VanTrash::Email;
-use App::VanTrash::Schema;
-use App::VanTrash::Areas;
+use App::VanTrash::Regions;
+use App::VanTrash::Districts;
 use App::VanTrash::Pickups;
 use App::VanTrash::Zones;
 use App::VanTrash::Reminders;
@@ -20,12 +20,12 @@ use Data::Dumper;
 use namespace::clean -except => 'meta';
 
 has 'base_path' => (is => 'ro', isa => 'Str',    required   => 1);
-has 'areas'     => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'regions'   => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'districts' => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'zones'     => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'pickups'   => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'mailer'    => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'reminders' => (is => 'ro', isa => 'Object', lazy_build => 1);
-has 'schema'    => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'notifier'  => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'kml'       => (is => 'ro', isa => 'Object', lazy_build => 1);
 
@@ -212,15 +212,7 @@ sub _build_mailer {
 
 sub _build_reminders {
     my $self = shift;
-    return App::VanTrash::Reminders->new( 
-        schema => $self->schema,
-    );
-}
-
-sub _build_schema {
-    my $self = shift;
-    my $db_file = $self->base_path . '/data/vantrash.db';
-    return App::VanTrash::Schema->connect("dbi:SQLite:$db_file");
+    return App::VanTrash::Reminders->new;
 }
 
 sub _build_notifier {
@@ -247,19 +239,24 @@ sub tonight {
     $now->set( hour => 23, minute => 59 );
 }
 
-sub _build_areas {
+sub _build_regions {
     my $self = shift;
-    return App::VanTrash::Areas->new( schema => $self->schema );
+    return App::VanTrash::Regions->new;
+}
+
+sub _build_districts {
+    my $self = shift;
+    return App::VanTrash::Districts->new;
 }
 
 sub _build_zones {
     my $self = shift;
-    return App::VanTrash::Zones->new( schema => $self->schema );
+    return App::VanTrash::Zones->new;
 }
 
 sub _build_pickups {
     my $self = shift;
-    return App::VanTrash::Pickups->new( schema => $self->schema );
+    return App::VanTrash::Pickups->new;
 }
 
 sub _build_kml {

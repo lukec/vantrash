@@ -1,9 +1,0 @@
-#!/bin/bash
-set -e
-set -x
-
-DB=data/vantrash.db
-DUMP=data/vantrash.dump
-if [ ! -e $DB ]; then
-    sqlite3 $DB < $DUMP
-fi

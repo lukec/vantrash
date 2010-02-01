@@ -7,43 +7,52 @@ use YAML qw/LoadFile/;
 use App::VanTrash::Model;
 use namespace::clean -except => 'meta';
 
-has 'zone'  => (is => 'ro', isa => 'Str');
-has 'area'  => (is => 'ro', isa => 'Str', required => 1);
-has 'areas' => (is => 'ro', isa => 'HashRef', lazy_build => 1);
+has 'region'  => (is => 'ro', isa => 'Str', required => 1);
+has 'regions' => (is => 'ro', isa => 'HashRef', lazy_build => 1);
 has 'model' => (is => 'ro', isa => 'Object', lazy_build => 1);
 
 sub scrape {
     my $self      = shift;
-    my $area_name = $self->area or die "area is mandatory!";
-    my $only_zone = $self->zone;
+    my $region_name = $self->region or die "region is mandatory!";
 
-    my $area = $self->areas->{$area_name};
-    die "Sorry, '$area_name' is not a valid area" unless $area;
-    my $zones = $area->{zones};
-    die "Sorry, '$area_name' has no zones defined!" unless @$zones;
+    my $region = $self->regions->{$region_name};
+    die "Sorry, '$region_name' is not a valid region" unless $region;
+    my $districts = $region->{districts};
+    die "Sorry, '$region_name' has no districts defined!" unless @$districts;
 
-    if (! $self->model->areas->by_name($area_name)) {
-        $self->model->areas->add({
-                name => $area_name,
-                desc => $area->{desc},
-                centre => $area->{centre},
+    if (! $self->model->regions->by_name($region_name)) {
+        print "Adding region to the database!\n";
+        my $region = $self->model->regions->add({
+                name => $region_name,
+                desc => $region->{desc},
+                centre => $region->{centre},
+                kml_file => "$region_name.kml",
             },
         );
     }
 
-    for my $zone (@$zones) {
-        next if $only_zone and $zone->{name} ne $only_zone;
-        print "Scraping $zone->{name}\n";
-        $self->scrape_zone($zone);
-
-        my $zobj = $self->model->zones->add({
-            name => $zone->{name},
-            desc => $zone->{desc},
-            area => $area_name,
-            colour => $zone->{colour},
-            days => $zone->{days},
-            }
+    for my $d (@$districts) {
+        print "Adding district $d->{name}\n";
+        my $district = $self->model->districts->add({
+                region_id => $region->region_id,
+                kml_file => "$d->{name}.kml",
+                %$d,
+            },
         );
+
+        for my $zone (@{ $district->{zones} }) {
+            print "Scraping $zone->{name}\n";
+            $self->scrape_zone($zone);
+
+            my $zobj = $self->model->zones->add({
+                    name => $zone->{name},
+                    district_id => $district->district_id,
+                    desc => $zone->{desc},
+                    colour => $zone->{colour},
+                    days => $zone->{days},
+                }
+            );
+        }
     }
 }
 
@@ -51,6 +60,8 @@ sub scrape_zone {
     my $self = shift;
     my $zone = shift;
     my $debug = $ENV{VT_DEBUG};
+
+    # XXX: Scraper is hardcoded for Vancouver
 
     my $row_scraper = scraper {
         process 'td.headings', 'months[]' => 'TEXT';
@@ -129,10 +140,10 @@ sub _month_to_num {
     }->{lc $name} || die "No month for $name";
 }
 
-sub _build_areas {
+sub _build_regions {
     my $self = shift;
-    my $file = "$FindBin::Bin/../etc/areas.yaml";
-    die "Can't find area file: $file!" unless -e $file;
+    my $file = "$FindBin::Bin/../etc/regions.yaml";
+    die "Can't find region file: $file!" unless -e $file;
     return LoadFile($file);
 
 }

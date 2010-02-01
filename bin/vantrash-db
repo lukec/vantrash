@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use FindBin;
@@ -12,7 +12,7 @@ my $schema  = "$FindBin::Bin/../etc/sql/vantrash.sql";
 if ($command eq 'recreate') {
     print "Re-creating database ...\n";
     rename $db_file, "$db_file.old" if $db_file;
-    system("sqlite3 $db_file < $schema");
+    system("psql -f $schema");
 }
 
 exit;

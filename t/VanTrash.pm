@@ -35,12 +35,13 @@ sub _build_base_path {
         "$tmp_dir/data/trash-zone-times.yaml";
     
     # Create the SQL db
-    my $db_file = "$tmp_dir/data/vantrash.db";
     my $sql_file = "$FindBin::Bin/../etc/sql/vantrash.sql";
     if ($ENV{VT_LOAD_DATA}) {
         $sql_file = "$FindBin::Bin/../data/vantrash.dump";
     }
-    system("sqlite3 $db_file < $sql_file");
+    my $db = "vantrash_$ENV{USER}_testing";
+    system("dropdb $db; createdb $db");
+    system("psql -f $sql_file vantrash_$ENV{USER}_testing > /dev/null 2>&1 | grep -v NOTICE");
     return $tmp_dir;
 }
 

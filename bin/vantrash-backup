@@ -11,6 +11,6 @@ if [[ ! -d $BACKUP ]]; then
     cd ..
 fi
 
-echo '.dump' | sqlite3 data/vantrash.db > $BACKUP/vantrash.dump
+pg_dump vantrash > $BACKUP/vantrash.dump
 cd $BACKUP;
 git commit -a -m 'backup'

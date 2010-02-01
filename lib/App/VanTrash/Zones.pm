@@ -1,8 +1,12 @@
 package App::VanTrash::Zones;
-use Moose;
+use MooseX::Singleton;
 use namespace::clean -except => 'meta';
 
-extends 'App::VanTrash::Collection';
+sub table        {'zone'}
+sub columns      {qw/zone_id name district_id area desc colour/}
+sub has_sequence {1}
+
+with 'App::VanTrash::Collection';
 
 sub by_area { [ shift->search_by(area => @_)->all ] }
 
@@ -29,6 +33,23 @@ around 'add' => sub {
     }
     return $zobj;
 };
+
+__PACKAGE__->meta->make_immutable;
+
+package App::VanTrash::Zone;
+use Moose;
+use namespace::clean -except => 'meta';
+
+has 'zone_id' => (is => 'ro', isa => 'Int');
+has 'name'   => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
+has 'area'   => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
+has 'desc'   => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
+has 'colour' => (is => 'ro', isa => 'NonEmptySimpleStr', required => 1);
+
+sub uri {
+    my $self = shift;
+    return '/zones/' . $self->name;
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
