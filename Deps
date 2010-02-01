@@ -4,21 +4,4 @@ Debian:
 - tmpreaper
 
 Perl:
-- HTTP::Engine
-- Template
-- Email::Send
-- Email::MIME
-- Email::MIME::Creator
-- Date::ICal
-- Net::Server::PreForkSimple
-- JavaScript::Minifier::XS
-- Socialtext::WikiObject
-- Crypt::DES
-- BerkeleyDB
-- Web::Scraper
-- DBIx::Class
-- Test::HTTP
-- Socialtext::WikiTest (unreleased)
-- Net::Twitter
-- mocked
-- Email::Valid
+cpan install HTTP::Engine Template Email::Send Email::MIME Email::MIME::Creator Date::ICal Net::Server::PreForkSimple JavaScript::Minifier::XS Socialtext::WikiObject Crypt::DES BerkeleyDB Web::Scraper DBIx::Class Test::HTTP Socialtext::WikiTest Net::Twitter mocked Email::Valid MRO::Compat MooseX::Types Email::Send::Gmail MooseX::Types::Common::String WWW::Shorten WWW::Shorten::isgd Data::UUID XML::XPath Math::Polygon Data::ICal
