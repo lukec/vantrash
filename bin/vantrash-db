@@ -11,7 +11,7 @@ my $db_file = "$FindBin::Bin/../data/vantrash.db";
 my $schema  = "$FindBin::Bin/../etc/sql/vantrash.sql";
 if ($command eq 'recreate') {
     print "Re-creating database ...\n";
-    rename $db_file, "$db_file.old";
+    rename $db_file, "$db_file.old" if $db_file;
     system("sqlite3 $db_file < $schema");
 }
 
