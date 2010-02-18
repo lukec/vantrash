@@ -84,7 +84,7 @@ sub scrape_zone {
                     next;
                 }
                 $day = $1;
-                my $year = 2009;
+                my $year = 2010;
                 my $month = $current_months[$i - 1];
                 if ($month =~ s/^(\w+) (\d+)/$1/) {
                     $year = $2;
