@@ -100,6 +100,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	cp data/vantrash.dump $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	cp -f etc/cron.d/vantrash /etc/cron.d/vantrash
+	cp -f etc/areas.yaml $(INSTALL_DIR)/etc/areas.yaml
 	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
 	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
