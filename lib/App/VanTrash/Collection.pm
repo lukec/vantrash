@@ -1,5 +1,6 @@
 package App::VanTrash::Collection;
 use Moose;
+use Carp qw/croak/;
 use namespace::clean -except => 'meta';
 
 has 'schema' => (is => 'ro', required => 1);
@@ -14,7 +15,9 @@ sub by_name { shift->search_by(name => @_)->first }
 
 sub add {
     my $self = shift;
-    return $self->_rs->create(@_);
+    my $res = eval {  $self->_rs->create(@_) };
+    croak "Could not add a new " . ref($self) if $@;
+    return $res;
 }
 
 sub search_by {
