@@ -11,8 +11,16 @@ around 'add' => sub {
     my $self = shift;
     my $zone = shift;
     my $days = delete $zone->{days};
+    my $name = $zone->{name};
 
-    my $zobj = $orig->($self, $zone);
+    my $zobj;
+    if ($zobj = $self->_rs->search({name => $name})) {
+        warn "Looks like $name already exists\n";
+    }
+    else {
+        warn "Creating zone $name\n";
+        $zobj = $orig->($self, $zone);
+    }
     
     for my $day_str (@$days) {
         unless ($day_str =~ m/^([\d-]+)(?:\s+(\w+))?$/) {
