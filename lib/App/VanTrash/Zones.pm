@@ -28,8 +28,17 @@ around 'add' => sub {
             next;
         }
         my ($day, $flags) = ($1, $2);
+
+        if (my $pu = $self->schema->resultset('Pickup')->search({
+                    zone => $name,
+                    day => $day,
+                })->single()) {
+            warn "Already have a pickup for $name / $day\n";
+            next;
+        }
+        warn "adding a new pickup for $name / $day\n";
         $self->schema->resultset('Pickup')->create({
-                zone => $zobj->name,
+                zone => $name,
                 day => $day,
                 flags => $flags || '',
             },
