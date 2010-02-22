@@ -1,8 +1,4 @@
-- parsing data
-** needed to parse data, took ~3-4 hours to get it reliably scraped
-** eg: red and purple zone HTML has different spacing
+Regions
 
-- operations
-** largest on-going cost
-** admin interface?
-** backup
+* districts
+** show district polygons
