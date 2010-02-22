@@ -2,6 +2,7 @@ package App::VanTrash::Log;
 use MooseX::Singleton;
 use FindBin;
 use Fatal qw/open close syswrite/;
+use App::VanTrash::Config;
 use namespace::clean -except => 'meta';
 
 has 'log_file' => (is => 'ro', isa => 'Str', lazy_build => 1);
@@ -16,7 +17,7 @@ sub log {
 
 sub _build_log_file {
     my $self = shift;
-    if ($< >= 1000) {
+    if (App::VanTrash::Config->Is_dev) {
         return "$FindBin::Bin/../vantrash.log";
     }
     return "/var/log/vantrash.log";

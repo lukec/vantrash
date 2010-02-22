@@ -79,7 +79,7 @@ Create_and_send_reminder: {
         my $tweets = t::VanTrash->twitters;
         is scalar(@$tweets), 1, '1 tweet message found';
         is $tweets->[0]{to}, 'lukec', 'to correct user';
-        like $tweets->[0]{msg}, qr/It is garbage day on \d{4}-\d\d?-\d\d?/, 'message is correct';
+        like $tweets->[0]{msg}, qr/It is garbage day on \w+ for [\w\-]+/, 'message is correct';
     }
 
     WebHooks: {

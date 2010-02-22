@@ -23,7 +23,7 @@ open(my $fh, $ENV{VT_EMAIL});
 local $/ = undef;
 my $contents = <$fh>;
 like $contents, qr/\QTo: test/, 'to';
-like $contents, qr/\QFrom: "VanTrash" <help/, 'from';
+like $contents, qr/\QFrom: "VanTrash" <noreply/, 'from';
 like $contents, qr/\QSubject: You've won\E/, 'subject';
 like $contents, qr/foo is bar/, 'template works';
 
