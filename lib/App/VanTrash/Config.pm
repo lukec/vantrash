@@ -4,7 +4,6 @@ use YAML;
 use FindBin;
 use namespace::clean -except => 'meta';
 
-warn "Loading " . Config_file();
 my $CONFIG = YAML::LoadFile(Config_file());
 
 sub Is_dev {
