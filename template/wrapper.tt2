@@ -19,7 +19,7 @@
             <![endif]-->
         [% END %]
     </head>
-    <body>
+    <body id="[% id %]">
         [% UNLESS lightbox %]
         <div id="headerLeft">
             <div id="headerLogo"></div>
@@ -31,14 +31,12 @@
                 <li><a href="/api.html">Technical API</a></li>
                 <li class="last"><a href="http://twitter.com/vantrash">Follow us on Twitter</a></li>
             </ul>
-            [% IF show_search %]
             <div id="searchBox">
                 <form id="address">
                     <input class="text initial" type="text"/>
                     <input class="submit" type="submit" value=""/>
                 </form>
             </div>
-            [% END %]
         </div>
         <div id="leftNav">
             <div class="sections">

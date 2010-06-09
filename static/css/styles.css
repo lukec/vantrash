@@ -133,7 +133,7 @@ a img {
     float: left;
     text-align: left;
 }
-#leftNav .sections {
+body#map #leftNav .sections {
     height: 215px;
 }
 #leftNav p {
@@ -379,7 +379,9 @@ ul#nav li a, ul#nav li a:visited {
   position: absolute;
   bottom: 0;
   right: 0;
+  display: none;
 }
+body#map #searchBox { display: block }
 #searchBox .initial {
     font-style: italic;
     color: #666;
