@@ -23,6 +23,14 @@
         [% UNLESS lightbox %]
         <div id="headerLeft">
             <div id="headerLogo"></div>
+            <ul id="nav">
+                <li><a href="/">Map</a></li>
+                <li><a href="/faq.html">Frequently Asked Questions</a></li>
+                <li><a href="/tell-a-friend.html">Tell a friend</a></li>
+                <li><a href="/donate.html">Donate</a></li>
+                <li><a href="/api.html">Technical API</a></li>
+                <li class="last"><a href="http://twitter.com/vantrash">Follow us on Twitter</a></li>
+            </ul>
             [% IF show_search %]
             <div id="searchBox">
                 <form id="address">
@@ -33,7 +41,7 @@
             [% END %]
         </div>
         <div id="leftNav">
-            <div>
+            <div class="sections">
                 <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
                 <p>
                     You can find out your garbage schedule, download the schedule to your calendar
@@ -42,26 +50,11 @@
                 </p>
                 [% IF extranav %][% INCLUDE $extranav %][% END %]
             </div>
-            <ul id="nav">
-                <li><a href="/">Map</a></li>
-                <li><a href="/faq.html">Frequently Asked Questions</a></li>
-                <li><a href="/tell-a-friend.html">Tell a friend</a></li>
-                <li><a href="/donate.html">Donate</a></li>
-                <li><a href="/api.html">Technical API</a></li>
-                <li class="last"><a href="http://twitter.com/vantrash">Follow us on Twitter</a></li>
-            </ul>
             <div class="ad">
-              <script type="text/javascript"><!--
-              google_ad_client = "pub-2573365322646151";
-              /* vantrash 200x200, created 7/26/09 */
-              google_ad_slot = "7836693333";
-              google_ad_width = 200;
-              google_ad_height = 200;
-              //-->
-              </script>
-              <script type="text/javascript"
-              src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-              </script>
+                <a href="http://vancouver.ca/projects/foodWaste/index.htm"
+                    alt="Don't trash your food!">
+                    <img src="/images/vantrash-ad-square.jpg" width="375"/>
+                </a>
             </div>
         </div>
         [% END %]

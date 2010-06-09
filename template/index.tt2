@@ -5,6 +5,7 @@
 %]
     <div id="mapCanvas"></div>
     <script>
+
         map = new TrashMap({
             startingZone: "[% zone %]"
         });
