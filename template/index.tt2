@@ -5,8 +5,11 @@
 %]
     <div id="mapCanvas"></div>
     <script>
+        $(window).resize(function() {
+            $('#mapCanvas').height( $(window).height() - 150 );
+        }).resize();
 
-        map = new TrashMap({
+        var map = new TrashMap({
             startingZone: "[% zone %]"
         });
         map.render($('#mapCanvas').get(0));

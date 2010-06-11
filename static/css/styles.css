@@ -133,9 +133,6 @@ a img {
     float: left;
     text-align: left;
 }
-body#map #leftNav .sections {
-    height: 215px;
-}
 #leftNav p {
     margin: 10px 10px 20px 10px;
 }
