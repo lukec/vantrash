@@ -119,16 +119,16 @@ sub _send_notification_twitter {
     my $self = shift;
     my %args = @_;
 
-    my $msg = "It is garbage day on " . $args{pickup}->datetime->day_name
+    my $msg = "It's garbage day on " . $args{pickup}->datetime->day_name
             . " for " . $args{reminder}->zone;
     if ($args{pickup}->flags eq 'Y') {
-        $msg .= " - yard trimmings will be picked up";
+        $msg .= " - yard trimmings & food scraps will be picked up";
     }
     else {
         $msg .= " - no yard trimming pickup today";
     }
 
-    $msg .= ". To unsubscribe click: " . $args{reminder}->short_delete_url;
+    $msg .= ". Unsubscribe:" . $args{reminder}->short_delete_url;
 
     unless ($self->twitter->new_direct_message($args{target}, $msg)) {
         if (my $error = $self->twitter->get_error()) {
