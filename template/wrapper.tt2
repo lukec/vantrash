@@ -46,6 +46,11 @@
                     or set a reminder to your email.
                     Never forget to take the garbage out again.
                 </p>
+                <p>
+                    Please help us win the Apps for Climate Action Contest by
+                    voting for Vantrash!
+                    <a href="http://apps4climateaction.gov.bc.ca/gallery.aspx">http://apps4climateaction.gov.bc.ca/gallery.aspx</a>
+                </p>
                 [% IF extranav %][% INCLUDE $extranav %][% END %]
             </div>
             <div class="ad">
