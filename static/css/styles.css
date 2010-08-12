@@ -135,7 +135,8 @@ a img {
     text-align: left;
 }
 #leftNav p {
-    margin: 10px 10px 20px 10px;
+    font-size: 85%;
+    margin: 10px 10px 15px 10px;
 }
 #leftNav p.firststep {
     font-weight: bold;

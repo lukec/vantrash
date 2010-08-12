@@ -23,7 +23,7 @@ has 'request' => (is => 'rw', isa => 'HTTP::Engine::Request');
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
-our $VERSION = 1.4;
+our $VERSION = 1.5;
 
 sub handle_request {
     my $self = shift;
