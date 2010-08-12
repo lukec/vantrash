@@ -119,6 +119,7 @@ a img {
 #mainContent.lightbox {
     padding: 0;
     width: 95%;
+    margin: 0;
 }
 #mainContent {
     text-align:left;
