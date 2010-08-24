@@ -1,4 +1,4 @@
 [% WRAPPER m/wrapper.tt2 %]
-<a class="elem" href="/m/my_zone.html">My Zone</a>
-<a class="elem last" href="/m/zones.html">List of Pickup Zones</a>
+<a class="elem" href="/m/my_zone.html">Find zone for my current location</a>
+<a class="elem last" href="/m/zones.html">List of all pickup zones</a>
 [% END %]
