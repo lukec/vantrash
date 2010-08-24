@@ -1,6 +1,4 @@
-[% WRAPPER m/wrapper.tt2
-    javascript=["/javascript/vantrash-mobile-mini.js"]
-%]
+[% WRAPPER m/wrapper.tt2 %]
 
 <form method="GET" action="/m/add_reminder2.html">
     <input type="hidden" name="zone" value="[% zone %]"/>

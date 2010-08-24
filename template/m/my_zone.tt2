@@ -1,6 +1,4 @@
-[% WRAPPER m/wrapper.tt2
-    javascript=["/javascript/vantrash-mobile-mini.js"]
-%]
+[% WRAPPER m/wrapper.tt2 %]
 <div class="elem" id="schedule">
     <img src="/images/loading.gif"/>
 </div>
