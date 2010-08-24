@@ -4,7 +4,7 @@ LIB=lib
 TEMPLATE_DIR=template
 EXEC=bin/*
 MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS::minify(scalar <>);'
-MINIFY=cat
+#MINIFY=cat
 
 JS_DIR=static/javascript
 
