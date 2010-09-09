@@ -131,14 +131,15 @@ TrashMap.prototype = {
     },
 
     showScheduleForLocation: function (latlng) {
-        var marker = new GMarker(latlng, {
+        if (this.marker) this.map.removeOverlay(this.marker);
+        this.marker = new GMarker(latlng, {
             icon: this.createHomeIcon()
         });
-        this.map.addOverlay(marker);
+        this.map.addOverlay(this.marker);
         this.map.setCenter(latlng);
 
         var zone = this.containingZone(latlng);
-        this.showSchedule(marker, zone.name, zone.color);
+        this.showSchedule(this.marker, zone.name, zone.color);
     },
 
     containingZone: function (latlng) {
@@ -162,26 +163,34 @@ TrashMap.prototype = {
 
     findCurrentLocation: function (callback) {
         var self = this;
-        var error;
-        var geo = navigator.geolocation;
-        if (!geo && google && google.gears) {
-            geo = google.gears.factory.create('beta.geolocation');
-        }
-                  
-        if (geo) {
-            geo.getCurrentPosition(
-                function(pos) {
-                    if (self._done_curloc) return;
-                    self._done_curloc = true;
-                    var coords = pos.coords ? pos.coords : pos;
-                    callback(coords.latitude, coords.longitude);
-                },
-                function () {
-                    error = "Sorry, this feature seems to be disabled on this device";
+        
+        // Try W3C Geolocation (Preferred)
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                function(position) {
+                    callback(
+                        position.coords.latitude, position.coords.longitude
+                    );
+                }, function() {
+                    // error
                 }
             );
         }
-        if (error) throw new Error(error);
+        // Try Google Gears Geolocation
+        else if (google.gears) {
+            var geo = google.gears.factory.create('beta.geolocation');
+            geo.getCurrentPosition(
+                function(position) {
+                    callback(position.latitude,position.longitude);
+                }, function() {
+                    // error
+                }
+            );
+        }
+        // Browser doesn't support Geolocation
+        else {
+
+        }
     },
 
     loadKML: function(callback) {
