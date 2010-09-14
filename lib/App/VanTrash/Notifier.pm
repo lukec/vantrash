@@ -132,6 +132,8 @@ sub _send_notification_twitter {
 
     unless ($self->twitter->new_direct_message($args{target}, $msg)) {
         if (my $error = $self->twitter->get_error()) {
+            use Data::Dumper;
+            warn Dumper $error;
             if ($error->{error} =~ m/not following you/) {
                 $self->mailer->send_email(
                     to            => $args{reminder}->email,
