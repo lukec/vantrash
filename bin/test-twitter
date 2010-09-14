@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+use strict;
+use lib 'lib';
+use App::VanTrash::Twitter;
+
+my $t = App::VanTrash::Twitter->new;
+my $statuses = $t->twitter->friends_timeline({ count => 1 });
+use Data::Dumper;
+warn Dumper $statuses;
