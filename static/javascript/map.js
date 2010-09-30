@@ -131,15 +131,17 @@ TrashMap.prototype = {
     },
 
     showScheduleForLocation: function (latlng) {
-        if (this.marker) this.map.removeOverlay(this.marker);
-        this.marker = new GMarker(latlng, {
-            icon: this.createHomeIcon()
-        });
-        this.map.addOverlay(this.marker);
-        this.map.setCenter(latlng);
-
         var zone = this.containingZone(latlng);
-        this.showSchedule(this.marker, zone.name, zone.color);
+        if (zone) {
+            if (this.marker) this.map.removeOverlay(this.marker);
+            this.marker = new GMarker(latlng, {
+                icon: this.createHomeIcon()
+            });
+            this.map.addOverlay(this.marker);
+            this.map.setCenter(latlng);
+
+            this.showSchedule(this.marker, zone.name, zone.color);
+        }
     },
 
     containingZone: function (latlng) {
