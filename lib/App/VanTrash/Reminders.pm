@@ -25,6 +25,8 @@ sub add {
         $rem->{target} = 'email:' . $rem->{email};
     }
 
+    # TODO - filter valid reminder types
+
     my $robj = $self->_rs->create($rem);
     return $robj;
 }
