@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use lib 'lib';
+use FindBin;
+use Email::MIME;
+
+use App::VanTrash::Email;
+
+my $emailer = App::VanTrash::Email->new(
+    base_path => "$FindBin::Bin/..",
+);
+
+my ($subject, $body, @recipients);
+for my $recip (@recipients) {
+    warn "Sending email to $recip\n";
+    my %headers = (
+        From => '"VanTrash" <noreply@vantrash.ca>',
+        To => $recip,
+        Subject => $subject,
+    );
+    my $email = Email::MIME->create(
+        attributes => {
+            content_type => 'text/plain',
+            disposition => 'inline',
+            charset => 'utf8',
+        },
+        body => $body,
+    );
+    $email->header_set( $_ => $headers{$_}) for keys %headers;
+    $emailer->mailer->send($email);
+}
