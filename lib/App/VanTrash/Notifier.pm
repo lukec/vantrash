@@ -3,6 +3,7 @@ use Moose;
 use DateTime;
 use App::VanTrash::Log;
 use App::VanTrash::Twitter;
+use App::VanTrash::Twilio;
 use JSON qw/encode_json/;
 use namespace::clean -except => 'meta';
 
@@ -12,6 +13,7 @@ has 'reminders'      => (is => 'ro', isa => 'Object', required   => 1);
 has 'pickups'        => (is => 'ro', isa => 'Object', required   => 1);
 has 'sender_factory' => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'twitter'        => (is => 'ro', isa => 'Object', lazy_build => 1);
+has 'twilio'         => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'logger' =>
     (default => sub { App::VanTrash::Log->new }, handles => ['log']);
 
@@ -118,17 +120,7 @@ sub _send_notification_email {
 sub _send_notification_twitter {
     my $self = shift;
     my %args = @_;
-
-    my $msg = "It's garbage day on " . $args{pickup}->datetime->day_name
-            . " for " . $args{reminder}->zone;
-    if ($args{pickup}->flags eq 'Y') {
-        $msg .= " - yard trimmings & food scraps will be picked up";
-    }
-    else {
-        $msg .= " - no yard trimming pickup today";
-    }
-
-    $msg .= ". Unsubscribe:" . $args{reminder}->short_delete_url;
+    my $msg = $self->short_and_sweet_message(%args);
 
     unless ($self->twitter->new_direct_message($args{target}, $msg)) {
         if (my $error = $self->twitter->get_error()) {
@@ -171,6 +163,28 @@ sub _send_notification_webhook {
     return 1;
 }
 
+sub short_and_sweet_message {
+    my $self = shift;
+    my %args = @_;
+
+    my $msg = "It's garbage day on " . $args{pickup}->datetime->day_name
+            . " for " . $args{reminder}->zone;
+    if ($args{pickup}->flags eq 'Y') {
+        $msg .= " - yard trimmings & food scraps will be picked up";
+    }
+    else {
+        $msg .= " - no yard trimming pickup today";
+    }
+}
+
+sub _send_notification_sms {
+    my $self = shift;
+    my %args = @_;
+
+    $self->twilio->send_sms($args{target}, $self->short_and_sweet_message(%args));
+    return 1;
+}
+
 sub http_post {
     my $self = shift;
     my $url  = shift;
@@ -181,6 +195,7 @@ sub http_post {
 }
 
 sub _build_twitter { App::VanTrash::Twitter->new }
+sub _build_twilio { App::VanTrash::Twilio->new }
 
 # Tests can override this
 sub now { time() }
