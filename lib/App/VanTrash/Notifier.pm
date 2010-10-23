@@ -190,7 +190,8 @@ sub _send_notification_voice {
     my %args = @_;
 
     my $msg = $self->short_and_sweet_message(%args);
-    $msg =~ s/\-/. /g;
+    $msg =~ s/ \- /. /g;
+    $msg =~ s/\-/ /g;
     $msg =~ s/&/and/g;
     $msg .= ".  Have a great day!";
     $self->twilio->voice_call($args{target}, $msg);
