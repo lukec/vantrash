@@ -1,6 +1,5 @@
 package App::VanTrash::Twitter;
 use MooseX::Singleton;
-use YAML qw/LoadFile/;
 use Net::Twitter;
 use App::VanTrash::Config;
 use namespace::clean -except => 'meta';
