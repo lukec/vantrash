@@ -185,6 +185,18 @@ sub _send_notification_sms {
     return 1;
 }
 
+sub _send_notification_voice {
+    my $self = shift;
+    my %args = @_;
+
+    my $msg = $self->short_and_sweet_message(%args);
+    $msg =~ s/\-/. /g;
+    $msg =~ s/&/and/g;
+    $msg .= ".  Have a great day!";
+    $self->twilio->voice_call($args{target}, $msg);
+    return 1;
+}
+
 sub http_post {
     my $self = shift;
     my $url  = shift;
