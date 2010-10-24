@@ -39,7 +39,10 @@ sub _build_pretty_day {
 sub _build_datetime {
     my $self = shift;
     my $hash = $self->to_hash;
-    return DateTime->new( map { $_ => $hash->{$_} } qw/year month day/ );
+    return DateTime->new( 
+        time_zone => 'America/Vancouver',
+        map { $_ => $hash->{$_} } qw/year month day/,
+    );
 }
 
 
