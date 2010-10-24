@@ -8,8 +8,9 @@ extends 'App::VanTrash::Collection';
 sub by_zone {
     my $self = shift;
     my $zone = shift;
+    my $obj_please = shift;
     return [
-        map { $_->to_hash } $self->_rs->search(
+        map { $obj_please ? $_ : $_->to_hash } $self->_rs->search(
                 { zone     => $zone },
                 { order_by => { -asc => 'day' } },
             )->all
