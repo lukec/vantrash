@@ -6,6 +6,7 @@ use Template;
 use App::VanTrash::Model;
 use App::VanTrash::Template;
 use App::VanTrash::Config;
+use App::VanTrash::CallController;
 use JSON qw/encode_json decode_json/;
 use MIME::Types;
 use App::VanTrash::Log;
@@ -14,6 +15,7 @@ use namespace::clean -except => 'meta';
 
 has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
 has 'template' => (is => 'ro', lazy_build => 1);
+has 'call_controller' => (is => 'ro', lazy_build => 1);
 has 'model' => (is => 'rw', isa => 'App::VanTrash::Model');
 has 'mimetypes' => (is => 'ro', lazy_build => 1);
 has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
@@ -65,11 +67,13 @@ sub handle_request {
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
                     \&delete_reminder_html ],
             [ qr{^/reports/(.+)$} => \&show_report ],
+            [ qr{^/call(.*)$} => \&handle_call ],
         ],
 
         POST => [
             # Website Actions
             [ qr{^/action/tell-friends$} => \&tell_friends ],
+            [ qr{^/call(.*)$} => \&handle_call ],
         ],
         PUT => [
             [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
@@ -96,6 +100,15 @@ sub handle_request {
     }
 
     return $self->_static_file($path);
+}
+
+sub handle_call { 
+    my $self = shift;
+    my $req  = shift;
+    my $path = shift;
+    my $params = $req->params;
+
+    return $self->call_controller->handle_request($req, $path);
 }
 
 sub is_mobile {
@@ -491,6 +504,14 @@ sub response {
 sub _build_template {
     my $self = shift;
     return App::VanTrash::Template->new( base_path => $self->base_path );
+}
+
+sub _build_call_controller {
+    my $self = shift;
+    return App::VanTrash::CallController->new(
+        base_path => $self->base_path,
+        model => $self->model,
+        request => $self->request);
 }
 
 sub _build_engine {
