@@ -74,7 +74,7 @@ sub show_main_menu {
     <Gather action="/call/gather/main" method="POST" numDigits="1" timeout="7">
         <Say voice="woman">
             To look up the garbage day, press 1.
-            To leave a message for VanTrash, press 2.
+            To leave a message telling us how much you love Van Trash, press 2.
         </Say>
     </Gather>
     <Say voice="woman">Lets try that again.</Say>
