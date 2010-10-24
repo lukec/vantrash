@@ -70,7 +70,7 @@ sub next_pickup {
     my $tonight = $self->tonight;
     my @return;
     for my $d (@$days) {
-        my $dh = $d->to_hash;
+        my $dh = $obj_please ? $d->to_hash : $d;
         my $dt = DateTime->new(
             (map { $_ => $dh->{$_} } qw/year month day/),
             time_zone => 'America/Vancouver',
