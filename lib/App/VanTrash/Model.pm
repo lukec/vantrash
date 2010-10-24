@@ -32,8 +32,9 @@ has 'kml'       => (is => 'ro', isa => 'Object', lazy_build => 1);
 sub days {
     my $self = shift;
     my $zone = shift;
+    my $obj_please = shift;
 
-    return $self->pickups->by_zone($zone);
+    return $self->pickups->by_zone($zone, $obj_please);
 }
 
 sub ical {
@@ -62,18 +63,20 @@ sub next_pickup {
     my $zone = shift;
     my $limit = shift || 1;
     my $datetime = shift;
+    my $obj_please = shift;
 
-    my $days = $self->days($zone);
+    my $days = $self->days($zone, $obj_please);
     die "Not a valid zone: '$zone'\n" unless @$days;
     my $tonight = $self->tonight;
     my @return;
     for my $d (@$days) {
+        my $dh = $d->to_hash;
         my $dt = DateTime->new(
-            (map { $_ => $d->{$_} } qw/year month day/),
+            (map { $_ => $dh->{$_} } qw/year month day/),
             time_zone => 'America/Vancouver',
         );
         next if $tonight > $dt;
-        push @return, ($datetime ? $dt : $d->{string});
+        push @return, ($datetime ? $dt : $obj_please ? $d : $d->{string});
         last if @return == $limit;
     }
     return wantarray ? @return : @return == 1 ? $return[0] : \@return;
