@@ -1,3 +1,7 @@
 ---
   twitter_username: ""
   twitter_password: ""
+  twilio_AccountSid: ""
+  twilio_AuthToken: ""
+  twilio_from_number_sms: ""
+  twilio_from_number_voice: ""
