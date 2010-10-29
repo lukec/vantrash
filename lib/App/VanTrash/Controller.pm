@@ -1,6 +1,5 @@
 package App::VanTrash::Controller;
 use Moose;
-use HTTP::Engine;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Model;
@@ -8,28 +7,30 @@ use App::VanTrash::Template;
 use App::VanTrash::Config;
 use App::VanTrash::CallController;
 use JSON qw/encode_json decode_json/;
-use MIME::Types;
 use App::VanTrash::Log;
 use Email::Valid;
+use Plack::Request;
+use Plack::Response;
 use namespace::clean -except => 'meta';
 
-has 'engine' => (is => 'ro', lazy_build => 1, handles => ['run']);
-has 'template' => (is => 'ro', lazy_build => 1);
+has 'log_file'    => (is => 'rw', isa => 'Str', required => 1);
+has 'base_path'   => (is => 'ro', isa => 'Str', required => 1);
+
+with 'App::VanTrash::Log';
+
+# State
 has 'call_controller' => (is => 'ro', lazy_build => 1);
-has 'model' => (is => 'rw', isa => 'App::VanTrash::Model');
-has 'mimetypes' => (is => 'ro', lazy_build => 1);
-has 'http_module' => (is => 'ro', isa => 'Str', required => 1);
-has 'http_args' => (is => 'ro', isa => 'HashRef', default => sub { {} });
-has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
-has 'request' => (is => 'rw', isa => 'HTTP::Engine::Request');
-has 'logger' =>
-    (default => sub { App::VanTrash::Log->new }, handles => ['log']);
+has 'model'           => (is => 'rw', isa        => 'App::VanTrash::Model');
+has 'request'         => (is => 'rw', isa        => 'Plack::Request');
+has 'template'        => (is => 'ro', lazy_build => 1);
+has 'config'          => (is => 'ro', lazy_build => 1);
 
 our $VERSION = 1.6;
 
-sub handle_request {
+sub run {
     my $self = shift;
-    my $req = shift;
+    my $env = shift;
+    my $req = Plack::Request->new($env);
 
     $self->request($req);
 
@@ -99,14 +100,13 @@ sub handle_request {
         }
     }
 
-    return $self->_static_file($path);
+    return Plack::Response->new(404, [], '');
 }
 
 sub handle_call { 
     my $self = shift;
     my $req  = shift;
     my $path = shift;
-    my $params = $req->params;
 
     return $self->call_controller->handle_request($req, $path);
 }
@@ -126,10 +126,10 @@ sub default_page {
 sub ui_html {
     my ($self, $req, $tmpl) = @_;
     $tmpl ||= $self->default_page($req);
-    my $params = $req->params;
+    my $params = $req->parameters;
     $params->{zones} = $self->model->zones->all;
     $params->{host_port} = $req->uri->host_port;
-    return $self->process_template("$tmpl.tt2", $params);
+    return $self->process_template("$tmpl.tt2", $params)->finalize;
 }
 
 sub zones_html {
@@ -140,7 +140,7 @@ sub zones_html {
         zones => $self->model->zones->all,
         zone_uri => "/zones",
     );
-    return $self->process_template('zones/zones.html', \%param);
+    return $self->process_template('zones/zones.html', \%param)->finalize;
 }
 
 sub zones_txt {
@@ -167,18 +167,15 @@ sub zone_at_latlng {
     my $rest = shift || "";
 
     my $zone = $self->model->kml->find_zone_for_latlng($lat,$lng);
+    my $resp = Plack::Response->new;
     if ($zone) {
-        return HTTP::Engine::Response->new(
-            headers => [ Location => "/zones/$zone$rest" ],
-            status => 302,
-        );
+        $resp->redirect("/zones/$zone$rest", 302);
     }
     else {
-        return HTTP::Engine::Response->new(
-            status => 404,
-            body => "Sorry, no zone exists at $lat,$lng!",
-        );
+        $resp->status(404);
+        $resp->body("Sorry, no zone exists at $lat,$lng!");
     }
+    return $resp->finalize
 }
 
 sub zone_html {
@@ -190,7 +187,7 @@ sub zone_html {
     my %param = (
         zone => $self->_load_zone($zone),
     );
-    return $self->process_template('zones/zone.html', \%param);
+    return $self->process_template('zones/zone.html', \%param)->finalize;
 }
 
 sub zone_txt {
@@ -230,7 +227,7 @@ sub zone_days_html {
         days => $self->model->days($zone),
         has_ical => 1,
     );
-    return $self->process_template('zones/days.html', \%param);
+    return $self->process_template('zones/days.html', \%param)->finalize;
 }
 
 sub zone_days_txt {
@@ -275,7 +272,7 @@ sub zone_next_pickup_html {
         uri_append => '/nextpickup',
         days => [$self->model->next_pickup($zone, $limit)],
     );
-    return $self->process_template('zones/zone_next_pickup.html', \%param);
+    return $self->process_template('zones/zone_next_pickup.html', \%param)->finalize;
 }
 
 sub zone_next_pickup_txt {
@@ -312,7 +309,7 @@ sub zone_next_dow_change_html {
         uri_append => '/nextdowchange',
         $self->model->next_dow_change($zone, 'return datetime'),
     );
-    return $self->process_template('zones/zone_next_dow_change.html', \%param);
+    return $self->process_template('zones/zone_next_dow_change.html', \%param)->finalize;
 }
 
 sub zone_next_dow_change_txt {
@@ -354,7 +351,7 @@ sub confirm_reminder {
         );
         $resp->status(404);
         $self->log("CONFIRM_FAIL $zone $hash");
-        return $resp;
+        return $resp->finalize;
     }
 
     unless ($rem->confirmed()) {
@@ -369,7 +366,17 @@ sub confirm_reminder {
             ? 'm/reminder_good_confirm.tt2'
             : 'zones/reminders/good_confirm.html',
         \%param,
-    );
+    )->finalize;
+}
+
+sub _400_bad_request {
+    my $self = shift;
+    my $msg  = shift;
+    
+    my $resp = Plack::Response->new(400);
+    $resp->content_type('text/plain');
+    $resp->body($msg);
+    return $resp->finalize;
 }
 
 sub put_reminder {
@@ -378,13 +385,10 @@ sub put_reminder {
     my $zone = shift;
     
     my $args = eval { decode_json $req->raw_body };
-    return HTTP::Engine::Response->new( status => 400, body => "Bad JSON" ) if $@;
+    return $self->_400_bad_request("Bad JSON") if $@;
 
     my $addr = Email::Valid->address($args->{email});
-    return HTTP::Engine::Response->new( 
-        status => 400, 
-        body => "Bad email address",
-    ) unless $addr;
+    return $self->_400_bad_request("Bad email address") unless $addr;
 
     my $reminder = $self->model->add_reminder({
             name => $args->{name},
@@ -397,9 +401,7 @@ sub put_reminder {
     my $id = $reminder->id;
     $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email );
     my $uri = "/zones/$zone/reminders/" . $id;
-    my $resp = HTTP::Engine::Response->new( status => 201);
-    $resp->headers->header( Location => $uri );
-    return $resp;
+    return Plack::Response->new(201, [Location => $uri], '')->finalize;
 }
 
 sub _remove_slash {
@@ -420,27 +422,25 @@ sub delete_reminder_html {
             'zones/reminders/bad_delete.html'
         );
         $resp->status(404);
-        return $resp;
+        return $resp->finalize;
     }
 
     my $template = 'zones/reminders/confirm_delete.html';
-    if ($req->params->{confirm}) {
+    if ($req->parameters->{confirm}) {
         $template = 'zones/reminders/good_delete.html';
         $self->model->delete_reminder($id);
         $self->log("DELETE $zone $id");
     }
 
-    my $resp = $self->process_template($template, {
+    return $self->process_template($template, {
         reminder => $rem,
-    });
-    $resp->status(200);
-    return $resp;
+    })->finalize;
 }
 
 sub tell_friends {
     my $self = shift;
     my $req  = shift;
-    my $params = $req->params;
+    my $params = $req->parameters;
 
     my $tmpl_params = {};
     my $email_str = $params->{friend_emails};
@@ -461,7 +461,7 @@ sub tell_friends {
                 template => 'tell-a-friend.html',
                 template_args => {
                     friend_email => $sender_email,
-                    base => App::VanTrash::Config->base_url,
+                    base => $self->config->base_url,
                     request_uri => $self->request->request_uri,
                 },
             );
@@ -471,9 +471,7 @@ sub tell_friends {
         $self->log("TELLAFRIEND " . scalar(@emails));
     }
     
-    my $resp = $self->process_template('tell-a-friend.tt2', $tmpl_params);
-    $resp->status(200);
-    return $resp;
+    return $self->process_template('tell-a-friend.tt2', $tmpl_params)->finalize;
 }
 
 sub delete_reminder {
@@ -484,21 +482,18 @@ sub delete_reminder {
 
     if ($self->model->delete_reminder($id)) {
         $self->log("DELETE $zone $id");
-        return HTTP::Engine::Response->new( status => 204 );
+        return Plack::Response->new(204, [], '' );
     }
 
     $self->log("DELETE_FAIL $zone $id");
-    return HTTP::Engine::Response->new( status => 400 );
+    return $self->_400_bad_request("Could not delete $id");
 }
 
 sub response {
     my $self = shift;
     my $ct   = shift;
     my $body = shift;
-    my $res = HTTP::Engine::Response->new;
-    $res->headers->header('Content-Type' => $ct);
-    $res->body($body);
-    return $res;
+    return Plack::Response->new(200, ['Content-Type' => $ct], $body)->finalize;
 }
 
 sub _build_template {
@@ -514,17 +509,6 @@ sub _build_call_controller {
         request => $self->request);
 }
 
-sub _build_engine {
-    my $self = shift;
-    return HTTP::Engine->new(
-      interface => {
-          module => $self->http_module,
-          args   => $self->http_args,
-          request_handler => sub { $self->handle_request(@_) },
-      },
-    );
-}
-
 sub _build_model {
     my $self = shift;
     return App::VanTrash::Model->new(
@@ -538,58 +522,23 @@ sub process_template {
     my $param = shift;
     my $html;
     $param->{version} = $VERSION;
-    $param->{base} = App::VanTrash::Config->base_url;
+    $param->{base} = $self->config->base_url,
     $param->{request_uri} = $self->request->request_uri;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;
-    my $res = HTTP::Engine::Response->new(body => $html);
-    # Force IE8 to emulate IE7
-    $res->headers->header('X-UA-Compatible', 'IE=EmulateIE7');
-    return $res;
+    my $resp = Plack::Response->new(200);
+    $resp->body($html);
+    $resp->header('X-UA-Compatible' => 'IE=EmulateIE7');
+    return $resp;
 }
-
-sub show_report {
-    my $self = shift;
-    my $req  = shift;
-    my $path_name = shift;
-
-    $path_name = 'index.html' if $path_name =~ m#/#;
-    return $self->_static_file($self->base_path . '/root/reports/' . $path_name);
-}
-
-sub _static_file {
-    my $self = shift;
-    my $filename = shift;
-
-    $filename =~ s{^/(javascript|css)/\d+\.\d+}{$1};
-
-    # This majorly breaks stuff:
-    #my $file = $filename =~ m#/#
-    #    ? $filename
-    #    : $self->base_path . "/static/" . $filename;
-    my $file = $self->base_path . "/static/" . $filename;
-    if (-f $file) {
-        open(my $fh, $file);
-        my $resp = HTTP::Engine::Response->new(body => $fh);
-        my $ctype = $self->mimetypes->mimeTypeOf($file) || 'text/plain';
-        $resp->headers->header('Content-Type' => $ctype);
-        return $resp;
-    }
-    else {
-        return HTTP::Engine::Response->new(
-            status => 404,
-            body => "Sorry, that path doesn't exist!",
-        );
-    }
-}
-
-sub _build_mimetypes { MIME::Types->new }
 
 sub _load_zone {
     my $self = shift;
     my $name = shift;
     return $self->model->zones->by_name( $name );
 }
+
+sub _build_config { App::VanTrash::Config->instance };
 
 __PACKAGE__->meta->make_immutable;
 1;

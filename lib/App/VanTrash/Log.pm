@@ -1,11 +1,9 @@
 package App::VanTrash::Log;
-use MooseX::Singleton;
-use FindBin;
+use Moose::Role;
 use Fatal qw/open close syswrite/;
-use App::VanTrash::Config;
 use namespace::clean -except => 'meta';
 
-has 'log_file' => (is => 'ro', isa => 'Str', lazy_build => 1);
+requires 'log_file';
 
 sub log {
     my $self = shift;
@@ -15,13 +13,4 @@ sub log {
     close $fh;
 }
 
-sub _build_log_file {
-    my $self = shift;
-    if (App::VanTrash::Config->Is_dev) {
-        return "$FindBin::Bin/../vantrash.log";
-    }
-    return "/var/log/vantrash.log";
-}
-
-__PACKAGE__->meta->make_immutable;
 1;

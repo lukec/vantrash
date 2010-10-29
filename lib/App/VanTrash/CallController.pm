@@ -85,7 +85,7 @@ EOT
 sub process_main_menu {
     my ($self, $req, @args) = @_;
 
-    my $num = $req->params->{Digits};
+    my $num = $req->parameters->{Digits};
     if ($num and $num =~ m/^[12]$/) {
         if ($num == 1) {
             return '<Redirect>/call/show/lookup_menu</Redirect>';
@@ -132,7 +132,7 @@ EOT
 sub process_region {
     my ($self, $req, @args) = @_;
 
-    my $num = $req->params->{Digits};
+    my $num = $req->parameters->{Digits};
     if ($num and $num =~ m/^[12]$/) {
         my $type = $num == 1 ? 'north' : 'south';
         return "<Redirect>/call/show/zones_menu/$type</Redirect>";
@@ -162,7 +162,7 @@ sub lookup_zone {
     my ($self, $req, @args) = @_;
     my $type   = $args[0];
 
-    my $num = $req->params->{Digits};
+    my $num = $req->parameters->{Digits};
     if ($num and $num =~ m/^[12345]$/) {
         my @zones = (undef, qw/red blue green purple yellow/);
         my $zone_name = "vancouver-$type-$zones[$num]";
@@ -189,7 +189,7 @@ EOT
 
 sub receive_message {
     my ($self, $req, @args) = @_;
-    my $params = $req->params;
+    my $params = $req->parameters;
 
     my $body = "A new voicemail is available at: $params->{RecordingUrl}\n\n";
     if ($params->{TranscriptionStatus} eq 'completed') {
