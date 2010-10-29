@@ -1,4 +1,9 @@
 COULD DO
 * customizable & seasonal reminder notifications
 * prettier email notifications
+* voice notification snooze button
+* "remember" this zone
+
+TECHNICAL
+* use plack
 
