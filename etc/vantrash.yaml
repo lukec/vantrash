@@ -1,4 +1,5 @@
 ---
+  base_url: "http://vantrash.ca:5001"
   twitter_username: ""
   twitter_password: ""
   twilio_AccountSid: ""
