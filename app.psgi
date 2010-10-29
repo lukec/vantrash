@@ -1,6 +1,7 @@
 #!perl
 use Plack::Builder;
 use lib "lib";
+use App::VanTrash::CallController;
 use App::VanTrash::Controller;
 use App::VanTrash::Config;
 
@@ -18,7 +19,14 @@ builder {
            path => sub { s!^/(javascript|css)/(?:\d+\.\d+)/(.+)!/$1/$2! },
            root => './static/';
 
-    sub {
+    mount "/call" => sub {
+        App::VanTrash::CallController->new(
+            base_path => ".",
+            log_file => 'vantrash.log',
+        )->run(@_);
+    };
+
+    mount "/" => sub {
         local $ENV{VANTRASH_DEV_ENV} = 1;
         App::VanTrash::Controller->new(
             base_path => ".",

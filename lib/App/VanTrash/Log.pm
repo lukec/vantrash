@@ -3,7 +3,7 @@ use Moose::Role;
 use Fatal qw/open close syswrite/;
 use namespace::clean -except => 'meta';
 
-requires 'log_file';
+has 'log_file'    => (is => 'rw', isa => 'Str', required => 1);
 
 sub log {
     my $self = shift;

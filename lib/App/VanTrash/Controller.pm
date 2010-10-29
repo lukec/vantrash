@@ -2,8 +2,6 @@ package App::VanTrash::Controller;
 use Moose;
 use Fatal qw/open/;
 use Template;
-use App::VanTrash::Model;
-use App::VanTrash::Template;
 use App::VanTrash::Config;
 use App::VanTrash::CallController;
 use JSON qw/encode_json decode_json/;
@@ -13,26 +11,14 @@ use Plack::Request;
 use Plack::Response;
 use namespace::clean -except => 'meta';
 
-has 'log_file'    => (is => 'rw', isa => 'Str', required => 1);
-has 'base_path'   => (is => 'ro', isa => 'Str', required => 1);
+with 'App::VanTrash::ControllerBase';
 
-with 'App::VanTrash::Log';
-
-# State
-has 'call_controller' => (is => 'ro', lazy_build => 1);
-has 'model'           => (is => 'rw', isa        => 'App::VanTrash::Model');
-has 'request'         => (is => 'rw', isa        => 'Plack::Request');
-has 'template'        => (is => 'ro', lazy_build => 1);
-has 'config'          => (is => 'ro', lazy_build => 1);
-
-our $VERSION = 1.6;
+use constant Version => 1.6;
 
 sub run {
     my $self = shift;
     my $env = shift;
-    my $req = Plack::Request->new($env);
-
-    $self->request($req);
+    my $req = $self->request;
 
     my $coord = qr{[+-]?\d+\.\d+};
 
@@ -84,31 +70,15 @@ sub run {
         ],
     );
     
-    # Build a model for this request
-    $self->model( $self->_build_model );
-
     my $method = $req->method;
     for my $match (@{ $func_map{$method}}) {
         my ($regex, $todo) = @$match;
         if ($path =~ $regex) {
-            if (ref $todo) {
-                return $todo->($self, $req, $1, $2, $3, $4);
-            }
-            else {
-                $path = $todo;
-            }
+            return $todo->($self, $req, $1, $2, $3, $4);
         }
     }
 
-    return Plack::Response->new(404, [], '');
-}
-
-sub handle_call { 
-    my $self = shift;
-    my $req  = shift;
-    my $path = shift;
-
-    return $self->call_controller->handle_request($req, $path);
+    return Plack::Response->new(404, [], '')->finalize;
 }
 
 sub is_mobile {
@@ -369,16 +339,6 @@ sub confirm_reminder {
     )->finalize;
 }
 
-sub _400_bad_request {
-    my $self = shift;
-    my $msg  = shift;
-    
-    my $resp = Plack::Response->new(400);
-    $resp->content_type('text/plain');
-    $resp->body($msg);
-    return $resp->finalize;
-}
-
 sub put_reminder {
     my $self = shift;
     my $req  = shift;
@@ -489,56 +449,11 @@ sub delete_reminder {
     return $self->_400_bad_request("Could not delete $id");
 }
 
-sub response {
-    my $self = shift;
-    my $ct   = shift;
-    my $body = shift;
-    return Plack::Response->new(200, ['Content-Type' => $ct], $body)->finalize;
-}
-
-sub _build_template {
-    my $self = shift;
-    return App::VanTrash::Template->new( base_path => $self->base_path );
-}
-
-sub _build_call_controller {
-    my $self = shift;
-    return App::VanTrash::CallController->new(
-        base_path => $self->base_path,
-        model => $self->model,
-        request => $self->request);
-}
-
-sub _build_model {
-    my $self = shift;
-    return App::VanTrash::Model->new(
-        base_path => $self->base_path,
-    );
-}
-
-sub process_template {
-    my $self = shift;
-    my $template = shift;
-    my $param = shift;
-    my $html;
-    $param->{version} = $VERSION;
-    $param->{base} = $self->config->base_url,
-    $param->{request_uri} = $self->request->request_uri;
-    $self->template->process($template, $param, \$html) 
-        || die $self->template->error;
-    my $resp = Plack::Response->new(200);
-    $resp->body($html);
-    $resp->header('X-UA-Compatible' => 'IE=EmulateIE7');
-    return $resp;
-}
-
 sub _load_zone {
     my $self = shift;
     my $name = shift;
     return $self->model->zones->by_name( $name );
 }
-
-sub _build_config { App::VanTrash::Config->instance };
 
 __PACKAGE__->meta->make_immutable;
 1;

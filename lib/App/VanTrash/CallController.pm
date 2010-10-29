@@ -1,23 +1,18 @@
 package App::VanTrash::CallController;
 use Moose;
 use Email::MIME;
+use Plack::Response;
 use App::VanTrash::Email;
 use namespace::clean -except => 'meta';
 
-has 'request' => (is => 'rw', isa => 'HTTP::Engine::Request', required => 1);
-has 'model' => (is => 'rw', isa => 'App::VanTrash::Model', required => 1);
-has 'base_path' => (is => 'ro', isa => 'Str', required => 1);
-# TODO - logger should be a role
-has 'logger' =>
-    (default => sub { App::VanTrash::Log->new }, handles => ['log']);
+with 'App::VanTrash::ControllerBase';
 
+use constant Version => 1.6;
 
-our $VERSION = 1.6;
-
-sub handle_request {
+sub run {
     my $self = shift;
-    my $req = shift;
-    my $path = shift;
+    my $req = $self->request;
+    my $path = $req->path;
 
     my @func_map = (
         [ qr{^/start$}       => \&start ],
@@ -43,9 +38,9 @@ sub handle_request {
         }
     }
 
-    my $resp = HTTP::Engine::Response->new( status => 200 );
-    $resp->headers->header('Content-Type' => 'text/xml');
-    $resp->headers->header('Cache-Control' => 'no-cache, no-store, must-revalidate');
+    my $resp = Plack::Response->new(200);
+    $resp->header('Content-Type' => 'text/xml');
+    $resp->header('Cache-Control' => 'no-cache, no-store, must-revalidate');
     $response ||= "<Say voice=\"woman\">I'm sorry.  Lets start at the beginning.</Say>"
             . "<Redirect>/call/start</Redirect>";
 
@@ -57,7 +52,7 @@ $response
 EOT
     $resp->body($body);
 
-    return $resp;
+    return $resp->finalize;
 }
 
 sub start { 
