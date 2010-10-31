@@ -7,8 +7,4 @@ COULD DO
 TECHNICAL
 * use plack
 ** mostly tested, pretty confident
-** next step: apache handler or deploy a service?
 * release automation
-* test deployment server - ec2?
-** use App::BundleDeps
-** daemontools
