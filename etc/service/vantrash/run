@@ -1,0 +1,8 @@
+#!/bin/bash
+
+VANTRASH=/home/ubuntu/src/vantrash
+export PERL5LIB="$VANTRASH/lib"
+
+exec 2>&1 \
+    /usr/local/bin/plackup -s Starman -a $VANTRASH/production.psgi -p 2080 --host 127.0.0.1
+    
