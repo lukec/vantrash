@@ -40,6 +40,7 @@ JS_REMINDER_FILES=\
 
 WIKI_PAGES=about_us faq
 CRONJOB=etc/cron.d/vantrash
+PSGI=production.psgi
 
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
@@ -86,10 +87,16 @@ $(JS_REMINDER_TARGET): $(JS_REMINDER_FILES) Makefile
 	done
 
 $(INSTALL_DIR)/%:
-	mkdir $@
+	mkdir $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/root
+	mkdir $(INSTALL_DIR)/bin
+	mkdir $(INSTALL_DIR)/etc
+	mkdir $(INSTALL_DIR)/data
+	chown -R www-data:www-data $(INSTALL_DIR)
+
 
 install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
-    	 $(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB)
+	$(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB) $(PSGI)
 	rm -rf $(INSTALL_DIR)/root/css
 	rm -rf $(INSTALL_DIR)/root/images
 	rm -rf $(INSTALL_DIR)/root/javascript
@@ -97,17 +104,22 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	rm -f $(INSTALL_DIR)/root/*.html
+	cp $(PSGI) $(INSTALL_DIR)
 	cp data/vantrash.dump $(INSTALL_DIR)/data
 	cp $(EXEC) $(INSTALL_DIR)/bin
 	cp -f etc/cron.d/vantrash /etc/cron.d/vantrash
 	cp -f etc/areas.yaml $(INSTALL_DIR)/etc/areas.yaml
-	cp -f etc/apache2/sites-available/000-default /etc/apache2/sites-available
-	ln -sf /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/000-default
+	svc -d /etc/service/vantrash
+	rm -rf $(INSTALL_DIR)/etc/service
+	cp -R etc/service $(INSTALL_DIR)/etc/service
+	if [ ! -d /etc/service/vantrash ]; then \
+	    update-service --add $(INSTALL_DIR)/etc/service/vantrash vantrash; \
+	fi
+	svc -u /etc/service/vantrash
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
 	chown -R www-data:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
-	/etc/init.d/apache2 force-reload
 	/etc/init.d/nginx reload
 
 test: $(TESTS)
