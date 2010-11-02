@@ -1,12 +1,9 @@
 #!/bin/bash
 
 VANTRASH=/var/www/vantrash
-export PERL5LIB="$VANTRASH/lib"
-
-# todo 
-# * set userid to vantrash
-# * launch using proper lib
+export PERL5LIB=$VANTRASH/lib
 
 exec 2>&1 \
-    /usr/local/bin/plackup -s Starman -a $VANTRASH/production.psgi -p 2080 --host 127.0.0.1 2>> /var/log/vantrash-server.log
-    
+    /usr/local/bin/starman --listen 127.0.0.1:2080 --workers 4 --preload-app \
+        --user vantrash --group www-data \
+        $VANTRASH/production.psgi
