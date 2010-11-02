@@ -14,8 +14,8 @@ has 'pickups'        => (is => 'ro', isa => 'Object', required   => 1);
 has 'sender_factory' => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'twitter'        => (is => 'ro', isa => 'Object', lazy_build => 1);
 has 'twilio'         => (is => 'ro', isa => 'Object', lazy_build => 1);
-has 'logger' =>
-    (default => sub { App::VanTrash::Log->new }, handles => ['log']);
+
+with 'App::VanTrash::Log';
 
 sub need_notification {
     my $self = shift;

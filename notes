@@ -7,4 +7,4 @@ COULD DO
 TECHNICAL
 * use plack
 ** mostly tested, pretty confident
-* release automation
+* bug: creating a reminder for a duplicate zone+email combo

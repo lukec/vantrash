@@ -3,8 +3,10 @@ use MooseX::Singleton;
 use YAML;
 use namespace::clean -except => 'meta';
 
-has 'config_file' => (is => 'ro', isa => 'Str',     required   => 1);
+has 'config_file' => (is => 'ro', isa => 'Str',     lazy_build => 1);
 has 'config_hash' => (is => 'ro', isa => 'HashRef', lazy_build => 1);
+
+sub _build_config_file { '/etc/vantrash.yaml' }
 
 sub _build_config_hash {
     my $self = shift;

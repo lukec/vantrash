@@ -20,7 +20,7 @@ sub send_email {
 
     my $body;
     my $template = "email/$args{template}";
-    $args{template_args}{base} = App::VanTrash::Config->base_url();
+    $args{template_args}{base} = App::VanTrash::Config->instance->base_url();
     $self->template->process($template, $args{template_args}, \$body) 
         || die $self->template->error;
 

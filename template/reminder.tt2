@@ -30,6 +30,11 @@
                     <span class="title">Sending a twitter direct message to </span>
                     <input disabled="true" class="border twitter" type="text" name="twitter_name"/>
                 </p>
+                <p>
+                    <input name="tgRadio" id="voiceRadio" type="radio"/>
+                    <span class="title">Calling the phone number  </span>
+                    <input disabled="true" class="border voice" type="text" name="voice_name"/>
+                </p>
 
                 <div class="lbButtons">
                     <input class="btn Back" type="button" value="Back" onclick="wizard.showSlide('email_slide')"/>

@@ -8,7 +8,6 @@ use App::VanTrash::Zones;
 use App::VanTrash::Reminders;
 use App::VanTrash::Notifier;
 use App::VanTrash::KML;
-use App::VanTrash::Config;
 use Carp qw/croak/;
 use Data::ICal;
 use Data::ICal::Entry::Event;
@@ -128,7 +127,7 @@ sub add_reminder {
     my $robj = eval { $self->reminders->add($rem) };
     my $err = "Unknown error";
     if ($err = $@) {
-        warn "Error inserting reminder: " . Dumper($rem);
+        warn "Error inserting reminder ($err): " . Dumper($rem);
 
         # Perhaps the reminder exists already?
         if (my @rem = $self->reminders->by_email($rem->{email})) {

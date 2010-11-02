@@ -9,9 +9,11 @@ ReminderWizard.prototype = {
         var $target = $('input[name=target]');
         function fromEmail() { $target.val('email:' + $(this).val()) }
         function fromTwitter() { $target.val('twitter:' + $(this).val()) }
+        function fromVoice() { $target.val('voice:' + $(this).val()) }
         $("#emailRadio")
             .click(function() {
                 $("input.twitter").attr("disabled", true);
+                $("input.voice").attr("disabled", true);
                 $('input.email').change(fromEmail).change();
             })
             .click();
@@ -23,6 +25,18 @@ ReminderWizard.prototype = {
                     $("input.twitter").val('@');
                 }
                 $('input.twitter').change(fromTwitter).change();
+                $('input.voice').change(function() {});
+                $('input.email').change(function() {});
+            });
+
+        $("#voiceRadio")
+            .click(function() {
+                $("input.voice").attr("disabled", false).focus();
+                if (!$("input.voice").val()) {
+                    $("input.voice").val('');
+                }
+                $('input.voice').change(fromVoice).change();
+                $('input.twitter').change(function() {});
                 $('input.email').change(function() {});
             });
 
