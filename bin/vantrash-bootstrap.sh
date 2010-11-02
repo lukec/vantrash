@@ -1,5 +1,9 @@
 #!/bin/bash
 set -x
+
+useradd vantrash
+usermod -a -G www-data vantrash
+
 set -e
 
 # 
