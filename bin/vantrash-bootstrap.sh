@@ -10,7 +10,7 @@ set -e
 sudo apt-get install --assume-yes git-core nginx tmpreaper libxml2-dev \
         libdb4.6-dev ctags libssl-dev sqlite3 daemontools-run
 # And some helper dev packages
-sudo apt-get install --assume-yes screen multitail
+sudo apt-get install --assume-yes screen multitail perl-doc
 
 # Now install Perl dependencies
 # First install cpanm for easy cpanning
