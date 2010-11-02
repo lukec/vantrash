@@ -54,7 +54,7 @@ clean:
 	rm -f \
 	    $(JS_MINI) $(JS_TARGET) \
 	    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
-	    $(JS_MOBILE_TARGET) $(JS_MOBILE_MINI)
+	    $(JS_MOBILE_TARGET) $(JS_MOBILE_MINI) \
 	    $(JS_REMINDER_TARGET) $(JS_REMINDER_MINI)
 
 .SUFFIXES: .js -mini.js
@@ -92,7 +92,7 @@ $(INSTALL_DIR)/%:
 	mkdir $(INSTALL_DIR)/bin
 	mkdir $(INSTALL_DIR)/etc
 	mkdir $(INSTALL_DIR)/data
-	chown -R www-data:www-data $(INSTALL_DIR)
+	chown -R vantrash:www-data $(INSTALL_DIR)
 
 
 install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
@@ -119,7 +119,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	cp -f etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-available
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
-	chown -R www-data:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
+	chown -R vantrash:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
 	/etc/init.d/nginx reload
 
 test: $(TESTS)
