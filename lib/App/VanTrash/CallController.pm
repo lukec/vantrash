@@ -24,6 +24,7 @@ sub run {
         [ qr{^/show/zones_menu/(north|south)$} => \&show_zones_menu ],
         [ qr{^/gather/lookup/(north|south)$}   => \&lookup_zone ],
 
+        [ qr{^/notify/([\w-]+)$}     => \&voice_notify ],
         [ qr{^/show/message_prompt$} => \&show_message_prompt ],
         [ qr{^/receive/message$}     => \&receive_message ],
         [ qr{^/goodbye$}             => \&goodbye ],
@@ -134,6 +135,25 @@ sub process_region {
     }
     return "<Say voice=\"woman\">Please choose one or two.</Say>"
         . "<Redirect>/call/show/main</Redirect>";
+}
+
+sub voice_notify {
+    my ($self, $req, $zone_name) = @_;
+    my $zone = $self->model->zones->by_name($zone_name) or return;
+
+    my $pickup = $self->model->next_pickup($zone_name, 1, undef, 'obj please');
+    my $day_name = $pickup->datetime->day_name;
+    my $extra = 'No commpost pickup this week.';
+    if ($pickup->flags =~ m/y/i) {
+        $extra = "Food scraps and yard trimmings will be picked up too.";
+    }
+
+    my $zone_desc = $zone->desc;
+    return <<EOT;
+<Pause length="1"/>
+<Say voice="woman">Hello, this is Vanessa Van Trash. I hope you are feeling dirty, because garbage day is almost here!  Your garbage will be removed on $day_name.  $extra</Say>
+<Hangup/>
+EOT
 }
 
 sub show_zones_menu {
