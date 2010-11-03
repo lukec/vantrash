@@ -1,0 +1,51 @@
+
+* Fixture: VanTrash
+
+| open                  | http://vantrash.ca/ |
+| wait-for-page-to-load | 5000                     |
+
+| is-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively. |
+| is-text-present-ok    | You can find out your garbage schedule, download the schedule to your calendar or set a reminder to your email. Never forget to take the garbage out again. |
+| is-text-present-ok | To start, simply click on the zone in which you live or search for your address below, then click "Remind me". |
+
+| wait-for-kml |
+
+| click-zone-ok            | vancouver-south-red |
+| wait-for-text-present-ok | Vancouver Red South |
+| calendar-ok              | vancouver-south-red |
+
+| click-zone-ok            | vancouver-north-red |
+| wait-for-text-present-ok | Vancouver Red North |
+| calendar-ok              | vancouver-north-red |
+
+| click-zone-ok            | vancouver-south-blue |
+| wait-for-text-present-ok | Vancouver Blue South |
+| calendar-ok              | vancouver-south-blue |
+
+| click-zone-ok            | vancouver-north-blue |
+| wait-for-text-present-ok | Vancouver Blue North |
+| calendar-ok              | vancouver-north-blue |
+
+| click-zone-ok            | vancouver-south-purple |
+| wait-for-text-present-ok | Vancouver Purple South |
+| calendar-ok              | vancouver-south-purple |
+
+| click-zone-ok            | vancouver-north-purple |
+| wait-for-text-present-ok | Vancouver Purple North |
+| calendar-ok              | vancouver-north-purple |
+
+| click-zone-ok            | vancouver-south-green |
+| wait-for-text-present-ok | Vancouver Green South |
+| calendar-ok              | vancouver-south-green |
+
+| click-zone-ok            | vancouver-north-green |
+| wait-for-text-present-ok | Vancouver Green North |
+| calendar-ok              | vancouver-north-green |
+
+| click-zone-ok            | vancouver-south-yellow |
+| wait-for-text-present-ok | Vancouver Yellow South |
+| calendar-ok              | vancouver-south-yellow |
+
+| click-zone-ok            | vancouver-north-yellow |
+| wait-for-text-present-ok | Vancouver Yellow North |
+| calendar-ok              | vancouver-north-yellow |
