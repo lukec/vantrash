@@ -11,7 +11,7 @@ Calendar = function (args) {
 Calendar.prototype = {
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     months: [
-        'January', 'Febuary', 'March', 'April', 'May', 'June',
+        'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ],
     ROWS: 2 + Math.ceil(31 / 7),
