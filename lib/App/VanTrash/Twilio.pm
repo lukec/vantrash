@@ -37,9 +37,9 @@ sub send_sms {
 sub voice_call {
     my $self    = shift;
     my $number  = shift;
-    my $message = shift;
+    my $zone = shift;
 
-    my $url = 'http://twimlets.com/message?Message=' . uri_encode($message);
+    my $url = App::VanTrash::Config->base_url . '/call/notify/' . $zone;
     my $response = $self->api->POST(
         'Calls',
         Caller => $self->voice_from_number,
