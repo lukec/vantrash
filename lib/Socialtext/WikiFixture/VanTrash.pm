@@ -1,130 +1,131 @@
 package Socialtext::WikiFixture::VanTrash;
-use Moose::Role;
-use App::VanTrash::Model;
-use IPC::Run qw/start finish/;
+use Moose;
 use Test::More;
-use File::Path qw/mkpath rmtree/;
+use Test::HTTP;
+use JSON::XS qw(decode_json);
+use Date::Parse qw(str2time);
+use POSIX qw(strftime);
+use namespace::clean -except => 'meta';
 
-has 'model' => (is => 'ro', isa => 'App::VanTrash::Model', lazy_build => 1);
-has 'http_server' => (is => 'rw', isa => 'HashRef');
-has 'email_file' => (is => 'ro', isa => 'Str', lazy_build => 1);
+extends 'Socialtext::WikiFixture::Selenese';
 
-after 'init' => sub {
+has 'http' => (
+    is => 'ro', isa => 'Test::HTTP', lazy_build => 1
+);
+
+sub _build_http {
     my $self = shift;
-    $self->start_up_http_server;
-    $self->clear_reminders;
+    return Test::HTTP->new('vantrash');
 };
 
-after 'stop' => sub {
-    my $self = shift;
-    $self->stop_http_server;
-};
-
-sub stop_http_server {
-    my $self = shift;
-    my $server = $self->http_server || return;
-
-    my $h = $server->{handle};
-    $h->pump_nb;
-    $h->kill_kill();
-    if (my $msg = ${ $server->{output}}) {
-        warn $msg;
-    }
+sub get {
+    my ($self, $uri, $accept) = @_;
+    $accept ||= 'text/html';
+    $uri = "$self->{browser_url}$uri" if $uri =~ m#^/#;
+    $self->http->get($uri, [Accept => $accept]);
 }
 
-sub start_up_http_server {
-    my $self = shift;
+sub _api_get_next_pickup_date {
+    my ($self, $zone) = @_;
+    $self->get("/zones/$zone/nextpickup.json");
+    my $data = decode_json($self->http->response->content);
+    (my $date = $data->{'next'}[0]) =~ s{ Y$}{};
+    return strftime("%a %b %d %Y", localtime(str2time($date)));
+}
 
-    system("killall perl");
-    my $out = '';
-    my $base_dir = base_path();
-    $ENV{VT_EMAIL} = $self->email_file;
-    my @command = ($^X, "$base_dir/bin/vantrash-http.pl");
-    my $handle = start(\@command, \*STDIN, \$out, \$out);
-    $self->http_server( {
-            handle => $handle,
-            output => \$out,
-        }
+# Vantrash stuff
+
+sub wait_for_kml {
+    my $self = shift;
+    $self->wait_for_condition('window.map.zones.length', 5000);
+}
+
+has 'zones' => (
+    is => 'ro', isa => 'ArrayRef', lazy_build => 1,
+);
+sub _build_zones {
+    my $self = shift;
+    my $js = '
+        window.$.map(
+            window.map.zones,function(z){return z.name}
+        ).join(" ")
+    ';
+    return [ split ' ', $self->get_eval($js) ];
+}
+
+sub click_zone_ok {
+    my $self = shift;
+    my $zone = shift;
+
+    my $i = 0;
+    my %zones = map { $_ => $i++ } @{$self->zones};
+
+    $self->get_eval_ok(
+        "window.GEvent.trigger(window.map.zones[$zones{$zone}], 'click')",
+        "Click zone '$zone'",
     );
-    die "Failed to run @command" unless $handle;
-    sleep 3;
-    pump $handle;
-    unless ($out =~ m/Starting up HTTP server on port (\d+)/) {
-        die "Couldn't find HTTP port:\n$out\n";
+};
+
+sub calendar_ok {
+    my $self = shift;
+    my $zone = shift;
+
+    # Next pickup date is correct
+    my $next_date = $self->_api_get_next_pickup_date($zone);
+    $self->is_text_present_ok("Next pickup: $next_date");
+
+    # Check that the calendar opens to the current month
+    # XXX it should open to next month if no more days are this month
+    my $month = strftime("%B/%Y", localtime(time));
+    is $self->get_text('css=.month'), $month, "Calendar opens to $month";
+
+    # Today is bolded
+    my $date = int strftime("%d", localtime(time));
+    is $self->get_text('css=.calendar .today'), $date, "Today is $date";
+     
+    # Get the pickup days using REST 
+    $self->get("/zones/$zone/pickupdays.json");
+    my $pickup_days = decode_json($self->http->response->content);
+
+    # Click back until we get to the first month
+    my $current_month = strftime("%Y-%m", localtime(time));
+    my $first_month = "$pickup_days->[0]{year}-$pickup_days->[0]{month}";
+    while ($current_month gt $first_month) {
+        $self->click('css=.calendar .back');
+        my $test = $self->get_text('css=.month');
+        (my $first = $self->get_text('css=.month')) =~ s{/}{ 1 };
+        $current_month = strftime("%Y-%m", localtime(str2time($first)));
+        die "Unable to parse date: $first" unless $current_month;
     }
-    $out = "";
-    $self->{base_url} = "http://localhost:$1";
-    diag "Setting base_url to $self->{base_url}";
-}
 
-sub clear_reminders {
-    my $self = shift;
-    unlink base_path() . "/data/reminders.yaml";
-}
+    # Each pickup day has the appropriate text
+    for my $pickup_day (@$pickup_days) {
+        # Skip old months for now
+        my $ym = "$pickup_day->{year}-$pickup_day->{month}";
 
-sub reminder_count_is {
-    my $self = shift;
-    my $count = shift;
+        if ($ym gt $current_month) {
+            $self->click('css=.calendar .forward');
+            $current_month = $ym;
+        }
 
-    my $all_reminders = $self->model->all_reminders;
-    is scalar(@$all_reminders), $count, 'reminder count';
-}
+        # Verify the correct dates are marked
+        my $num = $pickup_day->{day} - 1;
+        my $day_selector = "dom=window.\$('.calendar .day').get($num)";
+        like $self->get_attribute("$day_selector\@class"), qr/marked/,
+            "$num is marked for pickup";
 
-sub clear_email {
-    my $self = shift;
-    unlink $self->email_file;
-}
-
-sub email_like {
-    my $self = shift;
-    my $regex = shift;
-
-    like $self->email_contents, $regex, 'email matches';
-}
-
-sub email_contents {
-    my $self = shift;
-    return '' unless -e $self->email_file;
-    open(my $fh, $self->email_file);
-    my $content;
-    {
-        local $/;
-        $content = <$fh>;
+        # Make sure yard trimmings is set
+        if ($pickup_day->{flags}) {
+            like $self->get_attribute("$day_selector\@style"), qr/yard/,
+                "$num is marked for yard trimmings pickup";
+        }
+        else{
+            unlike $self->get_attribute("$day_selector\@style"), qr/yard/,
+                "$num is NOT marked for yard trimmings pickup";
+        }
     }
-    return $content;
 }
 
-sub set_url_from_email {
-    my $self = shift;
-    my $var  = shift;
-
-    my $email = $self->email_contents;
-    my $url;
-    if ($email =~ m#http://vantrash\.ca(\S+)#) {
-        $url = $1;
-    }
-    unless ($url) {
-        warn "Could not find an url in this mess\n$email\n";
-        ok 0, 'no confirmation email';
-        return;
-    }
-    $self->{$var} = $url;
-    ok 1, 'found confirmation link in email';
-}
-
-sub base_path {
-    my $file = $INC{'Socialtext/WikiFixture/VanTrash.pm'};
-    (my $dir = $file) =~ s#(.+)/.+#$1#;
-    return "$dir/../../..";
-}
-
-sub _build_model {
-    return App::VanTrash::Model->new( base_path => base_path() );
-}
-
-sub _build_email_file {
-    my $file = "/tmp/email.$$";
-    return $file;
-}
+__PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 1;
