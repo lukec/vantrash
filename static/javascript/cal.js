@@ -39,6 +39,7 @@ Calendar.prototype = {
         var $tr = $('<tr></tr>').appendTo(this.table);
         $('<a href="#"></a>')
             .text('<<')
+            .addClass('back')
             .click(function() { self.prevMonth() })
             .appendTo($('<td></td>').appendTo($tr));
         $('<td>month</td>')
@@ -47,6 +48,7 @@ Calendar.prototype = {
             .appendTo($tr);
         $('<a href="#"></a>')
             .text('>>')
+            .addClass('forward')
             .click(function() { self.nextMonth() })
             .wrap('<td></td>')
             .appendTo($('<td></td>').appendTo($tr));
