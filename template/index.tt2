@@ -17,7 +17,7 @@
         <div class="description">
             <div class="searchBox">
                 <h1>Find my zone:</h1>
-                <form class="address">
+                <form id="address">
                     <input class="text ui-corner-all initial" type="text"/>
                     <input class="submit" type="submit" value="Search"/>
                 </form>
@@ -36,11 +36,13 @@
                 startingZone: "[% zone %]"
             });
             map.render($('#mapCanvas').get(0));
+
             $('#address .initial')
                 .val('149 West 4th')
                 .one('click', function() {
                     $(this).removeClass('initial').val('');
                 });
+
             $('#address')
                 .submit(function() {
                     map.search($('.text', this).val());

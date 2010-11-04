@@ -154,6 +154,11 @@ header {
     height: 120%;
 }
 
+input.initial {
+    font-style: italic;
+    color: #666;
+}
+
 input.text {
     height: 33px;
     font-size: 130%;
