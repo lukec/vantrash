@@ -10,9 +10,8 @@ TrashMap.prototype = {
         'July','August','September','October','November','December'
     ],
     descriptions: {},
-    center: function() {
-        return new GLatLng(49.26422, -123.138542);
-    },
+    zoom: 12,
+    center: new GLatLng(49.24702, -123.138542),
 
     showSchedule: function(node, name, color) {
         var self = this;
@@ -81,8 +80,8 @@ TrashMap.prototype = {
 
     createMap: function(node) {
         this.map = new GMap2(node);
-        this.map.setCenter(this.center(),9);
         this.map.setUIToDefault();
+        this.map.setCenter(this.center,this.zoom);
     },
 
     render: function(node) {
@@ -95,6 +94,7 @@ TrashMap.prototype = {
             else {
                 self.showScheduleForCurrentLocation();
             }
+            self.map.setCenter(self.center,self.zoom);
         });
     },
 
