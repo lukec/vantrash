@@ -166,17 +166,55 @@ input.text {
     width: 300px;
 }
 
-/* Map */
-#mapCanvas {
-    height: 300px;
-}
-
 .copyright {
     clear: both;
     font-size: 80%;
     display: block;
     text-align: right;
     margin: 0 10px 10px 0;
+}
+
+/* Map */
+#mapCanvas {
+    height: 350px;
+}
+
+/* Map Balloons */
+.balloon .subscribe {
+    margin-top: 4px;
+    width: 100%;
+    font-weight: bold;
+}
+
+.balloon .zoneName {
+    font-weight: bold;
+    text-align: center;
+    font-size: 115%;
+}
+.balloon .next {
+    text-align: center;
+}
+.balloon .yard {
+    text-align: center;
+    font-style: italic;
+}
+
+/* Don't make disabled dates opaque because all are disabled */
+.balloon .calendar .ui-state-disabled {
+    opacity: 1;
+    filter:Alpha(Opacity=100);
+}
+
+.balloon .calendar .ui-datepicker-today {
+    border: 1px solid #d22;
+}
+.balloon .calendar .ui-datepicker-today span {
+    color: #000;
+}
+
+.balloon .calendar .marked span {
+    background: #60a464;
+    color: #000;
 }
 
 @media all and (orientation:portrait) { 

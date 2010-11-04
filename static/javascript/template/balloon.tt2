@@ -1,0 +1,7 @@
+<div class="balloon">
+    <div class="zoneName">[% description %]</div>
+    <div class="next">Next pickup: [% next %]</div>
+    <div class="yard">[% yard %]</div>
+    <div class="calendar"></div>
+    <div><input class="subscribe" type="button" value="Subscribe"/></div>
+</div>

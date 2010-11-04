@@ -838,78 +838,78 @@ TrashMap = function(opts) {
 }
 
 TrashMap.prototype = {
+    monthNames: [
+        'January','February','March','April','May','June',
+        'July','August','September','October','November','December'
+    ],
     descriptions: {},
     center: function() {
         return new GLatLng(49.26422, -123.138542);
     },
 
-    getZoneInfo: function(name, color, desc, callback) {
+    showSchedule: function(node, name, color) {
         var self = this;
-        $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
-            var cal = new Calendar();
-            $.each(days, function(i,d) {
-                cal.mark(new CalendarMarker({
-                    year: d.year,
-                    month: d.month,
-                    day: d.day,
-                    color: color,
-                    image: d.flags == 'Y' ? '/images/yard.png' : false
-                }))
+
+        $.getJSON('/zones/' + name + '/nextpickup.json', function (next) {
+            var yard = '';
+            next = next.next[0];
+            if (next.match(/^\d+-(\d+)-(\d+)(?: (Y))?/)) {
+                next = self.monthNames[RegExp.$1 - 1] + ' ' + RegExp.$2;
+                yard = RegExp.$3
+                    ? ' (Yard trimmings will be picked up)'
+                    : ' (Yard trimmings will NOT be picked up)'
+            }
+
+            $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
+                var $div = $(Jemplate.process('balloon.tt2', {
+                    description: self.descriptions[name],
+                    next: next,
+                    yard: yard
+                }));
+
+                if (!node) throw new Error("Node required");
+                if (node.openInfoWindow) {
+                    node.openInfoWindow($div.get(0), {maxWidth: 220});
+                }
+                else {
+                    var center = node.getBounds().getCenter();
+                    self.map.openInfoWindow(
+                        center, $div.get(0), {maxWidth: 220}
+                    );
+                }
+                
+                $div.find('.subscribe', node).button();
+
+                /* Make a hash of days */
+                var pickupdays = {};
+                var yarddays = {};
+                $.each(days, function(i,d) {
+                    var key = [d.year,Number(d.month),Number(d.day)].join('-');
+                    pickupdays[key] = true;
+                    if (d.flags == 'Y') {
+                        yarddays[key] = true
+                    }
+                });
+
+                $div.find('.calendar', node).datepicker({
+                    beforeShowDay: function(day) {
+                        var key = [
+                            day.getFullYear(), day.getMonth()+1, day.getDate()
+                        ].join('-');
+                        return [
+                            false, // Not selectable
+                            pickupdays[key] ? 'marked' : '', // class
+
+                            // title XXX NOT GOOD ENOUGH
+                            yarddays[key] ? 'Yard trimmings are picked up' : ''
+                        ];
+                    },
+                    beforeShow: function(input, inst) {
+                        console.log('show', input);
+                    }
+                });
             });
-            cal.draw();
-            cal.createLegend({
-                'Garbage day': { color: color },
-                'Yard pickup': { color: color, image: '/images/yard.png' }
-            });
-            callback(self.createInfoNode(cal, name, desc));
         });
-    },
-
-    createInfoNode: function (cal, name, desc) {
-        var $div = $('<div class="balloon"></div>')
-
-        // Zone Title
-        $div.append( $('<div class="zoneName"></div>').text(desc) );
-
-        // Next pickup date
-        var nextDay = cal.nextMarkedDate();
-        if (nextDay) {
-            var days = cal.daysUntil(nextDay);
-            $div.append(
-                $('<div class="next"></div>').append(
-                    $('<span class="title"></span>').text('Next pickup: '),
-                    $('<span class="day"></span>')
-                        .text(days == 1 ? 'Tomorrow' : cal.formatDate(nextDay))
-                )
-            );
-        }
-
-        // Zone pickup schedule calendar
-        $div.append(cal.getTable());
-
-        $div.append(cal.getLegend());
-
-        // Buttons
-        $div.append(
-            $('<div class="buttons"></div>').append(
-                $('<input type="button" class="smallbtn"/>')
-                    .val("Add to calendar")
-                    .click(function() {
-                        location = "webcal://"
-                                 + location.host
-                                 + '/zones/' + name + '/pickupdays.ics';
-                    }),
-                $('<input type="button" class="smallbtn"/>')
-                    .val('Remind me')
-                    .click(function() {
-                        var reminders = new TrashReminders({zone: name});
-                        reminders.showLightbox();
-                        return false;
-                    })
-            )
-        );
-
-        return $div.get(0);
     },
 
     createMap: function(node) {
@@ -927,22 +927,6 @@ TrashMap.prototype = {
             }
             else {
                 self.showScheduleForCurrentLocation();
-            }
-        });
-    },
-
-    showSchedule: function(node, name, color) {
-        var self = this;
-        var descs = this.descriptions;
-
-        this.getZoneInfo(name, color, descs[name], function(result) {
-            if (!node) throw new Error("Node required");
-            if (node.openInfoWindow) {
-                node.openInfoWindow(result, {maxWidth: 220});
-            }
-            else {
-                var center = node.getBounds().getCenter();
-                self.map.openInfoWindow(center, result, {maxWidth: 220});
             }
         });
     },

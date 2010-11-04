@@ -8,6 +8,9 @@ MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS:
 
 JS_DIR=static/javascript
 
+JEMPLATE=$(JS_DIR)/Jemplate.js
+JEMPLATES=$(wildcard $(JS_DIR)/template/*.tt2)
+
 VANTRASH=$(JS_DIR)/vantrash.js
 VANTRASH_GZ=$(JS_DIR)/vantrash.js.gz
 VANTRASH_MINIFIED=$(JS_DIR)/vantrash-mini.js
@@ -15,8 +18,8 @@ VANTRASH_FILES=\
 	 $(JS_DIR)/libs/jquery-1.4.2.min.js \
 	 $(JS_DIR)/libs/jquery-ui-1.8.6.custom.min.js \
 	 $(JS_DIR)/libs/jquery-json-1.3.js \
-	 $(JS_DIR)/vantrash/cal.js \
 	 $(JS_DIR)/vantrash/reminders.js \
+	 $(JEMPLATE) \
 
 VANTRASH_MAP=$(JS_DIR)/vantrash-map.js
 VANTRASH_MAP_GZ=$(JS_DIR)/vantrash-map.js.gz
@@ -51,6 +54,7 @@ all: \
 
 clean:
 	rm -f \
+	    $(JEMPLATE) \
 	    $(VANTRASH) $(VANTRASH_MINIFIED) $(VANTRASH_GZ) \
 	    $(VANTRASH_MAP) $(VANTRASH_MAP_MINIFIED) $(VANTRASH_MAP_GZ) \
 	    $(VANTRASH_MOBILE) $(VANTRASH_MOBILE_MINIFIED) $(VANTRASH_MOBILE_GZ) \
@@ -59,6 +63,12 @@ clean:
 
 .js-mini.js:
 	$(MINIFY) $< > $@
+
+$(JEMPLATE): $(JEMPLATES)
+	jemplate --runtime=jquery > $@
+	echo ';' >> $@
+	jemplate --compile $< >> $@
+	echo ';' >> $@
 
 $(VANTRASH): $(VANTRASH_FILES) Makefile
 	rm -f $@;
