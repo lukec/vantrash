@@ -1,29 +1,51 @@
 [% WRAPPER wrapper.tt2
-    javascript=["http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5rEMciNjzck_9F910WRZkxQkGglP5O4HpwzXzPkg1mrDd6_pIhQOrRhaNFw0NJs0Y9o2jCPcHNE8Sw", "/javascript/$version/vantrash-map-mini.js"]
-    extranav='firststep.tt2'
-    id="map"
+    javascript = [
+        "http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAA5rEMciNjzck_9F910WRZkxQkGglP5O4HpwzXzPkg1mrDd6_pIhQOrRhaNFw0NJs0Y9o2jCPcHNE8Sw", "/javascript/$version/vantrash-map-mini.js",
+    ]
 %]
+
     <div id="mapCanvas"></div>
+
+    <div class="bottom">
+        <div class="ad">
+            <a href="http://vancouver.ca/projects/foodWaste/noplastic.htm"
+                alt="Don't trash your food!">
+                <img src="/images/vantrash-ad-no-plastic.jpg"/>
+            </a>
+        </div>
+
+        <div class="description">
+            <div class="searchBox">
+                <h1>Find my zone:</h1>
+                <form class="address">
+                    <input class="text ui-corner-all initial" type="text"/>
+                    <input class="submit" type="submit" value="Search"/>
+                </form>
+            </div>
+
+            <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
+            <p>To start, simply click on the zone in which you live or search for your address below, then click "Remind me".</p>
+        </div>
+    </div>
+
     <script>
-        $(window).resize(function() {
-            $('#mapCanvas').height( $(window).height() - 150 );
-        }).resize();
+        onDocumentReady.push(function() {
+            $(".submit").button();
 
-        var map = new TrashMap({
-            startingZone: "[% zone %]"
+            var map = new TrashMap({
+                startingZone: "[% zone %]"
+            });
+            map.render($('#mapCanvas').get(0));
+            $('#address .initial')
+                .val('149 West 4th')
+                .one('click', function() {
+                    $(this).removeClass('initial').val('');
+                });
+            $('#address')
+                .submit(function() {
+                    map.search($('.text', this).val());
+                    return false;
+                });
         });
-        map.render($('#mapCanvas').get(0));
-        $('#address .initial')
-            .val('149 West 4th')
-            .one('click', function() {
-                $(this).removeClass('initial').val('');
-            });
-        $('#address')
-            .submit(function() {
-                map.search($('.text', this).val());
-                return false;
-            });
     </script>
-
-    <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a>
 [% END %]

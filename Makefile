@@ -8,35 +8,34 @@ MINIFY=perl -MJavaScript::Minifier::XS -0777 -e 'print JavaScript::Minifier::XS:
 
 JS_DIR=static/javascript
 
-JS_MAP_TARGET=$(JS_DIR)/vantrash-map.js
-JS_MAP_MINI=$(JS_DIR)/vantrash-map-mini.js
-JS_MAP_FILES=\
-	 $(JS_DIR)/jquery-latest.js \
-	 $(JS_DIR)/jquery-json-1.3.js \
-	 $(JS_DIR)/jquery.lightbox.js \
-	 $(JS_DIR)/cal.js \
-	 $(JS_DIR)/reminders.js \
-	 $(JS_DIR)/egeoxml.js \
-	 $(JS_DIR)/epoly.js \
-	 $(JS_DIR)/map.js \
+VANTRASH=$(JS_DIR)/vantrash.js
+VANTRASH_GZ=$(JS_DIR)/vantrash.js.gz
+VANTRASH_MINIFIED=$(JS_DIR)/vantrash-mini.js
+VANTRASH_FILES=\
+	 $(JS_DIR)/libs/jquery-1.4.2.min.js \
+	 $(JS_DIR)/libs/jquery-ui-1.8.6.custom.min.js \
+	 $(JS_DIR)/libs/jquery-json-1.3.js \
+	 $(JS_DIR)/vantrash/cal.js \
+	 $(JS_DIR)/vantrash/reminders.js \
 
-JS_MOBILE_TARGET=$(JS_DIR)/vantrash-mobile.js
-JS_MOBILE_MINI=$(JS_DIR)/vantrash-mobile-mini.js
-JS_MOBILE_FILES=\
-	 $(JS_DIR)/jquery-latest.js \
-	 $(JS_DIR)/jquery-json-1.3.js \
-	 $(JS_DIR)/cal.js \
-	 $(JS_DIR)/map.js \
-	 $(JS_DIR)/reminders.js \
-	 $(JS_DIR)/gears_init.js \
+VANTRASH_MAP=$(JS_DIR)/vantrash-map.js
+VANTRASH_MAP_GZ=$(JS_DIR)/vantrash-map.js.gz
+VANTRASH_MAP_MINIFIED=$(JS_DIR)/vantrash-map-mini.js
+VANTRASH_MAP_FILES=\
+	 $(JS_DIR)/libs/egeoxml.js \
+	 $(JS_DIR)/libs/epoly.js \
+	 $(JS_DIR)/vantrash/map.js \
 
-JS_REMINDER_TARGET=$(JS_DIR)/vantrash-reminder.js
-JS_REMINDER_MINI=$(JS_DIR)/vantrash-reminder-mini.js
-JS_REMINDER_FILES=\
-	 $(JS_DIR)/jquery-latest.js \
-	 $(JS_DIR)/jquery-json-1.3.js \
-	 $(JS_DIR)/reminders.js \
-	 $(JS_DIR)/wizard.js \
+VANTRASH_MOBILE=$(JS_DIR)/vantrash-mobile.js
+VANTRASH_MOBILE_GZ=$(JS_DIR)/vantrash-mobile.js.gz
+VANTRASH_MOBILE_MINIFIED=$(JS_DIR)/vantrash-mobile-mini.js
+VANTRASH_MOBILE_FILES=\
+	 $(JS_DIR)/libs/jquery-1.4.2.min.js \
+	 $(JS_DIR)/libs/jquery-ui-1.8.6.custom.min.js \
+	 $(JS_DIR)/libs/jquery-json-1.3.js \
+	 $(JS_DIR)/libs/gears_init.js \
+	 $(JS_DIR)/vantrash/cal.js \
+	 $(JS_DIR)/vantrash/reminders.js \
 
 WIKI_PAGES=about_us faq
 CRONJOB=etc/cron.d/vantrash
@@ -46,45 +45,41 @@ TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
 all: \
-    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
-    $(JS_MOBILE_MINI) $(JS_MOBILE_TARGET) \
-    $(JS_REMINDER_MINI) $(JS_REMINDER_TARGET) \
+    $(VANTRASH_GZ) $(VANTRASH_MINIFIED) \
+    $(VANTRASH_MOBILE_GZ) $(VANTRASH_MOBILE_MINIFIED) \
+    $(VANTRASH_MAP_GZ) $(VANTRASH_MAP_MINIFIED) \
 
 clean:
 	rm -f \
-	    $(JS_MINI) $(JS_TARGET) \
-	    $(JS_MAP_TARGET) $(JS_MAP_MINI) \
-	    $(JS_MOBILE_TARGET) $(JS_MOBILE_MINI) \
-	    $(JS_REMINDER_TARGET) $(JS_REMINDER_MINI)
+	    $(VANTRASH) $(VANTRASH_MINIFIED) $(VANTRASH_GZ) \
+	    $(VANTRASH_MAP) $(VANTRASH_MAP_MINIFIED) $(VANTRASH_MAP_GZ) \
+	    $(VANTRASH_MOBILE) $(VANTRASH_MOBILE_MINIFIED) $(VANTRASH_MOBILE_GZ) \
 
-.SUFFIXES: .js -mini.js
+.SUFFIXES: .js -mini.js .js.gz
 
 .js-mini.js:
 	$(MINIFY) $< > $@
 
-$(JS_TARGET): $(JS_FILES) Makefile
+$(VANTRASH): $(VANTRASH_FILES) Makefile
 	rm -f $@;
-	for js in $(JS_FILES); do \
+	for js in $(VANTRASH_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
-$(JS_MAP_TARGET): $(JS_MAP_FILES) Makefile
+$(VANTRASH_MOBILE): $(VANTRASH_MOBILE_FILES) Makefile
 	rm -f $@;
-	for js in $(JS_MAP_FILES); do \
+	for js in $(VANTRASH_MOBILE_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
-$(JS_MOBILE_TARGET): $(JS_MOBILE_FILES) Makefile
+$(VANTRASH_MAP): $(VANTRASH_MAP_FILES) Makefile
 	rm -f $@;
-	for js in $(JS_MOBILE_FILES); do \
+	for js in $(VANTRASH_MAP_FILES); do \
 	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
 	done
 
-$(JS_REMINDER_TARGET): $(JS_REMINDER_FILES) Makefile
-	rm -f $@;
-	for js in $(JS_REMINDER_FILES); do \
-	    (echo "// BEGIN $$js"; cat $$js | perl -pe 's/\r//g') >> $@; \
-	done
+-mini.js.js.gz:
+	gzip -c $< > $@
 
 $(INSTALL_DIR)/%:
 	mkdir $(INSTALL_DIR)
