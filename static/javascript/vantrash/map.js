@@ -44,7 +44,7 @@ TrashMap.prototype = {
                     );
                 }
                 
-                $div.find('.subscribe', node).button();
+                $div.find('.remind_me', node).button();
 
                 /* Make a hash of days */
                 var pickupdays = {};
@@ -69,9 +69,6 @@ TrashMap.prototype = {
                             // title XXX NOT GOOD ENOUGH
                             yarddays[key] ? 'Yard trimmings are picked up' : ''
                         ];
-                    },
-                    beforeShow: function(input, inst) {
-                        console.log('show', input);
                     }
                 });
             });

@@ -3,5 +3,5 @@
     <div class="next">Next pickup: [% next %]</div>
     <div class="yard">[% yard %]</div>
     <div class="calendar"></div>
-    <div><input class="subscribe" type="button" value="Subscribe"/></div>
+    <div><input class="remindme" type="button" value="Remind me"/></div>
 </div>
