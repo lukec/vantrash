@@ -1,5 +1,5 @@
 [% WRAPPER m/wrapper.tt2 %]
-<div class="elem" id="schedule">
+<div class="elem calendar" id="schedule">
     <img src="/images/loading.gif"/>
 </div>
 <a class="elem" href="http://[% host_port %]/zones/[% zone %]/pickupdays.ics">
@@ -13,12 +13,7 @@
 <script>
     var map = new TrashMap();
     $.getJSON('/zones/[% zone %].json', function(data) {
-        map.getZoneInfo(data.name, data.colour, data.desc, function(node) {
-            $('#schedule')
-                .empty()
-                .append(node)
-                .append('<div class="clear"></div>');
-        });
+        map.createCalendar(data.name, $('#schedule').empty());
     });
 </script>
 [% END %]

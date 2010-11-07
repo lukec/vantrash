@@ -40,6 +40,7 @@ VANTRASH_MOBILE_FILES=\
 	 $(JS_DIR)/libs/jquery-json-1.3.js \
 	 $(JS_DIR)/libs/gears_init.js \
 	 $(JS_DIR)/vantrash/cal.js \
+	 $(JS_DIR)/vantrash/map.js \
 	 $(JS_DIR)/vantrash/reminders.js \
 
 CRONJOB=etc/cron.d/vantrash

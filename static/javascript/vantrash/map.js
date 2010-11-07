@@ -11,7 +11,9 @@ TrashMap.prototype = {
     ],
     descriptions: {},
     zoom: 12,
-    center: new GLatLng(49.24702, -123.138542),
+    center: typeof(GLatLng) != 'undefined'
+        ? new GLatLng(49.24702, -123.138542)
+        : undefined,
 
     showSchedule: function(node, name, color) {
         var self = this;
@@ -26,56 +28,61 @@ TrashMap.prototype = {
                     : ' (Yard trimmings will NOT be picked up)'
             }
 
-            $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
-                var $div = $(Jemplate.process('balloon.tt2', {
-                    description: self.descriptions[name],
-                    next: next,
-                    yard: yard
-                }));
+            var $div = $(Jemplate.process('balloon.tt2', {
+                description: self.descriptions[name],
+                next: next,
+                yard: yard
+            }));
 
-                if (!node) throw new Error("Node required");
-                if (node.openInfoWindow) {
-                    node.openInfoWindow($div.get(0), {maxWidth: 220});
-                }
-                else {
-                    var center = node.getBounds().getCenter();
-                    self.map.openInfoWindow(
-                        center, $div.get(0), {maxWidth: 220}
-                    );
-                }
+            if (!node) throw new Error("Node required");
+            if (node.openInfoWindow) {
+                node.openInfoWindow($div.get(0), {maxWidth: 220});
+            }
+            else {
+                var center = node.getBounds().getCenter();
+                self.map.openInfoWindow(
+                    center, $div.get(0), {maxWidth: 220}
+                );
+            }
                 
-                $div.find('.remind_me', node).button().click(function() {
-                    var lightbox = new ReminderLightbox({
-                        zone: name
-                    });
-                    lightbox.show();
+            $div.find('.remind_me', node).button().click(function() {
+                var lightbox = new ReminderLightbox({
+                    zone: name
                 });
+                lightbox.show();
+            });
 
-                /* Make a hash of days */
-                var pickupdays = {};
-                var yarddays = {};
-                $.each(days, function(i,d) {
-                    var key = [d.year,Number(d.month),Number(d.day)].join('-');
-                    pickupdays[key] = true;
-                    if (d.flags == 'Y') {
-                        yarddays[key] = true
-                    }
-                });
+            self.createCalendar(name, $div.find('.calendar', node));
+        });
+    },
 
-                $div.find('.calendar', node).datepicker({
-                    beforeShowDay: function(day) {
-                        var key = [
-                            day.getFullYear(), day.getMonth()+1, day.getDate()
-                        ].join('-');
-                        return [
-                            false, // Not selectable
-                            pickupdays[key] ? 'marked' : '', // class
 
-                            // title XXX NOT GOOD ENOUGH
-                            yarddays[key] ? 'Yard trimmings are picked up' : ''
-                        ];
-                    }
-                });
+    createCalendar: function(name, $node) {
+        $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
+            /* Make a hash of days */
+            var pickupdays = {};
+            var yarddays = {};
+            $.each(days, function(i,d) {
+                var key = [d.year,Number(d.month),Number(d.day)].join('-');
+                pickupdays[key] = true;
+                if (d.flags == 'Y') {
+                    yarddays[key] = true
+                }
+            });
+
+            $node.datepicker({
+                beforeShowDay: function(day) {
+                    var key = [
+                        day.getFullYear(), day.getMonth()+1, day.getDate()
+                    ].join('-');
+                    return [
+                        false, // Not selectable
+                        pickupdays[key] ? 'marked' : '', // class
+
+                        // title XXX NOT GOOD ENOUGH
+                        yarddays[key] ? 'Yard trimmings are picked up' : ''
+                    ];
+                }
             });
         });
     },

@@ -3,21 +3,22 @@
     <head>
         <meta name="viewport" content="width=240" />
         <link rel="shortcut icon" href="/images/favicon.png" />
-        <link href="/css/styles.css" rel="stylesheet" type="text/css" media="screen"/>
-        <script src="/javascript/vantrash-mobile-mini.js" type="text/javascript"></script>
-        [% FOR js = javascript %]
-            <script src="[% js %]" type="text/javascript"></script>
-        [% END %]
+        <link rel="stylesheet" href="/css/[% version %]/style.css?v=2">
+        <link rel="stylesheet" href="/css/[% version %]/jquery-ui-1.8.6.custom.css">
+        <script src="/javascript/[% version %]/vantrash-mobile-mini.js" type="text/javascript"></script>
     </head>
     <body id="mobile">
         <noscript>Your browser does not support JavaScript!</noscript>
-        <div style="display:none" id="content">
-            <a class="elem logo" href="/m/index.html">
-                <img src="/images/logo_small.png"/>
-                Vancouver Garbage Reminders
-            </a>
-            [% content %]
-        </div>
-        <script>$('#content').show()</script>
+        <div style="display:none" id="container">
+            <header>
+                <a href="/m/index.html"><div id="headerLogo"></div></a>
+            </header>
+            
+            <div id="main">
+                [% content %]
+            </div>
+            
+        </div> <!-- end of #container -->
+        <script>$('#container').show()</script>
     </body>
 </html>
