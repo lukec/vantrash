@@ -14,8 +14,8 @@
     <div class="page" id="basic_twitter">
         [% INCLUDE basic_twitter %]
     </div>
-    <div class="page" id="time">
-        [% INCLUDE time %]
+    <div class="page" id="success">
+        [% INCLUDE success %]
     </div>
 </div>
 
@@ -200,7 +200,7 @@
 
 [% BLOCK success %]
     <div class="title">Wait! You're not done yet!</div>
-    <div class="help">
+    <div>
         You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.
     </div>
 [% END %]

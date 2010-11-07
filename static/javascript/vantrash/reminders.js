@@ -57,7 +57,7 @@ ReminderLightbox.prototype = {
                 }
             },
             basic_email: {
-                focus: '.phone',
+                focus: '.email',
                 back: function() { self.showPage('choose_method') },
                 submit: function($cur) {
                     self.addReminder({
@@ -83,7 +83,7 @@ ReminderLightbox.prototype = {
                 }
             },
             basic_twitter: {
-                focus: '.phone',
+                focus: '.twitter',
                 back: function() { self.showPage('choose_method') },
                 submit: function($cur) {
                     self.addReminder({
@@ -174,8 +174,7 @@ ReminderLightbox.prototype = {
 
     showPage: function(name) {
         var self = this;
-        var opts = self.wizard()[name];
-        if (!opts) throw new Error('No such wizard page: ' + name);
+        var opts = self.wizard()[name] || {};
 
         self.$dialog.find('.globalError').remove();
 
@@ -219,6 +218,12 @@ ReminderLightbox.prototype = {
                 }
             });
         }
+        buttons.push({
+            text: 'Close',
+            click: function() {
+                self.$dialog.dialog('close');
+            }
+        });
         return buttons;
     },
 
