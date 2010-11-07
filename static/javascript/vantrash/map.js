@@ -44,7 +44,12 @@ TrashMap.prototype = {
                     );
                 }
                 
-                $div.find('.remind_me', node).button();
+                $div.find('.remind_me', node).button().click(function() {
+                    var lightbox = new ReminderLightbox({
+                        zone: name
+                    });
+                    lightbox.show();
+                });
 
                 /* Make a hash of days */
                 var pickupdays = {};

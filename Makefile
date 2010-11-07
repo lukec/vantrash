@@ -18,6 +18,8 @@ VANTRASH_FILES=\
 	 $(JS_DIR)/libs/jquery-1.4.2.min.js \
 	 $(JS_DIR)/libs/jquery-ui-1.8.6.custom.min.js \
 	 $(JS_DIR)/libs/jquery-json-1.3.js \
+	 $(JS_DIR)/libs/jquery-maskedinput-1.2.2.min.js \
+	 $(JS_DIR)/libs/jquery.validate.js \
 	 $(JS_DIR)/vantrash/reminders.js \
 	 $(JEMPLATE) \
 
@@ -67,7 +69,7 @@ clean:
 $(JEMPLATE): $(JEMPLATES)
 	jemplate --runtime=jquery > $@
 	echo ';' >> $@
-	jemplate --compile $< >> $@
+	jemplate --compile $(JEMPLATES) >> $@
 	echo ';' >> $@
 
 $(VANTRASH): $(VANTRASH_FILES) Makefile

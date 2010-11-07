@@ -1,0 +1,206 @@
+<div class="wizard">
+    <div class="page" id="choose_method">
+        [% INCLUDE choose_method %]
+    </div>
+    <div class="page" id="premium_sms">
+        [% INCLUDE premium type='sms' %]
+    </div>
+    <div class="page" id="premium_phone">
+        [% INCLUDE premium type='phone' %]
+    </div>
+    <div class="page" id="basic_email">
+        [% INCLUDE basic_email %]
+    </div>
+    <div class="page" id="basic_twitter">
+        [% INCLUDE basic_twitter %]
+    </div>
+    <div class="page" id="time">
+        [% INCLUDE time %]
+    </div>
+</div>
+
+[% BLOCK choose_method %]
+    <div class="title">Schedule a weekly reminder:</div>
+
+    <form>
+        <div class="premium payclass">
+            <div class="option">
+                <div class="radio">
+                    <input id="sms-reminder" name="reminder-radio" type="radio" value="premium_sms" checked="checked"/>
+                </div>
+                <div class="label">
+                    <label for="sms-reminder">Text Message / SMS</label>
+                </div>
+            </div>
+            <div class="option">
+                <div class="radio">
+                    <input id="phone-reminder" name="reminder-radio" type="radio" value="premium_phone"/>
+                </div>
+                <div class="label">
+                    <label for="phone-reminder">Phone call</label>
+                </div>
+            </div>
+            <div class="price">
+                $1.50 / month
+                <div class="or">or</div>
+                $15 / year
+            </div>
+        </div>
+        <div class="basic payclass">
+            <div class="option">
+                <div class="radio">
+                    <input id="email-reminder" name="reminder-radio" type="radio" value="basic_email"/>
+                </div>
+                <div class="label">
+                    <label for="email-reminder">E-mail</label>
+                </div>
+            </div>
+            <div class="option">
+                <div class="radio">
+                    <input id="twitter-reminder" name="reminder-radio" type="radio" value="basic_twitter"/>
+                </div>
+                <div class="label">
+                    <label for="twitter-reminder">Twitter Direct Message</label>
+                </div>
+            </div>
+            <div class="price">
+                Free
+            </div>
+        </div>
+    </form>
+    <div class="clearfix"></div>
+
+    <div class="calendars">
+        <b>-OR-</b>
+        <div class="title">Add to your calendar:</div>
+        <div>
+            [% FOR cal = calendars %]
+            <a href="[% cal.url %]" target="_blank">
+                <img src="/images/calendars/[% cal.icon %]">
+                <span>[% cal.name %]</span>
+            </a>
+            [% END %]
+        </div>
+    </div>
+[% END %]
+
+[% BLOCK field %]
+    <div class="field">
+        <div class="name">[% title %]:</div>
+        <input class="[% name %]" name="[% name %]"/>
+    </div>
+[% END %]
+
+[% BLOCK premium %]
+    <form>
+        [% IF type == 'phone' %]
+        <div class="title">Schedule a Telephone Call Reminder:</div>
+        <div class="help">
+            Please enter the 10 digit mobile telephone number that you wish to receive weekly telephone call pickup reminders. We also ask for you to provide your email address. Vantrash will never provide your email to anyone.
+        </div>
+        [% ELSE %]
+        <div class="title">Schedule a Text Message Reminder:</div>
+        <div class="help">
+            Please enter the 10 digit mobile telephone number that you wish to receive weekly text message pickup reminders. We also ask for you to provide your email address. Vantrash will never provide your email to anyone.
+        </div>
+        [% END %]
+        [% INCLUDE field name='phone' title='Telephone' %]
+        [% INCLUDE field name='email' title='Email' %]
+        [% INCLUDE time %]
+    </form>
+[% END %]
+
+[% BLOCK basic_email %]
+    <form>
+        <div class="title">Schedule an E-Mail Reminder:</div>
+        <div class="help">
+            Please enter the valid email address you wish for weekly pickup reminders to be sent to. Vantrash will never provide your email to anyone.
+        </div>
+        [% INCLUDE field name='email' title='Email' %]
+        [% INCLUDE time %]
+    </form>
+[% END %]
+
+[% BLOCK basic_twitter %]
+    <form>
+        <div class="title">Schedule a Twitter Reminder:</div>
+        <div class="help">
+            Please enter your Twitter username that you wish to receive weekly direct messages to. We also ask for you to provide your email address. Vantrash will never provide your email to anyone.
+        </div>
+        [% INCLUDE field name='twitter' title='Twitter Username' %]
+        [% INCLUDE field name='email' title='Email' %]
+        [% INCLUDE time %]
+    </form>
+[% END %]
+
+[% BLOCK payment %]
+    <div class="option">
+        <div class="radio">
+            <input id="monthly-sms" name="sms-cycle" type="radio" value="month"/>
+        </div>
+        <div class="label">
+            <label for="monthly-sms">$1.50 / month</label>
+        </div>
+    </div>
+    <div class="option">
+        <div class="radio">
+            <input id="yearly-sms" name="sms-cycle" type="radio" value="year"/>
+        </div>
+        <div class="label">
+            <label for="yearly-sms">$15 / year</label>
+        </div>
+    </div>
+[% END %]
+
+[% BLOCK time %]
+    <div class="field">
+        <div class="name">When:</div>
+        <select class="border simpleOffset">
+            <option value="-12">Noon the day before</option>
+            <option value="-6">6PM the day before</option>
+            <option value="+6">6AM the day of</option>
+            <option value="custom">A custom time</option>
+        </select>
+        <select class="border customOffset" name="offset">
+            <option value="-18">6AM the day before</option>
+            <option value="-17">7AM the day before</option>
+            <option value="-16">8AM the day before</option>
+            <option value="-15">9AM the day before</option>
+            <option value="-14">10AM the day before</option>
+            <option value="-13">11AM the day before</option>
+            <option value="-12">Noon the day before</option>
+            <option value="-11">1PM the day before</option>
+            <option value="-10">2PM the day before</option>
+            <option value="-9">3PM the day before</option>
+            <option value="-8">4PM the day before</option>
+            <option value="-7">5PM the day before</option>
+            <option value="-6">6PM the day before</option>
+            <option value="-5">7PM the day before</option>
+            <option value="-4">8PM the day before</option>
+            <option value="-3">9PM the day before</option>
+            <option value="-2">10PM the day before</option>
+            <option value="-1">11PM the day before</option>
+            <option value="0">Midnight before</option>
+            <option value="+1">1AM the day of</option>
+            <option value="+2">2AM the day of</option>
+            <option value="+3">3AM the day of</option>
+            <option value="+4">4AM the day of</option>
+            <option value="+5">5AM the day of</option>
+            <option value="+6">6AM the day of</option>
+        </select>
+    </div>
+[% END %]
+
+[% BLOCK not_implemented %]
+    <div class="title">Not Implemented</div>
+    <div class="help">
+        This feature is not implemented yet
+    </div>
+[% END %]
+
+[% BLOCK success %]
+    <div class="title">Wait! You're not done yet!</div>
+    <div class="help">
+        You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.
+    </div>
+[% END %]

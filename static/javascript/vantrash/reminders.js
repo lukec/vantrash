@@ -1,11 +1,227 @@
 (function($) {
 
-TrashReminders = function(opts) {
-    $.extend(this, opts)
+ReminderLightbox = function(opts) {
+    $.extend(this, this._defaults, opts);
+    if (!this.zone) throw new Error("zone is required");
 }
 
-TrashReminders.prototype = {
-    add: function (opts) {
+ReminderLightbox.prototype = {
+    _defaults: {
+        reminder: {}
+    },
+
+    wizard: function() {
+        var self = this;
+        if (self._wizard) return self._wizard;
+        var reminder = self.reminder;
+        return self._wizard = {
+            choose_method: {
+                next: function() {
+                    self.showPage(self.getValue('reminder-radio'))
+                }
+            },
+            premium_sms: {
+                focus: '.phone',
+                back: function() { self.showPage('choose_method') },
+                next: function() { self.showPage('not_implmented') },
+                validate: {
+                    rules: {
+                        phone: 'required',
+                        email: {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+                        phone: 'Please enter your telephone number',
+                        email: 'Please enter a valid email'
+                    }
+                }
+            },
+            premium_phone: {
+                focus: '.phone',
+                back: function() { self.showPage('choose_method') },
+                next: function() { self.showPage('not_implmented') },
+                validate: {
+                    rules: {
+                        phone: 'required',
+                        email: {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+                        phone: 'Please enter your telephone number',
+                        email: 'Please enter a valid email'
+                    }
+                }
+            },
+            basic_email: {
+                focus: '.phone',
+                back: function() { self.showPage('choose_method') },
+                submit: function($cur) {
+                    self.addReminder({
+                        offset: $cur.find('.customOffset').val(),
+                        email: $cur.find('.email').val(),
+                        target: 'email:' + $cur.find('.email').val(),
+                        zone: self.zone,
+                        success: function() {
+                            self.showPage('success');
+                        }
+                    });
+                },
+                validate: {
+                    rules: {
+                        email: {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+                        email: 'Please enter a valid email'
+                    }
+                }
+            },
+            basic_twitter: {
+                focus: '.phone',
+                back: function() { self.showPage('choose_method') },
+                submit: function($cur) {
+                    self.addReminder({
+                        offset: $cur.find('.customOffset').val(),
+                        email: $cur.find('.email').val(),
+                        target: 'twitter:' + $cur.find('.twitter').val(),
+                        zone: self.zone,
+                        success: function() {
+                            self.showPage('success');
+                        }
+                    });
+                },
+                validate: {
+                    rules: {
+                        twitter: 'required',
+                        email: {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+                        twitter: 'Please enter your twitter username',
+                        email: 'Please enter a valid email'
+                    }
+                }
+            }
+        };
+    },
+
+    getValue: function(name) {
+        return this.$dialog.find('input[name=' + name + ']:checked').val()
+    },
+
+    templateVars: function() {
+        var url = location.href + 'zones/' + self.zone + '/pickupdays.ics';
+        return {
+            calendars: [
+                {
+                    name: 'Google Calendar',
+                    url: 'http://www.google.com/calendar/render?cid=' + url,
+                    icon: 'google.png'
+                },
+                {
+                    name: 'iCal',
+                    url: url.replace('http:', 'webcal:'),
+                    icon: 'ical.png'
+                },
+                {
+                    name: 'Microsoft Outlook',
+                    url: url,
+                    icon: 'outlook.png'
+                }
+            ]
+        };
+    },
+
+    show: function() {
+        if (this.$dialog) throw new Error('Already started wizard!');
+        this.$dialog = $('<div></div>').attr('title', 'Add a reminder')
+            .html(Jemplate.process('reminders.tt2', this.templateVars()))
+            .dialog({
+                height: 425,
+                width: 550,
+                modal: true
+            });
+
+        this.$dialog.find('a').blur();
+
+        // disable all forms
+        this.$dialog.find('form').submit(function() { return false });
+
+        // Telephone fields
+        this.$dialog.find('.phone').mask('999-999-9999');
+
+        // Custom time picker
+        this.$dialog.find('.simpleOffset').change(function() {
+            if ($(this).val() == "custom") {
+                $(this).hide();
+                $(this).siblings('.customOffset').show();
+            }
+            else {
+                $(this).siblings('.customOffset').val($(this).val());
+            }
+        })
+
+        this.showPage('choose_method');
+    },
+
+    showPage: function(name) {
+        var self = this;
+        var opts = self.wizard()[name];
+        if (!opts) throw new Error('No such wizard page: ' + name);
+
+        self.$dialog.find('.globalError').remove();
+
+        // Hide other pages
+        self.$dialog.find('.wizard .page').hide();
+
+        // Show the current page
+        var $cur = self.$dialog.find('#'+name).show();
+        if (opts.focus) $cur.find(opts.focus).focus();
+        if (opts.validate) $cur.find('form').validate(opts.validate);
+        
+        // Update buttons
+        self.$dialog.dialog('option', 'buttons', self.buttons(opts, $cur));
+    },
+
+    buttons: function(opts, $cur) {
+        var self = this;
+        var buttons = [];
+        if (opts.back) {
+            buttons.push({
+                text: 'Back',
+                click: function() {
+                    opts.back($cur);
+                }
+            });
+        }
+        if (opts.next) {
+            buttons.push({
+                text: 'Next',
+                click: function() {
+                    if ($cur.find('form').valid()) opts.next($cur);
+                }
+            });
+        }
+        if (opts.submit) {
+            buttons.push({
+                text: 'Submit',
+                click: function() {
+                    if ($cur.find('form').valid()) opts.submit($cur);
+                }
+            });
+        }
+        return buttons;
+    },
+
+    addReminder: function (opts) {
         var data = {
             offset: opts.offset,
             email: opts.email,
@@ -16,16 +232,12 @@ TrashReminders.prototype = {
             type: 'PUT',
             url: '/zones/' + opts.zone + '/reminders',
             data: $.toJSON(data, true),
-            error: opts.error,
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $('<div class="error globalError"></div>')
+                    .html('Error: ' + textStatus)
+                    .insertAfter('.page:visible .title');
+            },
             success: opts.success
-        });
-    },
-
-    showLightbox: function($node) {
-        $.lightbox({
-            src: '/reminder.html?lightbox=1&zone=' + this.zone,
-            widthFactor: 0.4,
-            height: 220
         });
     }
 };
