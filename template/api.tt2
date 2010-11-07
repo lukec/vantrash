@@ -1,5 +1,5 @@
 [% WRAPPER wrapper.tt2 %]
-  <div class="api">
+  <div class="otherPage">
     <h1>VanTrash API</h1>
     This page defines the simple REST API that exposes collection times data.
 

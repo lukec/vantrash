@@ -1,10 +1,18 @@
 [% WRAPPER wrapper.tt2 %]
-<div class="donate">
+<div class="otherPage">
+    <h1>Donation</h1>
+
     <p>VanTrash is created for you by Kevin Jones and Luke Closs with lots of help from David Eaves.  We count on your support to help cover the cost of the resources needed to run this service.</p>
+
+    <br/>
 
     <p>We recommend a donation of $12/year if you use the reminder service.</p>
 
+    <br/>
+
     <p>If you just like the site and want to support us, perhaps you'd consider a $5 donation, about the same price as buying us a beer!</p>
+
+    <br/>
 
     <div class="donatebtn">
       [% INCLUDE paypal_form.tt2 %]

@@ -42,7 +42,6 @@ VANTRASH_MOBILE_FILES=\
 	 $(JS_DIR)/vantrash/cal.js \
 	 $(JS_DIR)/vantrash/reminders.js \
 
-WIKI_PAGES=about_us faq
 CRONJOB=etc/cron.d/vantrash
 PSGI=production.psgi
 

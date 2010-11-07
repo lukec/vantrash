@@ -1,5 +1,6 @@
 [% WRAPPER wrapper.tt2 %]
 
+<div class="otherPage">
 <h1>Data</h1>
 All of the trash pickup data is scraped from the City of Vancouver's website:
 <ul>
@@ -40,9 +41,6 @@ All of the trash pickup data is scraped from the City of Vancouver's website:
 <p>Copyright (c) 2009 John Resig</p>
 <a href="http://docs.jquery.com/License">http://docs.jquery.com/License</a>
 
-<br/>
-<br/>
-
 <h3>EGeoXML and EPolygon</h3>
 <p>licenced under a <a href="http://creativecommons.org/licenses/by/2.0/uk/">Creative Commons Licence</a></p>
 
@@ -58,4 +56,5 @@ All of the trash pickup data is scraped from the City of Vancouver's website:
 </p>
 
 <p>All other images are Copyright (C) 2009 by Luke Closs and Kevin Jones</p>
+</div>
 [% END %]

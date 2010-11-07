@@ -330,6 +330,42 @@ input.text {
     text-decoration: underline;
 }
 
+/* Other page styles */
+.otherPage {
+    padding: 20px;
+    padding-top: 0;
+}
+.otherPage h1 {
+    font-size: 130%;
+    margin: 15px 0 5px 0;
+}
+.otherPage h2 {
+    font-size: 120%;
+    margin: 15px 0 5px 0;
+}
+.otherPage h3 {
+    font-size: 110%;
+    margin: 15px 0 5px 0;
+}
+.otherPage h4 {
+    font-size: 100%;
+    margin: 15px 0 5px 0;
+}
+
+.otherPage ul.toc {
+    margin: 5px 0 5px 20px;
+}
+.otherPage ol, .otherPage ul {
+    margin: 5px 0 5px 40px;
+}
+
+.otherPage .section {
+    margin: 10px 0;
+}
+.otherPage .section input, .otherPage .section textarea {
+    margin: 3px 0 0 10px;
+}
+
 @media all and (orientation:portrait) { 
   
 }

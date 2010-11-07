@@ -1,5 +1,5 @@
 [% WRAPPER wrapper.tt2 %]
-   <div class="tellfriends">
+   <div class="otherPage">
      <h1>Tell your friends about VanTrash!</h1>
      [% IF success %]
        <div class="success">
@@ -10,30 +10,32 @@
        <div class="error">
          [% error %]
        </div>
+       [% END %]
      [% END %]
      <form action="/action/tell-friends" method="POST">
-       <div class="question">
+       <div class="section">
          <label for="friend_emails">Enter the email addresses of the people you'd like to introduce to this site:</label>
          <br />
          <textarea class="border"name="friend_emails" rows="5" cols="40"></textarea>
        </div>
 
-       <div class="question">
+       <div class="section">
          <label for="sender_email">Enter your email address:</label>
           <br />
          <textarea class="border" name="sender_email" rows="1" cols="40"></textarea>
        </div>
 
-
-       <div class="question">
+       <div class="section">
          <label for="skilltesting">To prove you are a human, please type the 2-letter code for the province Vancouver is in:</label>
           <br />
          <input type="text" class="border" name="skilltesting" size="2"/>
        </div>
 
-       <input class="btn" type="submit" name="submit" value="Invite!"/>
+       <input class="button" type="submit" name="submit" value="Invite!"/>
 
      </form>
    </div>
-   [% END %]
+   <script>
+        onDocumentReady.push(function() { $('.button').button().show() });
+   </script>
 [% END %]
