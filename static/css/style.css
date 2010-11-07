@@ -92,7 +92,7 @@ body {
 }
 
 #container {
-    margin: 4px 200px;
+    margin: 4px 220px;
     border: 1px solid #36533a;
     background-color: white;
 
@@ -176,7 +176,7 @@ input.text {
 
 /* Map */
 #mapCanvas {
-    height: 400px;
+    height: 390px;
 }
 
 /* Map Balloons */
