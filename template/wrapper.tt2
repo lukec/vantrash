@@ -19,6 +19,8 @@
 
     <link rel="stylesheet" href="/css/[% version %]/style.css?v=2">
     <link rel="stylesheet" href="/css/[% version %]/jquery-ui-1.8.6.custom.css">
+
+    <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
     <script src="/javascript/[% version %]/libs/modernizr-1.6.min.js"></script>
     <script>window.onDocumentReady = []</script>
 </head>
@@ -27,23 +29,25 @@
     <div id="container">
         <header>
             <a href="/"><div id="headerLogo"></div></a>
+            <div id="headerLinks">
+                <a href="/faq.html">Frequently asked questions</a>
+                <a href="/tell-a-friend.html">Tell a friend</a>
+                <a href="http://www.twitter.com/vantrash"><img src="http://twitter-badges.s3.amazonaws.com/twitter-c.png" alt="Follow vantrash on Twitter"/></a>
+                <fb:like href="http://www.vantrash.ca" layout="button_count" width="50"></fb:like>
+            </div>
         </header>
         
         <div id="main">
             [% content %]
         </div>
+
+        <footer>
+            <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a> |
+            <a href="/api.html">Technical API</a>
+        </footer>
         
     </div> <!-- end of #container -->
 
-    <footer>
-        <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a> |
-        <a href="/faq.html">Frequently asked questions</a> |
-        <a href="/tell-a-friend.html">Tell a friend</a> |
-        <a href="/donate.html">Donate</a> |
-        <a href="/api.html">Technical API</a> |
-        <a href="http://twitter.com/vantrash">Follow us on Twitter</a>
-    </footer>
-    
     <!--[if lt IE 7 ]>
         <script src="/javascript/[% version %]/libs/dd_belatedpng.js"></script>
         <script> DD_belatedPNG.fix('img, .png_bg'); </script>

@@ -96,7 +96,7 @@ body#mobile #container {
 }
 
 #container {
-    margin: 4px 220px;
+    margin: 4px 100px;
     border: 1px solid #36533a;
     background-color: white;
 
@@ -110,6 +110,7 @@ header {
     border-bottom: 1px solid #36533a;
     background: #60a464 url(../../images/header-background.png) 50% 50% repeat-x; color: #ffffff;
     font-weight: bold;
+    position: relative;
 
     /* rounded corners */
     -webkit-border-top-left-radius: 15px;
@@ -127,9 +128,16 @@ header {
     background: url(/images/new/vantrash_logo.png) 10px 10px no-repeat;
 }
 
-footer {
-    text-align: center;
-    padding: 10px 0;
+#headerLinks {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    margin: 5px 0;
+}
+#headerLinks img, #headerLinks iframe, #headerLinks a {
+    vertical-align: middle;
+    color: #000;
+    margin: 0 3px;
 }
 
 body#mobile #main {
@@ -141,6 +149,61 @@ body#mobile #main {
 #main {
     width: 100%;
 }
+
+footer {
+    border-top: 1px solid #36533a;
+    height: 15px;
+
+    text-align: center;
+    padding: 10px 0;
+
+    /* rounded corners */
+    -webkit-border-bottom-left-radius: 15px;
+    -webkit-border-bottom-right-radius: 15px;
+    -moz-border-radius-bottomleft: 15px;
+    -moz-border-radius-bottomright: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+/* Initial help text */
+.searchSection {
+    margin: 10px 0;
+}
+.searchSection .description {
+    padding: 0 0 0 10px;
+    font-size: 110%;
+}
+.searchSection .description p {
+    margin: 5px 0;
+}
+.searchSection h1 {
+    font-size: 120%;
+}
+.searchSection .searchBox {
+    float: right;
+    padding: 8px 10px;
+}
+
+/* Map and Ad */
+.mapSection, #mapCanvas, .ad img {
+    height: 450px;
+}
+#mapCanvas {
+    margin-left: 335px;
+}
+
+.mapSection {
+    position: relative;
+    border-top: 1px solid #36533a;
+    border-bottom: 1px solid #36533a;
+}
+.ad {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
 
 body#mobile a.elem {
     font-size: 120%;
@@ -158,36 +221,9 @@ body#mobile .ui-datepicker {
     display: none; /* don't show buttons until we've called $.button */
 }
 
-.bottom {
-    height: 510px;
-    position: relative;
-    border-top: 1px solid #c1dcc7;
-}
-
-.ad {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
 .reminderMessage {
     font-size: 120%;
     padding: 20px;
-}
-
-/* Left Nav */
-.description {
-    margin-top: 5px;
-    margin-left: 380px;
-    font-size: 120%;
-}
-
-.description p {
-    margin: 10px 0;
-}
-
-.description h1 {
-    height: 120%;
 }
 
 input.initial {
@@ -200,12 +236,6 @@ input.text {
     font-size: 130%;
     border: 1px solid #D3D3D3;
     width: 300px;
-}
-
-/* Map */
-#mapCanvas {
-    height: 390px;
-    border-bottom: 1px solid #36533a;
 }
 
 /* Map Balloons */

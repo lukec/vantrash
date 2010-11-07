@@ -4,34 +4,34 @@
     ]
 %]
 
-    <div id="mapCanvas"></div>
+    <div class="searchSection">
+        <div class="searchBox">
+            <form id="address">
+                <input class="text ui-corner-all initial" type="text"/>
+                <input class="button" type="submit" value="Find my zone!"/>
+            </form>
+        </div>
+        <div class="description">
+            <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
+            <p>To start, simply click on the zone in which you live or search for your address, then click "Remind me".</p>
+        </div>
+    </div>
 
-    <div class="bottom">
+
+    <div class="mapSection">
+        <div id="mapCanvas"></div>
         <div class="ad">
             <a href="http://vancouver.ca/projects/foodWaste/noplastic.htm"
                 alt="Don't trash your food!">
                 <img src="/images/vantrash-ad-no-plastic.jpg"/>
             </a>
         </div>
-
-        <div class="description">
-            <div class="searchBox">
-                <h1>Find my zone:</h1>
-                <form id="address">
-                    <input class="text ui-corner-all initial" type="text"/>
-                    <input class="submit" type="submit" value="Search"/>
-                </form>
-            </div>
-
-            <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
-            <p>You can find out your garbage schedule, download the schedule to your calendar or set a reminder to your email. Never forget to take the garbage out again.</p>
-            <p>To start, simply click on the zone in which you live or search for your address, then click "Remind me".</p>
-        </div>
     </div>
+
 
     <script>
         onDocumentReady.push(function() {
-            $(".submit").button();
+            $("#address .button").button().show();
 
             var map = new TrashMap({
                 startingZone: "[% zone %]"

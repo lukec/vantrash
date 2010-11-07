@@ -12,7 +12,7 @@ TrashMap.prototype = {
     descriptions: {},
     zoom: 12,
     center: typeof(GLatLng) != 'undefined'
-        ? new GLatLng(49.24702, -123.138542)
+        ? new GLatLng(49.24702, -123.125542)
         : undefined,
 
     showSchedule: function(node, name, color) {
