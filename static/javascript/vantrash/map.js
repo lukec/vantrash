@@ -33,17 +33,6 @@ TrashMap.prototype = {
                 next: next,
                 yard: yard
             }));
-
-            if (!node) throw new Error("Node required");
-            if (node.openInfoWindow) {
-                node.openInfoWindow($div.get(0), {maxWidth: 220});
-            }
-            else {
-                var center = node.getBounds().getCenter();
-                self.map.openInfoWindow(
-                    center, $div.get(0), {maxWidth: 220}
-                );
-            }
                 
             $div.find('.remind_me', node).button().click(function() {
                 var lightbox = new ReminderLightbox({
@@ -52,12 +41,24 @@ TrashMap.prototype = {
                 lightbox.show();
             });
 
-            self.createCalendar(name, $div.find('.calendar', node));
+            var $node = $div.find('.calendar', node);
+            self.createCalendar(name, $node, function(){
+                if (!node) throw new Error("Node required");
+                if (node.openInfoWindow) {
+                    node.openInfoWindow($div.get(0), {maxWidth: 220});
+                }
+                else {
+                    var center = node.getBounds().getCenter();
+                    self.map.openInfoWindow(
+                        center, $div.get(0), {maxWidth: 220}
+                    );
+                }
+            });
         });
     },
 
 
-    createCalendar: function(name, $node) {
+    createCalendar: function(name, $node, cb) {
         $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
             /* Make a hash of days */
             var pickupdays = {};
@@ -84,6 +85,8 @@ TrashMap.prototype = {
                     ];
                 }
             });
+
+            if (cb) cb();
         });
     },
 
