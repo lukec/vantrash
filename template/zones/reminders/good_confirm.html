@@ -1,9 +1,6 @@
 [% WRAPPER wrapper.tt2 %]
-<div class="pad success">
-    <p>
-        Thank you for confirming your email,
-        <i>[% reminder.email %]</i>.
-    </p>
-    <p>You will soon receive an email with all the details.</p>
+<div class="reminderMessage">
+    Thank you for confirming your email, <i>[% reminder.email %]</i>.<br/>
+    You will soon receive an email with all the details.
 </div>
 [% END %]

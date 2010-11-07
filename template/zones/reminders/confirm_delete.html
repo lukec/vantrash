@@ -1,9 +1,13 @@
 [% WRAPPER wrapper.tt2 %]
-  <div class="pad success">
-      <p>Are you sure you want to unsubscribe [% reminder.target %] from [% reminder.zone %] reminders?</p>
-      <p>
-        <input type="button" value="Yes" onclick="document.location = '[% request_uri %]?confirm=1'"/>
-        <input type="button" value="No" onclick="document.location = '[% base %]'"/>
-      </p>
-  </div>
+<div class="reminderMessage">
+    Are you sure you want to unsubscribe [% reminder.target %] from [% reminder.zone %] reminders?<br/>
+    
+    <div class="buttons">
+        <a href="[% request_uri %]?confirm=1" class="button">Yes</a>
+        <a href="[% base %]" class="button">No</a>
+    </div>
+    <script>
+        onDocumentReady.push(function() { $('.button').button().show() });
+    </script>
+</div>
 [% END %]

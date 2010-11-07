@@ -127,6 +127,13 @@ header {
     width: 100%;
 }
 
+.buttons {
+    padding-top: 20px;
+}
+.button {
+    display: none; /* don't show buttons until we've called $.button */
+}
+
 .bottom {
     height: 510px;
     position: relative;
@@ -137,6 +144,11 @@ header {
     position: absolute;
     left: 0;
     top: 0;
+}
+
+.reminderMessage {
+    font-size: 120%;
+    padding: 20px;
 }
 
 /* Left Nav */

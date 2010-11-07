@@ -1,12 +1,11 @@
 [% WRAPPER wrapper.tt2 %]
-  <div class="pad success">
-      <p>
-      The following garbage reminder has been deleted:<br />
-      <ul>
-        <li><strong>Zone:</strong>[% reminder.zone %]</li>
-        <li><strong>Email:</strong>[% reminder.email %]</li>
-        <li><strong>Name:</strong>[% reminder.name %]</li>
-      </ul>
-      </p>
-  </div>
+<div class="reminderMessage">
+  The following garbage reminder has been deleted:<br />
+  <ul>
+    <li><strong>Zone:</strong>[% reminder.zone %]</li>
+    <li><strong>Email:</strong>[% reminder.email %]</li>
+    <li><strong>Name:</strong>[% reminder.name %]</li>
+  </ul>
+  </p>
+</div>
 [% END %]
