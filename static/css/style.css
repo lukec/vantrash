@@ -123,6 +123,11 @@ header {
     background: url(/images/new/vantrash_logo.png) 10px 10px no-repeat;
 }
 
+footer {
+    text-align: center;
+    padding: 10px 0;
+}
+
 #main {
     width: 100%;
 }
@@ -176,14 +181,6 @@ input.text {
     font-size: 130%;
     border: 1px solid #D3D3D3;
     width: 300px;
-}
-
-.copyright {
-    clear: both;
-    font-size: 80%;
-    display: block;
-    text-align: right;
-    margin: 0 10px 10px 0;
 }
 
 /* Map */

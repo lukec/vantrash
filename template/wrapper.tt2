@@ -31,13 +31,18 @@
         
         <div id="main">
             [% content %]
-            <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a>
         </div>
         
-        <footer>
-
-        </footer>
     </div> <!-- end of #container -->
+
+    <footer>
+        <a class="copyright" href="/copyright.html">&copy;2009 Luke Closs and Kevin Jones</a> |
+        <a href="/faq.html">Frequently asked questions</a> |
+        <a href="/tell-a-friend.html">Tell a friend</a> |
+        <a href="/donate.html">Donate</a> |
+        <a href="/api.html">Technical API</a> |
+        <a href="http://twitter.com/vantrash">Follow us on Twitter</a>
+    </footer>
     
     <!--[if lt IE 7 ]>
         <script src="/javascript/[% version %]/libs/dd_belatedpng.js"></script>
