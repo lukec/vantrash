@@ -214,6 +214,7 @@ ReminderLightbox.prototype = {
             buttons.push({
                 text: 'Submit',
                 click: function() {
+                    $cur.find('.globalError').remove();
                     if ($cur.find('form').valid()) opts.submit($cur);
                 }
             });
