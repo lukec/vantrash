@@ -103,7 +103,7 @@ body {
 }
 
 header {
-    border-bottom: 1px solid #c1dcc7;
+    border-bottom: 1px solid #36533a;
     background: #60a464 url(../../images/header-background.png) 50% 50% repeat-x; color: #ffffff;
     font-weight: bold;
 
@@ -186,6 +186,7 @@ input.text {
 /* Map */
 #mapCanvas {
     height: 390px;
+    border-bottom: 1px solid #36533a;
 }
 
 /* Map Balloons */
