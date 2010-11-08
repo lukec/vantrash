@@ -379,6 +379,17 @@ input.text {
     text-decoration: underline;
 }
 
+/* Dialog Button layout*/
+.ui-dialog .ui-dialog-buttonset {
+    width: 100%;
+}
+.ui-dialog .ui-dialog-buttonset button.close {
+    float: none; /* place close buttons on the far left */
+}
+.ui-dialog .ui-dialog-buttonset button {
+    float: right;
+}
+
 /* Other page styles */
 .otherPage {
     padding: 20px;

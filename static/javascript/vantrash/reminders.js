@@ -193,14 +193,6 @@ ReminderLightbox.prototype = {
     buttons: function(opts, $cur) {
         var self = this;
         var buttons = [];
-        if (opts.back) {
-            buttons.push({
-                text: 'Back',
-                click: function() {
-                    opts.back($cur);
-                }
-            });
-        }
         if (opts.next) {
             buttons.push({
                 text: 'Next',
@@ -218,8 +210,17 @@ ReminderLightbox.prototype = {
                 }
             });
         }
+        if (opts.back) {
+            buttons.push({
+                text: 'Back',
+                click: function() {
+                    opts.back($cur);
+                }
+            });
+        }
         buttons.push({
-            text: 'Close',
+            className: 'close',
+            text: (opts.next || opts.submit) ? 'Cancel' : 'Close',
             click: function() {
                 self.$dialog.dialog('close');
             }
