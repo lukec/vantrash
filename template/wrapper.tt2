@@ -36,7 +36,7 @@
                 <fb:like href="http://www.vantrash.ca" layout="button_count" width="50"></fb:like>
             </div>
         </header>
-        
+
         <div id="main">
             [% content %]
         </div>

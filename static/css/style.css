@@ -167,22 +167,19 @@ footer {
 }
 
 /* Initial help text */
-.searchSection {
-    margin: 10px 0;
-}
 .searchSection .description {
-    padding: 0 0 0 10px;
+    padding: 10px;
     font-size: 110%;
 }
 .searchSection .description p {
-    margin: 5px 0;
+    padding: 4px 0;
 }
 .searchSection h1 {
     font-size: 120%;
 }
 .searchSection .searchBox {
     float: right;
-    padding: 8px 10px;
+    padding: 25px 15px;
 }
 
 /* Map and Ad */
@@ -233,7 +230,7 @@ input.initial {
 }
 
 input.text {
-    height: 33px;
+    padding: 4px 0;
     font-size: 130%;
     border: 1px solid #D3D3D3;
     width: 300px;
