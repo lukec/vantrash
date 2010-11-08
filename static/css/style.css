@@ -230,7 +230,7 @@ input.initial {
 }
 
 input.text {
-    padding: 4px 0;
+    padding: 5px;
     font-size: 130%;
     border: 1px solid #D3D3D3;
     width: 300px;
