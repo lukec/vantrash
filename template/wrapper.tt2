@@ -32,7 +32,7 @@
             <div id="headerLinks">
                 <a href="/faq.html">Frequently asked questions</a>
                 <a href="/tell-a-friend.html">Tell a friend</a>
-                <a href="http://www.twitter.com/vantrash"><img src="http://twitter-badges.s3.amazonaws.com/twitter-c.png" alt="Follow vantrash on Twitter"/></a>
+                <a href="http://www.twitter.com/vantrash"><img src="http://twitter-badges.s3.amazonaws.com/follow_us-c.png" alt="Follow Vantrash on Twitter"/></a>
                 <fb:like href="http://www.vantrash.ca" layout="button_count" width="50"></fb:like>
             </div>
         </header>
