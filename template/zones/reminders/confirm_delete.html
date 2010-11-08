@@ -6,8 +6,6 @@
         <a href="[% request_uri %]?confirm=1" class="button">Yes</a>
         <a href="[% base %]" class="button">No</a>
     </div>
-    <script>
-        onDocumentReady.push(function() { $('.button').button().show() });
-    </script>
+    <script>$('.button').button().show()</script>
 </div>
 [% END %]

@@ -22,7 +22,13 @@
 
     <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
     <script src="/javascript/[% version %]/libs/modernizr-1.6.min.js"></script>
-    <script>window.onDocumentReady = []</script>
+
+    <!-- vantrash stuff -->
+    <script src="/javascript/[% version %]/vantrash-mini.js"></script>
+
+    [% FOR js = javascript %]
+    <script src="[% js %]"></script>
+    [% END %]
 </head>
 
 <body>
@@ -52,15 +58,6 @@
         <script src="/javascript/[% version %]/libs/dd_belatedpng.js"></script>
         <script> DD_belatedPNG.fix('img, .png_bg'); </script>
     <![endif]-->
-
-    <!-- vantrash stuff -->
-    <script src="/javascript/[% version %]/vantrash-mini.js"></script>
-
-    [% FOR js = javascript %]
-    <script src="[% js %]"></script>
-    [% END %]
-    
-    <script>$.each(window.onDocumentReady, function(i,f) { $(f) })</script>
 
     <!-- yui profiler and profileviewer - remove for production
     <script src="/javascript/[% version %]/libs/profiling/yahoo-profiling.min.js"></script>

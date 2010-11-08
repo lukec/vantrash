@@ -36,6 +36,6 @@
      </form>
    </div>
    <script>
-        onDocumentReady.push(function() { $('.button').button().show() });
+        $('.button').button().show();
    </script>
 [% END %]
