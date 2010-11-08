@@ -191,12 +191,13 @@ footer {
 }
 #mapCanvas {
     margin-left: 335px;
+    border-left: 1px solid #36533a;
 }
 
 .mapSection {
+    width: 100%;
     position: relative;
     border-top: 1px solid #36533a;
-    border-bottom: 1px solid #36533a;
 }
 .ad {
     position: absolute;
