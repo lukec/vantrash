@@ -5,6 +5,8 @@ use Test::HTTP;
 use JSON::XS qw(decode_json);
 use Date::Parse qw(str2time);
 use POSIX qw(strftime);
+use DateTime;
+use DateTime::Format::Strptime;
 use namespace::clean -except => 'meta';
 
 extends 'Socialtext::WikiFixture::Selenese';
@@ -30,7 +32,11 @@ sub _api_get_next_pickup_date {
     $self->get("/zones/$zone/nextpickup.json");
     my $data = decode_json($self->http->response->content);
     (my $date = $data->{'next'}[0]) =~ s{ Y$}{};
-    return strftime("%a %b %d %Y", localtime(str2time($date)));
+    my ($y, $m, $d) = split '-', $date;
+    my $dt = DateTime->new(year => $y, month => $m, day=> $d);
+    return sprintf(
+        "%s %s %d %d", $dt->day_abbr, $dt->month_abbr, $dt->day, $dt->year
+    );
 }
 
 # Vantrash stuff
@@ -72,40 +78,67 @@ sub calendar_ok {
 
     # Next pickup date is correct
     my $next_date = $self->_api_get_next_pickup_date($zone);
-    $self->is_text_present_ok("Next pickup: $next_date");
+    $self->wait_for_text_present_ok("Next pickup: $next_date");
 
     # Check that the calendar opens to the current month
     # XXX it should open to next month if no more days are this month
-    my $month = strftime("%B/%Y", localtime(time));
-    is $self->get_text('css=.month'), $month, "Calendar opens to $month";
+    my $current = DateTime->new(
+        year => DateTime->now->year,
+        month => DateTime->now->month,
+        day => 1,
+    );
+    is $self->get_text('css=.ui-datepicker-month'), $current->month_name,
+        "Calendar opens to current month";
+    is $self->get_text('css=.ui-datepicker-year'), $current->year,
+        "Calendar opens to current year";
 
     # Today is bolded
     my $date = int strftime("%d", localtime(time));
-    is $self->get_text('css=.calendar .today'), $date, "Today is $date";
+    is $self->get_text('css=.calendar .ui-datepicker-today'), $date,
+        "Today is $date";
      
     # Get the pickup days using REST 
     $self->get("/zones/$zone/pickupdays.json");
     my $pickup_days = decode_json($self->http->response->content);
 
     # Click back until we get to the first month
-    my $current_month = strftime("%Y-%m", localtime(time));
-    my $first_month = "$pickup_days->[0]{year}-$pickup_days->[0]{month}";
-    while ($current_month gt $first_month) {
-        $self->click('css=.calendar .back');
-        my $test = $self->get_text('css=.month');
-        (my $first = $self->get_text('css=.month')) =~ s{/}{ 1 };
-        $current_month = strftime("%Y-%m", localtime(str2time($first)));
-        die "Unable to parse date: $first" unless $current_month;
+    my $first = DateTime->new(
+        year => $pickup_days->[0]{year},
+        month => $pickup_days->[0]{month},
+        day => 1,
+    );
+
+    # Step $current back until we get to first, clicking prev each time
+    while (DateTime->compare($first, $current) < 0) {
+        $self->click('css=.calendar .ui-datepicker-prev');
+        $current->subtract(months => 1);
+        die "Unable to parse date: $first" unless $current;
     }
+
+    # First month is labelled correctly
+    is $self->get_text('css=.ui-datepicker-month'), $current->month_name,
+        "Month is " . $current->month_name;
+    is $self->get_text('css=.ui-datepicker-year'), $current->year,
+        "Year is " . $current->year;
 
     # Each pickup day has the appropriate text
     for my $pickup_day (@$pickup_days) {
-        # Skip old months for now
-        my $ym = "$pickup_day->{year}-$pickup_day->{month}";
+        my $pickup_month = DateTime->new(
+            year => $pickup_day->{year},
+            month => $pickup_day->{month},
+            day => 1,
+        );
 
-        if ($ym gt $current_month) {
-            $self->click('css=.calendar .forward');
-            $current_month = $ym;
+        # Click next if the pickup day is on the next month
+        if (DateTime->compare($pickup_month, $current) > 0) {
+            $self->click('css=.calendar .ui-datepicker-next');
+            $current->add(months => 1);
+
+            # Month is labelled correctly
+            is $self->get_text('css=.ui-datepicker-month'),
+                $current->month_name, "Month is " . $current->month_name;
+            is $self->get_text('css=.ui-datepicker-year'), $current->year,
+                "Year is " . $current->year;
         }
 
         # Verify the correct dates are marked
@@ -116,11 +149,11 @@ sub calendar_ok {
 
         # Make sure yard trimmings is set
         if ($pickup_day->{flags}) {
-            like $self->get_attribute("$day_selector\@style"), qr/yard/,
+            like $self->get_attribute("$day_selector\@class"), qr/yard/,
                 "$num is marked for yard trimmings pickup";
         }
         else{
-            unlike $self->get_attribute("$day_selector\@style"), qr/yard/,
+            unlike $self->get_attribute("$day_selector\@class"), qr/yard/,
                 "$num is NOT marked for yard trimmings pickup";
         }
     }

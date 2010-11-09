@@ -1,18 +1,15 @@
 
 * Fixture: VanTrash
 
-| open                  | http://vantrash.ca/ |
-| wait-for-page-to-load | 5000                     |
-
-| is-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively. |
-| is-text-present-ok    | You can find out your garbage schedule, download the schedule to your calendar or set a reminder to your email. Never forget to take the garbage out again. |
-| is-text-present-ok | To start, simply click on the zone in which you live or search for your address below, then click "Remind me". |
-
-| wait-for-kml |
+| open                  | /    |
+| wait-for-page-to-load | 5000 |
+| wait-for-kml          |      |
 
 | click-zone-ok            | vancouver-south-red |
 | wait-for-text-present-ok | Vancouver Red South |
 | calendar-ok              | vancouver-south-red |
+
+^ exit
 
 | click-zone-ok            | vancouver-north-red |
 | wait-for-text-present-ok | Vancouver Red North |

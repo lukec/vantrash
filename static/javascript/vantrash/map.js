@@ -5,9 +5,10 @@ TrashMap = function(opts) {
 }
 
 TrashMap.prototype = {
+    dayNames: [ 'Sun','Mon','Tue','Wed','Thu','Fri','Sat' ],
     monthNames: [
-        'January','February','March','April','May','June',
-        'July','August','September','October','November','December'
+        'Jan','Feb','Mar','Apr','May','Jun',
+        'Jul','Aug','Sept','Oct','Nov','Dec'
     ],
     descriptions: {},
     zoom: 12,
@@ -18,16 +19,7 @@ TrashMap.prototype = {
     showSchedule: function(node, name, color) {
         var self = this;
 
-        $.getJSON('/zones/' + name + '/nextpickup.json', function (next) {
-            var yard = '';
-            next = next.next[0];
-            if (next.match(/^\d+-(\d+)-(\d+)(?: (Y))?/)) {
-                next = self.monthNames[RegExp.$1 - 1] + ' ' + RegExp.$2;
-                yard = RegExp.$3
-                    ? ' (Yard trimmings will be picked up)'
-                    : ' (Yard trimmings will NOT be picked up)'
-            }
-
+        self.getNextPickup(name, function(next, yard) {
             var $div = $(Jemplate.process('balloon.tt2', {
                 description: self.descriptions[name],
                 next: next,
@@ -57,6 +49,29 @@ TrashMap.prototype = {
         });
     },
 
+    getNextPickup: function(name, callback) {
+        var self = this;
+        $.getJSON('/zones/' + name + '/nextpickup.json', function (next) {
+            var yard = '';
+            next = next.next[0];
+            if (next.match(/^(\d+)-(\d+)-(\d+)(?: (Y))?/)) {
+                var nextDate = new Date;
+                nextDate.setFullYear(RegExp.$1);
+                nextDate.setMonth(RegExp.$2-1);
+                nextDate.setDate(RegExp.$3);
+                next = [
+                    self.dayNames[nextDate.getDay()],
+                    self.monthNames[nextDate.getMonth()],
+                    nextDate.getDate(),
+                    nextDate.getFullYear()
+                ].join(' ');
+                yard = RegExp.$4
+                    ? ' (Yard trimmings will be picked up)'
+                    : ' (Yard trimmings will NOT be picked up)'
+            }
+            callback(next, yard);
+        });
+    },
 
     createCalendar: function(name, $node, cb) {
         $.getJSON('/zones/' + name + '/pickupdays.json', function (days) {
@@ -76,13 +91,10 @@ TrashMap.prototype = {
                     var key = [
                         day.getFullYear(), day.getMonth()+1, day.getDate()
                     ].join('-');
-                    return [
-                        false, // Not selectable
-                        pickupdays[key] ? 'marked' : '', // class
-
-                        // title XXX NOT GOOD ENOUGH
-                        yarddays[key] ? 'Yard trimmings are picked up' : ''
-                    ];
+                    var className = 'day';
+                    if (pickupdays[key]) className += ' marked';
+                    if (yarddays[key]) className += ' yard';
+                    return [ false, className ];
                 }
             });
 
