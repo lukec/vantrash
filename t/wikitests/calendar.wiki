@@ -9,8 +9,6 @@
 | wait-for-text-present-ok | Vancouver Red South |
 | calendar-ok              | vancouver-south-red |
 
-^ exit
-
 | click-zone-ok            | vancouver-north-red |
 | wait-for-text-present-ok | Vancouver Red North |
 | calendar-ok              | vancouver-north-red |
