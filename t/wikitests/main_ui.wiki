@@ -1,0 +1,18 @@
+
+* Fixture: VanTrash
+
+| open                  | /    |
+| wait-for-page-to-load | 5000 |
+
+| is-text-present-ok | VanTrash helps you manage your neighbourhood garbage schedule more effectively.                         |
+| is-text-present-ok | To start, simply click on the zone in which you live or search for your address, then click "Remind me" |
+
+| click-ok              | link=Frequently asked questions |
+| wait-for-page-to-load | 5000                            |
+| is-text-present-ok    | Using VanTrash                  |
+
+| open                  | /                                 |
+| wait-for-page-to-load | 5000                              |
+| click-ok              | link=Tell a friend                |
+| wait-for-page-to-load | 5000                              |
+| is-text-present-ok    | Tell your friends about VanTrash! |
