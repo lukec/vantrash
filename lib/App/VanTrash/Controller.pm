@@ -60,10 +60,8 @@ sub run {
         POST => [
             # Website Actions
             [ qr{^/action/tell-friends$} => \&tell_friends ],
-            [ qr{^/call(.*)$} => \&handle_call ],
-        ],
-        PUT => [
-            [ qr{^/zones/([^/]+)/reminders$} => \&put_reminder ],
+            [ qr{^/PayPal_IPN$} => \&handle_paypal_ipn ],
+            [ qr{^/zones/([^/]+)/reminders$} => \&post_reminder ],
         ],
         DELETE => [
             [ qr{^/zones/([^/]+)/reminders/(.+)$} => \&delete_reminder ],

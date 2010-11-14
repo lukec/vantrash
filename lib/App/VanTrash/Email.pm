@@ -4,6 +4,7 @@ use Email::Send;
 use Email::MIME;
 use Email::MIME::Creator;
 use Email::Send::Gmail;
+use Email::Send::IO;
 use Net::SMTP::SSL;
 use YAML;
 use App::VanTrash::Template;
@@ -46,7 +47,6 @@ sub _build_mailer {
     my $self = shift;
 
     if ($ENV{VT_EMAIL}) {
-        require Email::Send::IO;
         @Email::Send::IO::IO = ($ENV{VT_EMAIL});
         return Email::Send->new({
             mailer => 'IO',
