@@ -5,7 +5,7 @@ use namespace::clean -except => 'meta';
 
 has 'log_file'    => (is => 'rw', isa => 'Str', lazy_build => 1);
 
-sub _build_log_file { '/var/log/vantrash.log' }
+sub _build_log_file { $ENV{VT_LOG_FILE} || '/var/log/vantrash.log' }
 
 sub log {
     my $self = shift;
