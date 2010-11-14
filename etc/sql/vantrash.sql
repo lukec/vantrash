@@ -31,7 +31,8 @@ CREATE TABLE reminder (
     created_at INTEGER NOT NULL,
     next_pickup INTEGER NOT NULL,
     last_notified INTEGER NOT NULL,
-    confirm_hash TEXT NOT NULL
+    confirm_hash TEXT NOT NULL,
+    payment_period TEXT
 );
 
 -- TODO:
