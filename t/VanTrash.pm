@@ -7,6 +7,7 @@ use Fatal qw/mkdir symlink/;
 use Test::More;
 use File::Slurp;
 use mocked 'Net::Twitter';
+use mocked 'Business::PayPal::NVP';
 
 use lib 'lib';
 use namespace::clean -except => 'meta';
@@ -35,6 +36,8 @@ sub _build_base_path {
     symlink "$FindBin::Bin/../template", "$tmp_dir/template";
     copy "$FindBin::Bin/../data/trash-zone-times.yaml",
         "$tmp_dir/data/trash-zone-times.yaml";
+    mkdir "$tmp_dir/etc";
+    copy "$FindBin::Bin/../etc/vantrash.yaml" => "$tmp_dir/etc/vantrash.yaml";
 
     $ENV{VT_LOG_FILE} = "$tmp_dir/vantrash.log";
     
@@ -51,6 +54,7 @@ sub _build_base_path {
 sub app {
     local $ENV{VT_LOAD_DATA} = 1;
     my $test_base = t::VanTrash->base_path;
+    App::VanTrash::Config->new( config_file => "$test_base/etc/vantrash.yaml");
     return sub {
         App::VanTrash::Controller->new(
             base_path => $test_base,

@@ -6,6 +6,7 @@ use Test::More;
 use HTTP::Request::Common qw/GET POST DELETE/;
 use t::VanTrash;
 use App::VanTrash::Controller;
+use JSON qw/encode_json/;
 
 my $app = t::VanTrash->app;
 test_psgi $app, sub {
@@ -42,6 +43,13 @@ test_psgi $app, sub {
     );
     is $res->code, 400;
     like $res->content, qr/target is unsupported/;
+
+    # Rainy day: paid target w/o payment_period
+    $res = $cb->(POST "/zones/vancouver-north-blue/reminders", 
+        Content => q|{"email":"test@vantrash.ca","name":"Test","target":"voice:7787851357"}|
+    );
+    is $res->code, 400;
+    like $res->content, qr/require payment period/;
 };
 
 
@@ -53,7 +61,7 @@ for my $target (qw{email:test@vantrash.ca twitter:vantrash webhook:http://vantra
             Content => qq|{"email":"test\@vantrash.ca","name":"Test","target":"$target"}|
         );
         is $res->code, 201;
-        is $res->content, '';
+        is $res->content, '{}';
         ok $res->header('Location') =~ m#^/zones/vancouver-north-blue/reminders/([\w-]+)$#;
         my $reminder_id = $1;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
@@ -69,12 +77,20 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
     test_psgi $app, sub {
         my $cb = shift;
         my $res = $cb->(POST "/zones/vancouver-north-blue/reminders", 
-            Content => qq|{"email":"test\@vantrash.ca","name":"Test","target":"$target"}|
+            Content => encode_json(
+                {
+                    email => 'test@vantrash.ca',
+                    name => 'Test',
+                    target => $target,
+                    payment_period => 'month',
+                },
+            ),
         );
         is $res->code, 201;
-        is $res->content, '';
         ok $res->header('Location') =~ m#^/zones/vancouver-north-blue/reminders/([\w-]+)$#;
         my $reminder_id = $1;
+        ok $res->header('Content-Type') =~ m#json#;
+        like $res->content, qr|{"payment_url":"https://www\.sandbox\.paypal.+fake-paypal-token"}|;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 204;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");

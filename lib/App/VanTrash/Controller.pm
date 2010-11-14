@@ -3,6 +3,7 @@ use Moose;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Config;
+use App::VanTrash::Config;
 use App::VanTrash::CallController;
 use JSON qw/encode_json decode_json/;
 use App::VanTrash::Log;
@@ -353,18 +354,29 @@ sub post_reminder {
     return $self->_400_bad_request("target is required") unless $args->{target};
     return $self->_400_bad_request("target is unsupported") unless $self->model->reminders->Is_valid_target($args->{target});
 
+    my $payment_required = $args->{target} =~ m/^(?:voice|sms):/;
+    return $self->_400_bad_request("voice/sms reminders require payment period")
+        if $payment_required and !$args->{payment_period};
+
     my $reminder = $self->model->add_reminder({
             name => $args->{name},
             email => $addr,
             offset => $args->{offset},
             target => $args->{target},
             zone => $zone,
+            ($payment_required ? (payment_period => $args->{payment_period}) : ()),
         },
     );
-    my $id = $reminder->id;
     $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email );
-    my $uri = "/zones/$zone/reminders/" . $id;
-    return Plack::Response->new(201, [Location => $uri], '')->finalize;
+    my @headers;
+    push @headers, Location => "/zones/$zone/reminders/" . $reminder->id;
+    push @headers, 'Content-Type' => 'application/json';
+
+    my $body = "{}";
+    if ($payment_required) {
+        $body = q|{"payment_url":"| . $reminder->payment_url . q|"}|;
+    }
+    return Plack::Response->new(201, \@headers, $body)->finalize;
 }
 
 sub _remove_slash {
