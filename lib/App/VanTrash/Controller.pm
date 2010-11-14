@@ -51,6 +51,8 @@ sub run {
                     \&zone_next_dow_change_txt ],
             [ qr{^/zones/([^/]+)/nextdowchange\.json$} =>
                     \&zone_next_dow_change_json ],
+            [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)$} =>
+                    \&show_reminder ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/confirm$} =>
                     \&confirm_reminder ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
@@ -299,6 +301,19 @@ sub zone_next_dow_change_json {
     $self->log("ZONENEXTDOWCHANGE $zone JSON");
 
     my $body = encode_json {$self->model->next_dow_change($zone)};
+    return $self->response('application/json' => $body);
+}
+
+sub show_reminder {
+    my $self = shift;
+    my $req  = shift;
+    my $zone = shift;
+    my $hash = shift;
+            
+    my $rem = $self->model->reminders->by_id($hash);
+    return $self->_400_bad_request("Cannot find reminder $hash") unless $rem;
+
+    my $body = encode_json $rem->to_hash;
     return $self->response('application/json' => $body);
 }
 
