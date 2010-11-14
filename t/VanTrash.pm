@@ -7,6 +7,8 @@ use Fatal qw/mkdir symlink/;
 use Test::More;
 use File::Slurp;
 use mocked 'Net::Twitter';
+
+use lib 'lib';
 use namespace::clean -except => 'meta';
 
 BEGIN {
@@ -28,11 +30,13 @@ my @http_requests;
 sub _build_base_path {
     my $self = shift;
 
-    my $tmp_dir = tempdir( CLEANUP => 1 );
+    my $tmp_dir = tempdir( CLEANUP => 0 );
     mkdir "$tmp_dir/data";
     symlink "$FindBin::Bin/../template", "$tmp_dir/template";
     copy "$FindBin::Bin/../data/trash-zone-times.yaml",
         "$tmp_dir/data/trash-zone-times.yaml";
+
+    $ENV{VT_LOG_FILE} = "$tmp_dir/vantrash.log";
     
     # Create the SQL db
     my $db_file = "$tmp_dir/data/vantrash.db";
@@ -44,9 +48,25 @@ sub _build_base_path {
     return $tmp_dir;
 }
 
+sub app {
+    local $ENV{VT_LOAD_DATA} = 1;
+    my $test_base = t::VanTrash->base_path;
+    return sub {
+        App::VanTrash::Controller->new(
+            base_path => $test_base,
+            log_file  => "$test_base/vantrash.log",
+        )->run(@_);
+
+    };
+}
+
 sub model {
     my $self = shift;
-    return App::VanTrash::Model->new( base_path => $self->base_path );
+    my $test_base = t::VanTrash->base_path;
+    return App::VanTrash::Model->new(
+        base_path => $test_base,
+        log_file  => "$test_base/vantrash.log",
+    );
 }
 
 sub email_content {

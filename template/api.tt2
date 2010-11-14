@@ -52,13 +52,13 @@
         <h3>Zone Reminders</h3>
         <p>You can add and remove reminders through the API as follows.</p>
         <h4>Adding a reminder</h4>
-        <p>Submit a HTTP PUT request to <code>/zones/:zone_id/reminders</code> containing a JSON payload with the following elements in the body:</p>
+        <p>Submit a HTTP POST request to <code>/zones/:zone_id/reminders</code> containing a JSON payload with the following elements in the body:</p>
         <ul>
             <li><code>id</code> - A unique identifier for this reminder. Must be 3-30 characters alphanumeric.</li>
             <li><code>password</code> - An optional password for this reminder</li>
             <li><code>email</code> - An email address to receive email reminders</li>
             <li><code>offset</code> - Number of hours to add to midnight of the pickup day. Defaults to -6 (eg: 6pm of the day before pickup).</li>
-            <li><code>target</code> - (Optional) Notification delivery target.  Defaults to an email target.  See below for more targets.</li>
+            <li><code>target</code> - Notification delivery target.  See below for available targets.</li>
         </ul>
         <p>
         This will initiate creation of a reminder.  Email will be sent to the email address with a confirmation link.<br />

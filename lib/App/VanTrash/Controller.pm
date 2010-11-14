@@ -9,6 +9,7 @@ use App::VanTrash::Log;
 use Email::Valid;
 use Plack::Request;
 use Plack::Response;
+use Business::PayPal::IPN;
 use namespace::clean -except => 'meta';
 
 with 'App::VanTrash::ControllerBase';
@@ -53,8 +54,6 @@ sub run {
                     \&confirm_reminder ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
                     \&delete_reminder_html ],
-            [ qr{^/reports/(.+)$} => \&show_report ],
-            [ qr{^/call(.*)$} => \&handle_call ],
         ],
 
         POST => [
@@ -337,7 +336,7 @@ sub confirm_reminder {
     )->finalize;
 }
 
-sub put_reminder {
+sub post_reminder {
     my $self = shift;
     my $req  = shift;
     my $zone = shift;
@@ -345,8 +344,14 @@ sub put_reminder {
     my $args = eval { decode_json $req->raw_body };
     return $self->_400_bad_request("Bad JSON") if $@;
 
-    my $addr = Email::Valid->address($args->{email});
+    my $addr;
+    if ($args->{email}) {
+        $addr = Email::Valid->address($args->{email});
+    }
     return $self->_400_bad_request("Bad email address") unless $addr;
+    return $self->_400_bad_request("name is required") unless $args->{name};
+    return $self->_400_bad_request("target is required") unless $args->{target};
+    return $self->_400_bad_request("target is unsupported") unless $self->model->reminders->Is_valid_target($args->{target});
 
     my $reminder = $self->model->add_reminder({
             name => $args->{name},
@@ -440,7 +445,7 @@ sub delete_reminder {
 
     if ($self->model->delete_reminder($id)) {
         $self->log("DELETE $zone $id");
-        return Plack::Response->new(204, [], '' );
+        return Plack::Response->new(204, [], '' )->finalize;
     }
 
     $self->log("DELETE_FAIL $zone $id");
@@ -451,6 +456,28 @@ sub _load_zone {
     my $self = shift;
     my $name = shift;
     return $self->model->zones->by_name( $name );
+}
+
+sub handle_paypal_ipn {
+    my $self = shift;
+    my $req = $self->request;
+
+    # For testing in the sandbox only
+    local $Business::PayPal::IPN::GTW = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    my $ipn = Business::PayPal::IPN->new(query => $req);
+    die Business::PayPal::IPN->error() unless $ipn;
+    my $paypal = { $ipn->vars };
+    
+    if ( $paypal->{payment_status} eq 'Completed' ) {
+        warn "Payment was made successfully!";
+        # TODO - look up the reminder id, make the reminder confirmed
+        # TODO - can only confirm voice or sms reminders via this paypal hook
+    }
+    else {
+        use Data::Dumper;
+        warn Dumper $paypal;
+    }
+    return Plack::Response->new(200, [], '')->finalize;
 }
 
 __PACKAGE__->meta->make_immutable;
