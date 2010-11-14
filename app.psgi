@@ -9,8 +9,6 @@ use App::VanTrash::Config;
 App::VanTrash::Config->new(config_file => 'etc/vantrash.yaml');
 
 builder {
-    enable "Plack::Middleware::AccessLog::Timed",
-            format => "%h %l %u %t \"%r\" %>s %b %D";
     enable "StackTrace";
     enable "Plack::Middleware::Static",
            path => qr{^/(robots\.txt|zones\.kml|images)}, 
