@@ -19,9 +19,7 @@ $email->send_email(
     template_args => { foo => 'bar' },
 );
 
-open(my $fh, $ENV{VT_EMAIL});
-local $/ = undef;
-my $contents = <$fh>;
+my $contents = t::VanTrash->email_content;
 like $contents, qr/\QTo: test/, 'to';
 like $contents, qr/\QFrom: "VanTrash" <noreply/, 'from';
 like $contents, qr/\QSubject: You've won\E/, 'subject';
