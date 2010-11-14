@@ -130,7 +130,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	/etc/init.d/nginx reload
 
 test: $(TESTS)
-	prv $(TESTS)
+	prove -Ilib $(TESTS)
 
 wikitest: $(WIKITESTS)
 	prove $(WIKITESTS)
