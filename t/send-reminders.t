@@ -18,6 +18,7 @@ Create_and_send_reminder: {
         name => "Test Reminder",
         email => 'test@vantrash.ca',
         zone => $zone->name,
+        target => 'email:test@vantrash.ca',
         offset => 0,
     });
     my $next_pickup = $model->next_pickup($zone->name);
