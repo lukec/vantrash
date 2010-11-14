@@ -21,14 +21,14 @@ sub add {
     $rem->{last_notified} = time;
     $rem->{confirm_hash}  = _build_uuid('vantrash-confirm', $rem);
 
-    if (!$rem->{target} or $rem->{target} =~ m/^email:/) {
-        $rem->{target} = 'email:' . $rem->{email};
-    }
-
-    # TODO - filter valid reminder types
-
     my $robj = $self->_rs->create($rem);
     return $robj;
+}
+
+sub Is_valid_target {
+    my $class = shift;
+    my $target = shift;
+    return $target =~ m/^(?:email|twitter|webhook|sms|voice):/;
 }
 
 sub _build_uuid { 
