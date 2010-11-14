@@ -21,6 +21,7 @@ Add_a_reminder: {
             name => "Test Reminder",
             email => 'test@vantrash.ca',
             zone => $zone->{name},
+            target => 'email:test@vantrash.ca',
         },
     );
 
