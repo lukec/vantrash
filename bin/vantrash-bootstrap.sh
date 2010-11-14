@@ -35,8 +35,10 @@ cpanm --sudo \
     Email::MIME \
     Email::MIME::Creator \
     Email::Send \
+    Email::Send::IO \
     Email::Send::Gmail \
     Email::Valid \
+    File::Slurp \
     JavaScript::Minifier::XS \
     MRO::Compat \
     Math::Polygon \
