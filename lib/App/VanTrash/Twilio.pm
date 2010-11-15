@@ -37,9 +37,9 @@ sub send_sms {
 sub voice_call {
     my $self    = shift;
     my $number  = shift;
-    my $zone = shift;
+    my $path = shift;
 
-    my $url = App::VanTrash::Config->base_url . '/call/notify/' . $zone;
+    my $url = App::VanTrash::Config->base_url . $path;
     my $response = $self->api->POST(
         'Calls',
         Caller => $self->voice_from_number,

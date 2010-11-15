@@ -189,9 +189,10 @@ sub _send_notification_voice {
     my $self = shift;
     my %args = @_;
 
-    $self->twilio->voice_call($args{target}, $args{reminder}->zone);
+    $self->twilio->voice_call($args{target}, '/call/notify/' . $args{reminder}->zone);
     return 1;
 }
+
 
 sub http_post {
     my $self = shift;
