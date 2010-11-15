@@ -40,6 +40,7 @@ cpanm --sudo \
     Email::Valid \
     File::Slurp \
     JavaScript::Minifier::XS \
+    Jemplate \
     MRO::Compat \
     Math::Polygon \
     MooseX::Types \
