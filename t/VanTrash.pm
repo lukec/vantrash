@@ -7,6 +7,7 @@ use Fatal qw/mkdir symlink/;
 use Test::More;
 use File::Slurp;
 use mocked 'Net::Twitter';
+use mocked 'WWW::Twilio::API';
 use mocked 'Business::PayPal::NVP';
 
 use lib 'lib';
