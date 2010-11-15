@@ -60,14 +60,18 @@ for my $target (qw{email:test@vantrash.ca twitter:vantrash webhook:http://vantra
         my $res = $cb->(POST "/zones/vancouver-north-blue/reminders", 
             Content => qq|{"email":"test\@vantrash.ca","name":"Test","target":"$target"}|
         );
-        is $res->code, 201;
+        is $res->code, 201, "create reminder - $target";
         is $res->content, '{}';
         ok $res->header('Location') =~ m#^/zones/vancouver-north-blue/reminders/([\w-]+)$#;
         my $reminder_id = $1;
+        $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
+        is $res->code, 200;
+        is $res->header('Content-Type'), 'application/json';
+        like $res->content, qr/"payment_period":null/;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
-        is $res->code, 204;
+        is $res->code, 204, 'delete success';
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
-        is $res->code, 400;
+        is $res->code, 400, 'cannot delete twice';
     };
 }
 
@@ -86,16 +90,31 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
                 },
             ),
         );
-        is $res->code, 201;
+        is $res->code, 201, "create reminder - $target";
         ok $res->header('Location') =~ m#^/zones/vancouver-north-blue/reminders/([\w-]+)$#;
         my $reminder_id = $1;
         ok $res->header('Content-Type') =~ m#json#;
         like $res->content, qr|{"payment_url":"https://www\.sandbox\.paypal.+fake-paypal-token"}|;
+        $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
+        is $res->code, 200;
+        is $res->header('Content-Type'), 'application/json';
+        unlike $res->content, qr/"payment_period":null/;
+
+        # Pretend we just agreed on paypal and we are back.
+        $res = $cb->(GET "/billing/proceed?token=fake-paypal-token");
+        is $res->code, 200;
+        like $res->content, qr/Thank you for subscribing/;
+
+        # Now delete the reminder
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 204;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 400;
     };
 }
+
+# TODO - paypal rainy day
+# TODO - paypal rainy day - no token / bad token
+# TODO - paypal cancel scenario
 
 done_testing();

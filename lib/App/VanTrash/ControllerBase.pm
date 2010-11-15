@@ -2,6 +2,7 @@ package App::VanTrash::ControllerBase;
 use Moose::Role;
 use App::VanTrash::Template;
 use App::VanTrash::Model;
+use App::VanTrash::Paypal;
 
 with 'App::VanTrash::Log';
 requires 'Version';
@@ -23,9 +24,12 @@ around 'run' => sub {
 
 sub _build_model {
     my $self = shift;
-    return App::VanTrash::Model->new(
+    my $model = App::VanTrash::Model->new(
         base_path => $self->base_path,
     );
+    # Set the model in the Paypal singleton.
+    App::VanTrash::Paypal->new(model => $model);
+    return $model;
 }
 
 sub _build_template {

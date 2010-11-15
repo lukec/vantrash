@@ -2,6 +2,8 @@ package Business::PayPal::NVP;
 use strict;
 use warnings;
 
+our $CUSTOM;
+
 sub new {
     my $class = shift;
     my %p = @_;
@@ -22,13 +24,29 @@ sub SetExpressCheckout {
 
     for my $key (qw/AMT CURRENCYCODE DESC CUSTOM L_NAME0 L_BILLINGTYPE0 
                     L_BILLINGAGREEMENTDESCRIPTION0 RETURNURL CANCELURL LANDINGPAGE/) {
-
-        die "$key is required" unless $p{$key};
+        next if $p{$key};
+        warn "$key is required";
+        die "$key is required";
     }
+    $CUSTOM = $p{CUSTOM};
 
     return (
         TOKEN => 'fake-paypal-token',
     );
+}
+
+sub GetExpressCheckoutDetails {
+    my $self = shift;
+    return (
+        ACK => 'Success',
+        CUSTOM => $CUSTOM,
+        BILLINGAGREEMENTACCEPTEDSTATUS => 1,
+    );
+}
+
+sub CreateRecurringPaymentsProfile {
+    my $self = shift;
+    return (ACK => 'Success');
 }
 
 1;

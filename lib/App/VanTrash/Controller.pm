@@ -5,6 +5,7 @@ use Template;
 use App::VanTrash::Config;
 use App::VanTrash::Config;
 use App::VanTrash::CallController;
+use App::VanTrash::Paypal;
 use JSON qw/encode_json decode_json/;
 use App::VanTrash::Log;
 use Email::Valid;
@@ -14,6 +15,8 @@ use Business::PayPal::IPN;
 use namespace::clean -except => 'meta';
 
 with 'App::VanTrash::ControllerBase';
+
+has 'paypal' => (is => 'ro', isa => 'App::VanTrash::Paypal', lazy_build => 1);
 
 use constant Version => 1.6;
 
@@ -57,12 +60,18 @@ sub run {
                     \&confirm_reminder ],
             [ qr{^/zones/([^/]+)/reminders/([\w\d-]+)/delete$} => 
                     \&delete_reminder_html ],
+
+            # Billing
+            [ qr{^/billing/proceed$} => \&payment_proceed ],
+            [ qr{^/billing/cancel$}  => \&payment_cancel ],
         ],
 
         POST => [
             # Website Actions
             [ qr{^/action/tell-friends$} => \&tell_friends ],
             [ qr{^/PayPal_IPN$} => \&handle_paypal_ipn ],
+
+            # API
             [ qr{^/zones/([^/]+)/reminders$} => \&post_reminder ],
         ],
         DELETE => [
@@ -304,6 +313,29 @@ sub zone_next_dow_change_json {
     return $self->response('application/json' => $body);
 }
 
+sub payment_proceed {
+    my $self = shift;
+    my $req  = shift;
+
+    my $token = $req->parameters->{token};
+    unless ($token) {
+        my $res = Plack::Response->new;
+        $res->redirect("/");
+        return $res->finalize;
+    }
+
+    my $rem = eval {$self->paypal->create_subscription($token)};
+    if ($@) {
+        return $self->_400_bad_request("Could not create subscription: $@");
+    }
+
+    # Confirm the reminder
+    # Thank the user
+
+    my %param;
+    return $self->process_template('zones/reminders/payment.html', \%param)->finalize;
+}
+
 sub show_reminder {
     my $self = shift;
     my $req  = shift;
@@ -506,6 +538,8 @@ sub handle_paypal_ipn {
     }
     return Plack::Response->new(200, [], '')->finalize;
 }
+
+sub _build_paypal { App::VanTrash::Paypal->new( model => shift->model ) }
 
 __PACKAGE__->meta->make_immutable;
 1;
