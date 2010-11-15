@@ -32,7 +32,8 @@ CREATE TABLE reminder (
     next_pickup INTEGER NOT NULL,
     last_notified INTEGER NOT NULL,
     confirm_hash TEXT NOT NULL,
-    payment_period TEXT
+    payment_period TEXT,
+    subscription_profile_id TEXT
 );
 
 -- TODO:

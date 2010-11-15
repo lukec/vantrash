@@ -19,7 +19,8 @@ has 'created_at'    => (is => 'ro', isa => 'Int',  required => 1);
 has 'next_pickup'   => (is => 'rw', isa => 'Int',  required => 1);
 has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
-has 'payment_period' => (is => 'ro', isa => 'Str');
+has 'payment_period'          => (is => 'ro', isa => 'Str');
+has 'subscription_profile_id' => (is => 'ro', isa => 'Str');
 
 has 'nice_name'        => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'nice_zone'        => (is => 'ro', isa => 'Str', lazy_build => 1);
@@ -99,7 +100,8 @@ __PACKAGE__->add_columns(
     next_pickup   => { data_type => 'integer' },
     last_notified => { data_type => 'integer' },
     confirm_hash  => { data_type => 'text' },
-    payment_period  => { data_type => 'text' },
+    payment_period          => { data_type => 'text' },
+    subscription_profile_id => { data_type => 'text' },
 );
 
 __PACKAGE__->set_primary_key('id');
