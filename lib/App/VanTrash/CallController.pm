@@ -28,6 +28,7 @@ sub run {
         [ qr{^/show/message_prompt$} => \&show_message_prompt ],
         [ qr{^/receive/message$}     => \&receive_message ],
         [ qr{^/goodbye$}             => \&goodbye ],
+        [ qr{^/new-user-welcome$}    => \&new_user_welcome ],
     );
 
     my $response = '';
@@ -232,6 +233,10 @@ sub receive_message {
 }
 
 sub goodbye { "<Say voice=\"woman\">Goodbye.</Say><Hangup/>" }
+
+sub new_user_welcome { 
+    "<Say voice=\"woman\">Hello, this is Van Trash.  We hope you find this service useful.  Goodbye.</Say><Hangup/>"
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
