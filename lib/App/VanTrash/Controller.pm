@@ -329,10 +329,22 @@ sub payment_proceed {
         return $self->_400_bad_request("Could not create subscription: $@");
     }
 
-    # Confirm the reminder
-    # Thank the user
+    $self->model->confirm_reminder($rem);
 
-    my %param;
+    if ($rem->target =~ m/^(\w+):(.+)/) {
+        my ($type, $target) = ($1, $2);
+        if ($type eq 'sms') {
+            $self->model->notifier->twilio->send_sms($target, 
+                "Thank you for using VanTrash.  If you are receiving this message in error, go to "
+                . $rem->short_delete_url,
+            );
+        }
+        elsif ($type eq 'voice') {
+            $self->model->notifier->twilio->voice_call($target, '/call/new-user-welcome');
+        }
+    }
+
+    my %param = (reminder => $rem);
     return $self->process_template('zones/reminders/payment.html', \%param)->finalize;
 }
 
