@@ -7,6 +7,7 @@ use App::VanTrash::Pickups;
 use App::VanTrash::Zones;
 use App::VanTrash::Reminders;
 use App::VanTrash::Notifier;
+use App::VanTrash::Paypal;
 use App::VanTrash::KML;
 use Carp qw/croak/;
 use Data::ICal;
@@ -184,11 +185,15 @@ sub delete_reminder {
     my $self = shift;
     my $id   = shift or croak 'An id is mandatory!';
 
-    if (my $rem = $self->reminders->by_id($id)) {
-        $rem->delete;
-        return $rem;
+    my $rem = $self->reminders->by_id($id);
+    return unless $rem;
+
+    if (my $profile_id = $rem->subscription_profile_id) {
+        App::VanTrash::Paypal->cancel_subscription($profile_id);
     }
-    return;
+
+    $rem->delete;
+    return $rem;
 }
 
 sub _load_file {

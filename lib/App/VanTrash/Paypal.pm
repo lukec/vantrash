@@ -110,5 +110,18 @@ sub create_subscription {
     return $rem;
 }
 
+sub cancel_subscription {
+    my $self = shift;
+    my $profile_id = shift;
+
+    my %resp = $self->api->ManageRecurringPaymentsProfileStatus(
+        PROFILEID => $profile_id,
+        ACTION => 'Cancel',
+        NOTE => "Subscription cancelled at user's request.",
+    );
+    die "Could not cancel reminder using profile_id: $profile_id"
+        unless $resp{ACK} eq 'Success';
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
