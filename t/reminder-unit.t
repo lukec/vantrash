@@ -30,6 +30,7 @@ Add_a_reminder: {
     like $rem->id,  qr/^[\w\d-]+$/, 'id';
     is $rem->nice_zone, 'Vancouver-North-Blue', 'nice zone name';
     is scalar(@{ $model->reminders->all }), 1, 'one reminder';
+    ok !$rem->is_expired, 'not expired';
 }
 
 Check_if_model_persists: {

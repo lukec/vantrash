@@ -46,6 +46,11 @@ sub to_hash {
 sub email_target { shift->target =~ m/^email:/ }
 sub twitter_target { shift->target =~ m/^twitter:/ }
 
+sub is_expired {
+    my $self = shift;
+    return DateTime->today > $self->expiry_date;
+}
+
 sub _build_nice_name {
     my $self = shift;
     return join('-', $self->zone, $self->email, $self->name)
@@ -82,7 +87,7 @@ sub _build_zone_url {
 
 sub _build_expiry_date {
     my $self = shift;
-    return DateTime->now + DateTime::Duration->new(year => 5) unless $self->expiry;
+    return DateTime->now + DateTime::Duration->new(years => 5) unless $self->expiry;
     return DateTime->from_epoch($self->expiry);
 }
 
