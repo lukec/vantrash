@@ -111,6 +111,7 @@ header {
     background: #60a464 url(../../images/header-background.png) 50% 50% repeat-x; color: #ffffff;
     font-weight: bold;
     position: relative;
+    height: 80px;
 
     /* rounded corners */
     -webkit-border-top-left-radius: 15px;
@@ -122,10 +123,7 @@ header {
 }
 
 #headerLogo {
-    padding-left: 10px;
-    height: 80px;
-    vertical-align: middle;
-    background: url(/images/new/vantrash_logo.png) 10px 10px no-repeat;
+    margin: 10px 0 0 10px;
 }
 
 #headerLinks {

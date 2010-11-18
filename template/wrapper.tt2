@@ -34,7 +34,7 @@
 <body>
     <div id="container">
         <header>
-            <a href="/"><img id="headerLogo" src="/images/recollect_logo.png"/></a>
+            <a href="/"><img id="headerLogo" src="/images/new/vantrash_logo.png"/></a>
             <div id="headerLinks">
                 <a href="/faq.html">Frequently asked questions</a>
                 <a href="/tell-a-friend.html">Tell a friend</a>
