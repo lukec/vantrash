@@ -26,3 +26,4 @@ static/new_reminder_lb.html
 static/reminder_success_lb.html
 vantrash.log
 backup
+etc/vantrash.yaml
