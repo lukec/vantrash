@@ -131,7 +131,8 @@ sub add_reminder {
     my $next_pickup_dt = $self->next_pickup($rem->{zone}, 1, 'dt');
     $rem->{next_pickup} = $next_pickup_dt->epoch;
 
-    if ($self->Payment_required_for($rem->{target})) {
+    my $payment_req = $self->Payment_required_for($rem->{target});
+    if ($payment_req) {
         my $dt = DateTime->today + DateTime::Duration->new(weeks => 2);
         $rem->{expiry} = $dt->epoch;
     }
@@ -153,7 +154,7 @@ sub add_reminder {
     }
     die $err unless $robj;
 
-    $self->send_reminder_confirm_email($robj);
+    $self->send_reminder_confirm_email($robj) unless $payment_req;
     return $robj;
 }
 
