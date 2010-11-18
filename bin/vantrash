@@ -15,6 +15,7 @@ my $target;
 my $delete;
 my $confirm;
 my $server_base = 'http://vantrash.ca';
+my $payment_period;
 GetOptions(
     'z|zone=s'     => \$zone,
     'i|id=s'       => \$id,
@@ -23,6 +24,7 @@ GetOptions(
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
     't|target=s'   => \$target,
+    'period'       => \$payment_period,
     'delete'       => \$delete,
     'confirm'      => \$confirm,
     'server=s'     => \$server_base,
@@ -61,13 +63,14 @@ sub confirm_reminder {
 sub add_reminder {
     my $uri = "$server_base/zones/$zone/reminders";
     my $ua = LWP::UserAgent->new;
-    my $req = HTTP::Request->new('PUT', $uri);
+    my $req = HTTP::Request->new('POST', $uri);
     $req->content( encode_json( {
                 name => $name,
                 email => $email,
                 ($password ? (password => $password) : ()),
                 ($offset   ? (offset   => $offset  ) : ()),
                 ($target   ? (target   => $target  ) : ()),
+                ($payment_period   ? (payment_period => $payment_period ) : ()),
             }
         )
     );
