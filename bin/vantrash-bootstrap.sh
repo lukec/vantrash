@@ -20,12 +20,9 @@ sudo apt-get install --assume-yes screen multitail perl-doc
 # First install cpanm for easy cpanning
 curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 
-# Then install some missing dep
-cpanm --sudo --force \
-    Module::Install::ReadmeMarkdownFromPod
-
 # Now get to the meat of our Perl dependiencies
-cpanm --sudo \
+cpanm --sudo --notest \
+    Module::Install::ReadmeMarkdownFromPod \
     BerkeleyDB \
     Crypt::DES \
     DBIx::Class \
