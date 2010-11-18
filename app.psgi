@@ -1,15 +1,23 @@
 #!perl
+
+# This is the development psgi file
+
 use Plack::Builder;
 use lib "lib";
 use App::VanTrash::CallController;
 use App::VanTrash::Controller;
 use App::VanTrash::Config;
 
-# Create the singleton config object
 App::VanTrash::Config->new(config_file => 'etc/vantrash.yaml');
 
 builder {
-    enable "StackTrace";
+    enable 'Debug', panels => [qw(
+        Environment Response Memory Timer 
+        Parameters Session
+    )];
+    enable 'Debug::DBIProfile', profile => 2;
+    enable 'Debug::DBITrace';
+
     enable "Plack::Middleware::Static",
            path => qr{^/(robots\.txt|zones\.kml|images)}, 
            root => './static/';
