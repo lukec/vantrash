@@ -59,6 +59,7 @@ sub process_template {
     my $resp = Plack::Response->new(200);
     $resp->body($html);
     $resp->header('X-UA-Compatible' => 'IE=EmulateIE7');
+    $resp->header('Content-Type' => 'text/html; charset=utf8');
     return $resp;
 }
 
