@@ -60,6 +60,7 @@ ReminderLightbox.prototype = {
                 focus: '.email',
                 back: function() { self.showPage('choose_method') },
                 submit: function($cur) {
+                    self.showPage('loading');
                     self.addReminder({
                         offset: $cur.find('.customOffset').val(),
                         email: $cur.find('.email').val(),
@@ -86,6 +87,7 @@ ReminderLightbox.prototype = {
                 focus: '.twitter',
                 back: function() { self.showPage('choose_method') },
                 submit: function($cur) {
+                    self.showPage('loading');
                     self.addReminder({
                         offset: $cur.find('.customOffset').val(),
                         email: $cur.find('.email').val(),

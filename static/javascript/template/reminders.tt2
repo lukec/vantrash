@@ -17,6 +17,9 @@
     <div class="page" id="success">
         [% INCLUDE success %]
     </div>
+    <div class="page" id="loading">
+        <img src="/images/loading.gif"/>
+    </div>
 </div>
 
 [% BLOCK choose_method %]

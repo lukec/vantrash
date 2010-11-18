@@ -363,6 +363,12 @@ input.text {
     margin-right: 10px;
 }
 
+#loading img {
+    position: absolute;
+    left: 250px;
+    top: 150px;
+}
+
 .ui-dialog .calendars {
     margin-top: 20px;
 }
