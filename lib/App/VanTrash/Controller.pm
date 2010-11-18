@@ -3,7 +3,6 @@ use Moose;
 use Fatal qw/open/;
 use Template;
 use App::VanTrash::Config;
-use App::VanTrash::Config;
 use App::VanTrash::CallController;
 use App::VanTrash::Paypal;
 use JSON qw/encode_json decode_json/;
@@ -69,7 +68,9 @@ sub run {
         POST => [
             # Website Actions
             [ qr{^/action/tell-friends$} => \&tell_friends ],
-            [ qr{^/PayPal_IPN$} => \&handle_paypal_ipn ],
+
+            # Billing
+            [ qr{^/billing/ipn$} => \&handle_paypal_ipn ],
 
             # API
             [ qr{^/zones/([^/]+)/reminders$} => \&post_reminder ],
@@ -533,21 +534,47 @@ sub handle_paypal_ipn {
     my $self = shift;
     my $req = $self->request;
 
-    # For testing in the sandbox only
-    local $Business::PayPal::IPN::GTW = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
-    my $ipn = Business::PayPal::IPN->new(query => $req);
-    die Business::PayPal::IPN->error() unless $ipn;
-    my $paypal = { $ipn->vars };
-    
-    if ( $paypal->{payment_status} eq 'Completed' ) {
-        warn "Payment was made successfully!";
-        # TODO - look up the reminder id, make the reminder confirmed
-        # TODO - can only confirm voice or sms reminders via this paypal hook
+    my $ipn = $self->paypal->process_ipn($req);
+    use Data::Dumper;
+    warn Dumper { $ipn->vars };
+
+    my $reminder_id = $ipn->custom;
+    $self->log("PAYMENT_IPN - $reminder_id");
+
+    my $rem = $self->model->reminders->by_id($reminder_id);
+    if ( $ipn->completed() ) {
+        # means the funds are already in our paypal account.
+        my $gross = $ipn->mc_gross_1;
+        $self->log("PAYMENT_COMPLETED - $reminder_id - \$$gross");
+
+        # Calculate the next expiry, giving an extra week of grace.
+        my $new_expiry = DateTime->today + $rem->duration 
+                                         + DateTime::Duration->new(weeks => 1);
+        if ($new_expiry > $rem->expiry_datetime) {
+            $rem->expiry( $new_expiry->epoch );
+            $rem->update;
+            $self->log("EXPIRY_ADVANCE - $reminder_id - " . $new_expiry->ymd);
+        }
+    } elsif ( $ipn->pending ) {
+        # the payment was made to your account, but its status is still pending
+        # $ipn->pending() also returns the reason why it is so.
+        $self->log("PAYMENT_PENDING - $reminder_id - " . $ipn->pending);
+    } elsif ( $ipn->denied ) {
+        # the payment denied, it should try again.
+        $self->log("PAYMENT_DENIED - $reminder_id");
+    } elsif ( $ipn->failed ) {
+        # the payment failed. We should delete this reminder?
+        $self->log("PAYMENT_FAILED - $reminder_id");
+
+        $self->mailer->send_email(
+            to => $rem->email,
+            subject => 'VanTrash reminder has expired',
+            template => 'reminder-expiry.html',
+            template_args => {
+            },
+        );
     }
-    else {
-        use Data::Dumper;
-        warn Dumper $paypal;
-    }
+
     return Plack::Response->new(200, [], '')->finalize;
 }
 

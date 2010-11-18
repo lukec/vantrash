@@ -113,6 +113,62 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
         is $res->code, 200;
         like $res->content, qr/Thank you for subscribing/;
 
+        # Now the paypal IPN comes in
+        my $fake_ipn = {
+            'payer_id' => 'TESTBUYERID01',
+            'verify_sign' => 'AjPx9bf6MqOkbgZYNGr9bzU-kL1MAMVI76h9wdBoD7U561dLlB3yi4br',
+            'residence_country' => 'US',
+            'address_state' => 'CA',
+            'mc_handling' => '2.06',
+            'receiver_email' => 'seller@paypalsandbox.com',
+            'item_number1' => 'AK-1234',
+            'address_status' => 'confirmed',
+            'payment_type' => 'instant',
+            'address_city' => 'San Jose',
+            'address_street' => '123, any street',
+            'payment_status' => 'Completed',
+            'mc_shipping1' => '1.02',
+            'cmd' => '_notify-validate',
+            'test_ipn' => '1',
+            'txn_type' => 'cart',
+            'address_country' => 'United States',
+            'charset' => 'windows-1252',
+            'payment_date' => '22:23:24 Nov 17, 2010 PST',
+            'mc_handling1' => '1.67',
+            'invoice' => 'abc1234',
+            'quantity1' => '1',
+            'payer_status' => 'unverified',
+            'mc_fee' => '0.44',
+            'address_zip' => '95131',
+            'custom' => $reminder_id,
+            'txn_id' => '241118623',
+            'last_name' => 'Smith',
+            'receiver_id' => 'TESTSELLERID1',
+            'address_country_code' => 'US',
+            'mc_shipping' => '3.02',
+            'payer_email' => 'buyer@paypalsandbox.com',
+            'tax' => '2.02',
+            'address_name' => 'John Smith',
+            'notify_version' => '2.4',
+            'mc_gross_1' => '9.34',
+            'item_name1' => 'something',
+            'mc_currency' => 'USD',
+            'first_name' => 'John'
+        };
+        %Business::PayPal::IPN::TEST_DATA = ( %$fake_ipn, completed => 1);
+        $res = $cb->(POST "/billing/ipn", [ %$fake_ipn ]);
+        is $res->code, 200, $res->content;
+
+        # Now check the expiry was bumped ahead
+        $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
+        is $res->code, 200;
+        is $res->header('Content-Type'), 'application/json';
+        $blob = decode_json $res->content;
+        is $blob->{payment_period}, 'month', 'monthly payment period';
+        my $next_expiry = DateTime->today 
+                            + DateTime::Duration->new(months=>1, weeks => 1);
+        is $blob->{expiry}, $next_expiry->epoch, 'expires in 1 month + 1 week';
+
         # Now delete the reminder
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 204;
@@ -120,9 +176,5 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
         is $res->code, 400;
     };
 }
-
-# TODO - paypal rainy day
-# TODO - paypal rainy day - no token / bad token
-# TODO - paypal cancel scenario
 
 done_testing();
