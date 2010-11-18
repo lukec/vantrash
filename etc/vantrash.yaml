@@ -1,8 +1,13 @@
 ---
-  base_url: "http://vantrash.ca:5001"
+  base_url: "http://vantrash.ca:5000"
   twitter_username: ""
   twitter_password: ""
   twilio_AccountSid: ""
   twilio_AuthToken: ""
   twilio_from_number_sms: ""
   twilio_from_number_voice: ""
+  paypal_branch: "test"
+  paypal_user: ""
+  paypal_pwd: ""
+  paypal_sig: ""
+
