@@ -6,7 +6,6 @@ use Email::MIME::Creator;
 use Email::Send::Gmail;
 use Email::Send::IO;
 use Net::SMTP::SSL;
-use YAML;
 use App::VanTrash::Template;
 use App::VanTrash::Config;
 use namespace::clean -except => 'meta';
@@ -53,16 +52,12 @@ sub _build_mailer {
         });
     }
 
-    my $config_file = $ENV{VANTRASH_DEV_ENV}
-        ? './etc/vantrash_mail.yaml'
-        : '/etc/vantrash_mail.yaml';
-    die "File doesn't exist: $config_file" unless -f $config_file;
-    my $config = YAML::LoadFile($config_file);
+    my $config = App::VanTrash::Config->instance;
     my $mailer = Email::Send->new({
         mailer => 'Gmail',
         mailer_args => [
-            username => delete $config->{username},
-            password => delete $config->{password},
+            username => $config->Value('gmail_username'),
+            password => $config->Value('gmail_password'),
         ]
     });
     return $mailer;

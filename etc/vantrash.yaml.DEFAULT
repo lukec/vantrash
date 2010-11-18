@@ -10,4 +10,6 @@
   paypal_user: ""
   paypal_pwd: ""
   paypal_sig: ""
+  gmail_username: ""
+  gmail_password: ""
 
