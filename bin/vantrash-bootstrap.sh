@@ -1,8 +1,8 @@
 #!/bin/bash
 set -x
 
-useradd vantrash
-usermod -a -G www-data vantrash
+sudo useradd vantrash
+sudo usermod -a -G www-data vantrash
 
 set -e
 
@@ -24,6 +24,8 @@ curl -L http://cpanmin.us | perl - --sudo App::cpanminus
 cpanm --sudo --notest \
     Module::Install::ReadmeMarkdownFromPod \
     BerkeleyDB \
+    Business::PayPal::NVP \
+    Business::PayPal::IPN \
     Crypt::DES \
     DBIx::Class \
     Data::ICal \
@@ -44,6 +46,7 @@ cpanm --sudo --notest \
     MooseX::Singleton \
     MooseX::Types::Common::String \
     Net::Twitter \
+    Starman \
     Socialtext::WikiObject \
     Socialtext::WikiTest \
     Template \
