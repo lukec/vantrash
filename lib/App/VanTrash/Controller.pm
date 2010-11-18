@@ -418,15 +418,18 @@ sub post_reminder {
     return $self->_400_bad_request("voice/sms reminders require payment period")
         if $payment_required and !$args->{payment_period};
 
-    my $reminder = $self->model->add_reminder({
+    my $reminder = eval { 
+        $self->model->add_reminder({
             name => $args->{name},
             email => $addr,
             offset => $args->{offset},
             target => $args->{target},
             zone => $zone,
             ($payment_required ? (payment_period => $args->{payment_period}) : ()),
-        },
-    );
+        });
+    };
+    return $self->_400_bad_request($@) if $@;
+
     $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email );
     my @headers;
     push @headers, Location => "/zones/$zone/reminders/" . $reminder->id;
