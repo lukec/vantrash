@@ -413,7 +413,7 @@ sub post_reminder {
     return $self->_400_bad_request("target is required") unless $args->{target};
     return $self->_400_bad_request("target is unsupported") unless $self->model->reminders->Is_valid_target($args->{target});
 
-    my $payment_required = $args->{target} =~ m/^(?:voice|sms):/;
+    my $payment_required = $self->model->Payment_required_for($args->{target});
     return $self->_400_bad_request("voice/sms reminders require payment period")
         if $payment_required and !$args->{payment_period};
 

@@ -37,9 +37,9 @@ has 'expiry_date'      => (is => 'ro', isa => 'DateTime', lazy_build => 1);
 sub to_hash {
     my $self = shift;
     return {
-        map { $_ => $self->$_() } qw/id name email zone offset confirmed
-                                     created_at next_pickup last_notified
-                                     target confirm_hash payment_period/
+        map { $_ => $self->$_() }
+            qw/id name email zone offset confirmed created_at next_pickup
+            last_notified target confirm_hash payment_period expiry/
     };
 }
 

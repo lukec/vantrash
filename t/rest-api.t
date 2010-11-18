@@ -6,7 +6,7 @@ use Test::More;
 use HTTP::Request::Common qw/GET POST DELETE/;
 use t::VanTrash;
 use App::VanTrash::Controller;
-use JSON qw/encode_json/;
+use JSON qw/encode_json decode_json/;
 
 no warnings 'redefine';
 
@@ -69,7 +69,9 @@ for my $target (qw{email:test@vantrash.ca twitter:vantrash webhook:http://vantra
         $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 200;
         is $res->header('Content-Type'), 'application/json';
-        like $res->content, qr/"payment_period":null/;
+        my $blob = decode_json $res->content;
+        ok !$blob->{payment_period}, 'free reminders have no payment_period';
+        ok !$blob->{expiry}, 'free reminders have no expiry';
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 204, 'delete success';
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
@@ -100,7 +102,11 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
         $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 200;
         is $res->header('Content-Type'), 'application/json';
-        unlike $res->content, qr/"payment_period":null/;
+        my $blob = decode_json $res->content;
+        is $blob->{payment_period}, 'month', 'monthly payment period';
+
+        my $in_two_weeks = DateTime->today + DateTime::Duration->new(weeks=>2);
+        is $blob->{expiry}, $in_two_weeks->epoch, 'expires in 2 weeks';
 
         # Pretend we just agreed on paypal and we are back.
         $res = $cb->(GET "/billing/proceed?token=fake-paypal-token");

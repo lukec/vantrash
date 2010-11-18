@@ -111,6 +111,12 @@ sub next_dow_change {
     return;
 }
 
+sub Payment_required_for {
+    my $class = shift;
+    my $target = shift;
+    return $target =~ m/^(?:voice|sms):/;
+}
+
 sub add_reminder {
     my $self = shift;
     my $rem  = shift or croak "A reminder is mandatory!";
@@ -124,6 +130,11 @@ sub add_reminder {
 
     my $next_pickup_dt = $self->next_pickup($rem->{zone}, 1, 'dt');
     $rem->{next_pickup} = $next_pickup_dt->epoch;
+
+    if ($self->Payment_required_for($rem->{target})) {
+        my $dt = DateTime->today + DateTime::Duration->new(weeks => 2);
+        $rem->{expiry} = $dt->epoch;
+    }
 
     my $robj = eval { $self->reminders->add($rem) };
     my $err = "Unknown error";
