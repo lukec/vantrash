@@ -86,6 +86,14 @@ button {  width: auto; overflow: visible; }
     Author: 
  */
 
+.pageError {
+    margin: 10px;
+}
+.pageError .ui-icon-alert {
+    float: left;
+    margin-right: 0.3em;
+}
+
 body {
     background: #eee;
     font: 12px 'Lucida Grande', Arial, sans-serif;

@@ -46,7 +46,7 @@ sub response {
     return Plack::Response->new(200, ['Content-Type' => $ct], $body)->finalize;
 }
 
-sub process_template {
+sub render_template {
     my $self = shift;
     my $template = shift;
     my $param = shift;
@@ -56,8 +56,15 @@ sub process_template {
     $param->{request_uri} = $self->request->request_uri;
     $self->template->process($template, $param, \$html) 
         || die $self->template->error;
+    return $html;
+}
+
+sub process_template {
+    my $self = shift;
+    my $template = shift;
+    my $param = shift;
     my $resp = Plack::Response->new(200);
-    $resp->body($html);
+    $resp->body($self->render_template($template, $param));
     $resp->header('X-UA-Compatible' => 'IE=EmulateIE7');
     $resp->header('Content-Type' => 'text/html; charset=utf8');
     return $resp;
@@ -69,7 +76,9 @@ sub _400_bad_request {
     
     my $resp = Plack::Response->new(400);
     $resp->content_type('text/plain');
-    $resp->body($msg);
+    $resp->body($self->render_template('error.tt2', { msg => $msg }));
+    $resp->header('X-UA-Compatible' => 'IE=EmulateIE7');
+    $resp->header('Content-Type' => 'text/html; charset=utf8');
     return $resp->finalize;
 }
 

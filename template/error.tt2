@@ -1,0 +1,6 @@
+[% WRAPPER wrapper.tt2 %]
+<div class="pageError reminderMessage ui-state-error ui-corner-all"> 
+    <span class="ui-icon ui-icon-alert"></span> 
+    <strong>Error:</strong> [% msg %]
+</div>
+[% END %]
