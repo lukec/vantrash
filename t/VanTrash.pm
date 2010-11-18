@@ -9,6 +9,7 @@ use File::Slurp;
 use mocked 'Net::Twitter';
 use mocked 'WWW::Twilio::API';
 use mocked 'Business::PayPal::NVP';
+use mocked 'Business::PayPal::IPN';
 
 use lib 'lib';
 use namespace::clean -except => 'meta';
@@ -17,6 +18,8 @@ BEGIN {
     $ENV{VT_EMAIL} = "/tmp/email.$$";
 
     use_ok 'App::VanTrash::Model';
+    use_ok 'App::VanTrash::Log';
+    $App::VanTrash::Log::VERBOSE = 1;
 }
 
 END { unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL} }
