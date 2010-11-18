@@ -24,7 +24,7 @@ GetOptions(
     'e|email=s'    => \$email,
     'o|offset=s'   => \$offset,
     't|target=s'   => \$target,
-    'period'       => \$payment_period,
+    'period=s'     => \$payment_period,
     'delete'       => \$delete,
     'confirm'      => \$confirm,
     'server=s'     => \$server_base,
