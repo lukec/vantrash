@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 our $CUSTOM;
+our %CHECKOUT;
 
 sub new {
     my $class = shift;
@@ -24,7 +25,7 @@ sub SetExpressCheckout {
 
     for my $key (qw/AMT CURRENCYCODE DESC CUSTOM L_NAME0 L_BILLINGTYPE0 
                     L_BILLINGAGREEMENTDESCRIPTION0 RETURNURL CANCELURL LANDINGPAGE/) {
-        next if $p{$key};
+        next if $CHECKOUT{$key} = $p{$key};
         warn "$key is required";
         die "$key is required";
     }

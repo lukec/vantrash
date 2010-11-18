@@ -158,6 +158,7 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
         %Business::PayPal::IPN::TEST_DATA = ( %$fake_ipn, completed => 1);
         $res = $cb->(POST "/billing/ipn", [ %$fake_ipn ]);
         is $res->code, 200, $res->content;
+        is $Business::PayPal::NVP::CHECKOUT{AMT}, '1.50';
 
         # Now check the expiry was bumped ahead
         $res = $cb->(GET "/zones/vancouver-north-blue/reminders/$reminder_id");
@@ -174,7 +175,39 @@ for my $target (qw{voice:7787851357 sms:7787851357}) {
         is $res->code, 204;
         $res = $cb->(DELETE "/zones/vancouver-north-blue/reminders/$reminder_id");
         is $res->code, 400;
+
+        # Coupon codes
+        my $config = App::VanTrash::Config->instance;
+        $config->config_hash->{coupons}{test} = '10.00';
+        $res = $cb->(POST "/zones/vancouver-north-blue/reminders", 
+            Content => encode_json(
+                {
+                    email => 'test@vantrash.ca',
+                    name => 'Test',
+                    target => $target,
+                    payment_period => 'month',
+                    coupon => 'test',
+                },
+            ),
+        );
+        is $res->code, 400, 'coupons must be on an annual reminder';
+        $res = $cb->(POST "/zones/vancouver-north-blue/reminders", 
+            Content => encode_json(
+                {
+                    email => 'test@vantrash.ca',
+                    name => 'Test',
+                    target => $target,
+                    payment_period => 'year',
+                    coupon => 'test',
+                },
+            ),
+        );
+        is $res->code, 201, "create reminder - $target";
+
+        # Pretend we just agreed on paypal and we are back.
+        $res = $cb->(GET "/billing/proceed?token=fake-paypal-token");
+        is $res->code, 200;
+        is $Business::PayPal::NVP::CHECKOUT{AMT}, '10.00', 'coupon worked';
     };
 }
-
 done_testing();

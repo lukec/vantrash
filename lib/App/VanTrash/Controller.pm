@@ -410,6 +410,10 @@ sub post_reminder {
     return $self->_400_bad_request("voice/sms reminders require payment period")
         if $payment_required and !$args->{payment_period};
 
+    if (my $coupon = $args->{coupon} and $payment_required) {
+        return $self->_400_bad_request("coupons are only valid for annual subscriptions") unless $args->{payment_period} eq 'year';
+    }
+
     my $reminder = eval { 
         $self->model->add_reminder({
             name => $args->{name},
@@ -418,6 +422,7 @@ sub post_reminder {
             target => $args->{target},
             zone => $zone,
             ($payment_required ? (payment_period => $args->{payment_period}) : ()),
+            coupon => $args->{coupon},
         });
     };
     return $self->_400_bad_request($@) if $@;

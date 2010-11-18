@@ -16,6 +16,7 @@ my $delete;
 my $confirm;
 my $server_base = 'http://vantrash.ca';
 my $payment_period;
+my $coupon;
 GetOptions(
     'z|zone=s'     => \$zone,
     'i|id=s'       => \$id,
@@ -25,6 +26,7 @@ GetOptions(
     'o|offset=s'   => \$offset,
     't|target=s'   => \$target,
     'period=s'     => \$payment_period,
+    'coupon=s'     => \$coupon,
     'delete'       => \$delete,
     'confirm'      => \$confirm,
     'server=s'     => \$server_base,
@@ -70,6 +72,7 @@ sub add_reminder {
                 ($password ? (password => $password) : ()),
                 ($offset   ? (offset   => $offset  ) : ()),
                 ($target   ? (target   => $target  ) : ()),
+                ($coupon   ? (coupon => $coupon ) : ()),
                 ($payment_period   ? (payment_period => $payment_period ) : ()),
             }
         )

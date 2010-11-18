@@ -34,7 +34,7 @@ sub set_up_subscription {
     
     # SetExpressCheckout - https://www.x.com/docs/DOC-1208
     my $base_url = App::VanTrash::Config->base_url;
-    my $p = $self->_subscription_opts($opts{period});
+    my $p = $self->_subscription_opts($opts{period}, $opts{coupon});
     my %resp = $self->api->SetExpressCheckout(
         AMT => $p->{amount},
         CURRENCYCODE => 'CAD',
@@ -62,20 +62,32 @@ sub set_up_subscription {
 sub _subscription_opts {
     my $self = shift;
     my $period = shift;
+    my $coupon = shift;
 
-    my %period_opts = (
-        month => {
+    if ($period eq 'month') {
+        return {
             amount => '1.50',
             name => 'Monthly VanTrash Subscription',
             desc => '$1.50 per month for VanTrash notifications',
-        },
-        year => {
+        };
+    }
+    elsif ($period eq 'year') {
+        my $coupons = App::VanTrash::Config->Value('coupons') || {};
+        if ($coupon and $coupons->{$coupon}) {
+            my $price = $coupons->{$coupon};
+            return {
+                amount => $price,
+                name => 'Annual VanTrash Subscription',
+                desc => "$price per year for VanTrash notifications ($coupon)",
+            };
+        }
+        return {
             amount => '15.00',
             name => 'Annual VanTrash Subscription',
             desc => '$15.00 per year for VanTrash notifications',
-        },
-    );
-    return $period_opts{$period};
+        };
+    }
+    die "Unknown payment period: $period";
 }
 
 sub create_subscription {
@@ -89,7 +101,7 @@ sub create_subscription {
     my $rem = $self->model->reminders->by_id($resp{CUSTOM});
     die "Could not find reminder for '$resp{CUSTOM}'" unless $rem;
     
-    my $p = $self->_subscription_opts($rem->payment_period);
+    my $p = $self->_subscription_opts($rem->payment_period, $rem->coupon);
     %resp = $self->api->CreateRecurringPaymentsProfile(
         TOKEN => $token,
         PROFILESTARTDATE => DateTime->now->iso8601,

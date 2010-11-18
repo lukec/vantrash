@@ -23,6 +23,7 @@ has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
 has 'expiry'                  => (is => 'rw', isa => 'Int', default => 0);
 has 'payment_period'          => (is => 'ro', isa => 'Str');
+has 'coupon'                  => (is => 'ro', isa => 'Str', default => '');
 has 'subscription_profile_id' => (is => 'ro', isa => 'Str');
 
 has 'nice_name'        => (is => 'ro', isa => 'Str', lazy_build => 1);
@@ -105,6 +106,7 @@ sub _build_payment_url {
     return App::VanTrash::Paypal->set_up_subscription(
         period => $self->payment_period,
         custom => $self->id,
+        coupon => $self->coupon,
     );
 }
 
@@ -125,6 +127,7 @@ __PACKAGE__->add_columns(
     confirm_hash  => { data_type => 'text' },
     payment_period          => { data_type => 'text' },
     expiry                  => { data_type => 'integer' },
+    coupon                  => { data_type => 'text' },
     subscription_profile_id => { data_type => 'text' },
 );
 
