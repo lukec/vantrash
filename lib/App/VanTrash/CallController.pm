@@ -28,7 +28,7 @@ sub run {
         [ qr{^/show/message_prompt$} => \&show_message_prompt ],
         [ qr{^/receive/message$}     => \&receive_message ],
         [ qr{^/goodbye$}             => \&goodbye ],
-        [ qr{^/new-user-welcome$}    => \&new_user_welcome ],
+        [ qr{^/new-user-welcome/(\w+)$}    => \&new_user_welcome ],
     );
 
     my $response = '';
@@ -235,7 +235,13 @@ sub receive_message {
 sub goodbye { "<Say voice=\"woman\">Goodbye.</Say><Hangup/>" }
 
 sub new_user_welcome { 
-    "<Say voice=\"woman\">Hello, this is Vanessa Van Trash.  We have created your new reminder and we will call you each week.  If you need to look up the garbage day from your phone, call me back and I can help you.  We hope you find this service useful. If you have any problems or suggestions phone me and leave a message, tweet us, or send us an email at help at van trash dot C A.</Say><Pause length="1"/><Say voice=\"woman\">Goodbye.</Say><Hangup/>"
+    my $self = shift;
+    my $req  = shift;
+    my $type = shift;
+
+    my %action = ( sms => 'text', voice => 'call' );
+
+    return "<Say voice=\"woman\">Hello, this is Vanessa Van Trash.  We have created your new reminder and we will $action{$type} you each week.  If you need to look up the garbage day from your phone, call me back and I can help you.  We appreciate your support and hope that you find this service useful. If you have any problems or suggestions phone me and leave a message, tweet us, or send us an email at help at van trash dot C A.</Say><Pause length=\"1\"/><Say voice=\"woman\">Goodbye.</Say><Hangup/>"
 }
 
 __PACKAGE__->meta->make_immutable;

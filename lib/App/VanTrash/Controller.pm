@@ -334,15 +334,7 @@ sub payment_proceed {
 
     if ($rem->target =~ m/^(\w+):(.+)/) {
         my ($type, $target) = ($1, $2);
-        if ($type eq 'sms') {
-            $self->model->notifier->twilio->send_sms($target, 
-                "Thank you for using VanTrash.  If you are receiving this message in error, go to "
-                . $rem->short_delete_url,
-            );
-        }
-        elsif ($type eq 'voice') {
-            $self->model->notifier->twilio->voice_call($target, '/call/new-user-welcome');
-        }
+        $self->model->notifier->twilio->voice_call($target, "/call/new-user-welcome/$type");
     }
 
     my %param = (reminder => $rem);
