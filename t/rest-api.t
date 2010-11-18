@@ -8,6 +8,8 @@ use t::VanTrash;
 use App::VanTrash::Controller;
 use JSON qw/encode_json/;
 
+no warnings 'redefine';
+
 my $app = t::VanTrash->app;
 test_psgi $app, sub {
     my $cb = shift;
