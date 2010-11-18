@@ -6,6 +6,8 @@ use WWW::Shorten::isgd;
 use Data::UUID;
 use App::VanTrash::Config;
 use App::VanTrash::Paypal;
+use DateTime;
+use DateTime::Duration;
 use namespace::clean -except => 'meta';
 
 has 'id'            => (is => 'ro', isa => 'Str',  required => 1);
@@ -19,6 +21,7 @@ has 'created_at'    => (is => 'ro', isa => 'Int',  required => 1);
 has 'next_pickup'   => (is => 'rw', isa => 'Int',  required => 1);
 has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
+has 'expiry'                  => (is => 'ro', isa => 'Int', default => 0);
 has 'payment_period'          => (is => 'ro', isa => 'Str');
 has 'subscription_profile_id' => (is => 'ro', isa => 'Str');
 
@@ -29,6 +32,19 @@ has 'delete_url'       => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'short_delete_url' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'zone_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'payment_url'      => (is => 'ro', isa => 'Str', lazy_build => 1);
+has 'expiry_date'      => (is => 'ro', isa => 'DateTime', lazy_build => 1);
+
+sub to_hash {
+    my $self = shift;
+    return {
+        map { $_ => $self->$_() } qw/id name email zone offset confirmed
+                                     created_at next_pickup last_notified
+                                     target confirm_hash payment_period/
+    };
+}
+
+sub email_target { shift->target =~ m/^email:/ }
+sub twitter_target { shift->target =~ m/^twitter:/ }
 
 sub _build_nice_name {
     my $self = shift;
@@ -64,17 +80,11 @@ sub _build_zone_url {
     return join '/', App::VanTrash::Config->base_url, 'zones', $self->zone, 'reminders';
 }
 
-sub to_hash {
+sub _build_expiry_date {
     my $self = shift;
-    return {
-        map { $_ => $self->$_() } qw/id name email zone offset confirmed
-                                     created_at next_pickup last_notified
-                                     target confirm_hash payment_period/
-    };
+    return DateTime->now + DateTime::Duration->new(year => 5) unless $self->expiry;
+    return DateTime->from_epoch($self->expiry);
 }
-
-sub email_target { shift->target =~ m/^email:/ }
-sub twitter_target { shift->target =~ m/^twitter:/ }
 
 sub _build_payment_url {
     my $self = shift;
@@ -101,6 +111,7 @@ __PACKAGE__->add_columns(
     last_notified => { data_type => 'integer' },
     confirm_hash  => { data_type => 'text' },
     payment_period          => { data_type => 'text' },
+    expiry                  => { data_type => 'integer' },
     subscription_profile_id => { data_type => 'text' },
 );
 

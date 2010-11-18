@@ -20,6 +20,7 @@ sub add {
     $rem->{created_at}    = time;
     $rem->{last_notified} = time;
     $rem->{confirm_hash}  = _build_uuid('vantrash-confirm', $rem);
+    $rem->{expiry}        ||= 0; # no expiry
 
     my $robj = $self->_rs->create($rem) or die "Could not create a reminder!";
     return $robj;
