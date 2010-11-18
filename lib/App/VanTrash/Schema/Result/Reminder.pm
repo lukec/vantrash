@@ -21,7 +21,7 @@ has 'created_at'    => (is => 'ro', isa => 'Int',  required => 1);
 has 'next_pickup'   => (is => 'rw', isa => 'Int',  required => 1);
 has 'last_notified' => (is => 'rw', isa => 'Int',  required => 1);
 has 'confirm_hash'  => (is => 'ro', isa => 'Str',  required => 1);
-has 'expiry'                  => (is => 'ro', isa => 'Int', default => 0);
+has 'expiry'                  => (is => 'rw', isa => 'Int', default => 0);
 has 'payment_period'          => (is => 'ro', isa => 'Str');
 has 'subscription_profile_id' => (is => 'ro', isa => 'Str');
 
@@ -32,7 +32,8 @@ has 'delete_url'       => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'short_delete_url' => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'zone_url'         => (is => 'ro', isa => 'Str', lazy_build => 1);
 has 'payment_url'      => (is => 'ro', isa => 'Str', lazy_build => 1);
-has 'expiry_date'      => (is => 'ro', isa => 'DateTime', lazy_build => 1);
+has 'expiry_datetime'  => (is => 'ro', isa => 'DateTime', lazy_build => 1);
+has 'duration'         => (is => 'ro', isa => 'DateTime::Duration', lazy_build => 1);
 
 sub to_hash {
     my $self = shift;
@@ -46,9 +47,16 @@ sub to_hash {
 sub email_target { shift->target =~ m/^email:/ }
 sub twitter_target { shift->target =~ m/^twitter:/ }
 
+
 sub is_expired {
     my $self = shift;
-    return DateTime->today > $self->expiry_date;
+    return DateTime->today > $self->expiry_datetime;
+}
+
+sub _build_duration {
+    my $self = shift;
+    my $p = $self->payment_period;
+    return DateTime::Duration->new("${p}s" => 1);
 }
 
 sub _build_nice_name {
@@ -85,10 +93,10 @@ sub _build_zone_url {
     return join '/', App::VanTrash::Config->base_url, 'zones', $self->zone, 'reminders';
 }
 
-sub _build_expiry_date {
+sub _build_expiry_datetime {
     my $self = shift;
     return DateTime->now + DateTime::Duration->new(years => 5) unless $self->expiry;
-    return DateTime->from_epoch($self->expiry);
+    return DateTime->from_epoch(epoch => $self->expiry);
 }
 
 sub _build_payment_url {
