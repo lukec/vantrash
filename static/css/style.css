@@ -108,10 +108,15 @@ body#mobile #container {
 
 header {
     border-bottom: 1px solid #36533a;
-    background: #60a464 url(../../images/header-background.png) 50% 50% repeat-x; color: #ffffff;
     font-weight: bold;
     position: relative;
     height: 80px;
+
+    /* Gradient */
+    background: #60a464; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a7cca9', endColorstr='#60a464'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#a7cca9), to(#60a464)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #a7cca9,  #60a464); /* for firefox 3.6+ */
 
     /* rounded corners */
     -webkit-border-top-left-radius: 15px;
