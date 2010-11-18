@@ -23,7 +23,19 @@ ReminderLightbox.prototype = {
             premium_sms: {
                 focus: '.phone',
                 back: function() { self.showPage('choose_method') },
-                next: function() { self.showPage('not_implmented') },
+                submit: function($cur) {
+                    self.showPage('loading');
+                    self.addReminder({
+                        offset: $cur.find('.customOffset').val(),
+                        email: $cur.find('.email').val(),
+                        target: 'sms:' + $cur.find('.phone').val(),
+                        payment_period: $cur.find('.paymentPeriod').val(),
+                        zone: self.zone,
+                        success: function(res) {
+                            window.location = res.payment_url;
+                        }
+                    });
+                },
                 validate: {
                     rules: {
                         phone: 'required',
@@ -41,7 +53,19 @@ ReminderLightbox.prototype = {
             premium_phone: {
                 focus: '.phone',
                 back: function() { self.showPage('choose_method') },
-                next: function() { self.showPage('not_implmented') },
+                submit: function($cur) {
+                    self.showPage('loading');
+                    self.addReminder({
+                        offset: $cur.find('.customOffset').val(),
+                        email: $cur.find('.email').val(),
+                        target: 'voice:' + $cur.find('.phone').val(),
+                        payment_period: $cur.find('.paymentPeriod').val(),
+                        zone: self.zone,
+                        success: function(res) {
+                            window.location = res.payment_url;
+                        }
+                    });
+                },
                 validate: {
                     rules: {
                         phone: 'required',
@@ -240,16 +264,17 @@ ReminderLightbox.prototype = {
         var data = {
             offset: opts.offset,
             email: opts.email,
+            payment_period: opts.payment_period,
             name: "reminder" + (new Date).getTime(),
             target: opts.target
         };
         $.ajax({
-            type: 'PUT',
+            type: 'POST',
             url: '/zones/' + opts.zone + '/reminders',
             data: $.toJSON(data, true),
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
+            error: function(xhr, textStatus, errorThrown) {
                 $('<div class="error globalError"></div>')
-                    .html('Error: ' + textStatus)
+                    .html('Error: ' + xhr.responseText)
                     .insertAfter('.page:visible .title');
             },
             success: opts.success

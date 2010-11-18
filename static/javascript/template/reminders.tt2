@@ -110,6 +110,7 @@
         [% INCLUDE field name='phone' title='Telephone' %]
         [% INCLUDE field name='email' title='Email' %]
         [% INCLUDE time %]
+        [% INCLUDE payment %]
     </form>
 [% END %]
 
@@ -137,21 +138,12 @@
 [% END %]
 
 [% BLOCK payment %]
-    <div class="option">
-        <div class="radio">
-            <input id="monthly-sms" name="sms-cycle" type="radio" value="month"/>
-        </div>
-        <div class="label">
-            <label for="monthly-sms">$1.50 / month</label>
-        </div>
-    </div>
-    <div class="option">
-        <div class="radio">
-            <input id="yearly-sms" name="sms-cycle" type="radio" value="year"/>
-        </div>
-        <div class="label">
-            <label for="yearly-sms">$15 / year</label>
-        </div>
+    <div class="field">
+        <div class="name">Payment Period:</div>
+        <select class="border paymentPeriod">
+            <option value="month">$15 / Year</option>
+            <option value="month">$1.50 / Month</option>
+        </select>
     </div>
 [% END %]
 
@@ -191,13 +183,6 @@
             <option value="+5">5AM the day of</option>
             <option value="+6">6AM the day of</option>
         </select>
-    </div>
-[% END %]
-
-[% BLOCK not_implemented %]
-    <div class="title">Not Implemented</div>
-    <div class="help">
-        This feature is not implemented yet
     </div>
 [% END %]
 

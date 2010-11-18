@@ -358,7 +358,7 @@ input.text {
 }
 .ui-dialog .field .name {
     float: left;
-    width: 90px;
+    width: 150px;
     text-align: right;
     margin-right: 10px;
 }
