@@ -53,7 +53,11 @@ sub _build_mailer {
         });
     }
 
-    my $config = YAML::LoadFile("/etc/vantrash_mail.yaml");
+    my $config_file = $ENV{VANTRASH_DEV_ENV}
+        ? './etc/vantrash_mail.yaml'
+        : '/etc/vantrash_mail.yaml';
+    die "File doesn't exist: $config_file" unless -f $config_file;
+    my $config = YAML::LoadFile($config_file);
     my $mailer = Email::Send->new({
         mailer => 'Gmail',
         mailer_args => [

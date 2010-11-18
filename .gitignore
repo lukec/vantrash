@@ -27,3 +27,4 @@ static/reminder_success_lb.html
 vantrash.log
 backup
 etc/vantrash.yaml
+etc/vantrash_mail.yaml

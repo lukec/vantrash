@@ -3,6 +3,7 @@ use Moose;
 use Test::More;
 use Test::HTTP;
 use JSON::XS qw(decode_json);
+use YAML;
 use Date::Parse qw(str2time);
 use POSIX qw(strftime);
 use DateTime;
@@ -37,6 +38,81 @@ sub _api_get_next_pickup_date {
     return sprintf(
         "%s %s %d %d", $dt->day_abbr, $dt->month_abbr, $dt->day, $dt->year
     );
+}
+
+sub set_scheme {
+    my ($self, $var, $scheme) = @_;
+    $self->{$var} =~ s{http://}{$scheme};
+    diag "Set $var to $self->{$var}";
+}
+
+has 'tester' => (
+    is => 'ro', isa => 'HashRef', lazy_build => 1,
+);
+
+sub _build_tester {
+    my $self = shift;
+    my $config = YAML::LoadFile('etc/vantrash_mail.yaml');
+    return $config->{tester} || die 'tester required';
+}
+
+sub wait_for_email_ok {
+    my ($self, $email_address) = @_;
+    require Mail::POP3Client;
+
+    my $tester = $self->tester;
+
+    my $pop = new Mail::POP3Client(
+        USER     => $tester->{username},
+        PASSWORD => $tester->{password},
+        HOST     => "pop.gmail.com",
+        USESSL   => 1,
+    );
+
+    for (0 .. 10) {
+        $pop->Connect() >= 0 || die $pop->Message();
+        for my $i (1 .. $pop->Count()) {
+            for ($pop->Head($i)) {
+                if (/^To:\s+(.*)/i and $1 eq $email_address) {
+                    $self->{email_body} = scalar $pop->Body($i);
+                }
+            }
+        }
+        $pop->Close();
+        last if $self->{email_body};
+        diag "Waiting for email...";
+        sleep 1;
+    }
+
+    ok $self->{email_body}, 'wait_for_email_ok';
+}
+
+sub text_like {
+    my $self = shift;
+    my $text = shift;
+    my $regex = shift;
+    like $text, $regex, 'text_like';
+}
+
+sub text_unlike {
+    my $self = shift;
+    my $text = shift;
+    my $regex = shift;
+    unlike $text, $regex, 'text_like';
+}
+
+sub exec_regex {
+    my $self = shift;
+    my $name = shift;
+    my $content = shift;
+    my $regex = $self->quote_as_regex(shift || '');
+    if ($content =~ $regex and $1) {
+        $self->{$name} = $1;
+        diag "Set $name to '$1'";
+    }
+    else {
+        die "Could not set exec '$regex' on '$content'";
+    }
 }
 
 # Vantrash stuff

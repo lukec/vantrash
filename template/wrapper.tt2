@@ -34,7 +34,7 @@
 <body>
     <div id="container">
         <header>
-            <a href="/"><div id="headerLogo"></div></a>
+            <a href="/"><img id="headerLogo" src="/images/recollect_logo.png"/></a>
             <div id="headerLinks">
                 <a href="/faq.html">Frequently asked questions</a>
                 <a href="/tell-a-friend.html">Tell a friend</a>

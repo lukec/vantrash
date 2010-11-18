@@ -75,7 +75,7 @@
         <div class="title">Add to your calendar:</div>
         <div>
             [% FOR cal = calendars %]
-            <a href="[% cal.url %]" target="_blank">
+            <a id="[% cal.id %]" href="[% cal.url %]" target="_blank">
                 <img src="/images/calendars/[% cal.icon %]">
                 <span>[% cal.name %]</span>
             </a>

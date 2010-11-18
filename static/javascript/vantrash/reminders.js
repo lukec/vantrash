@@ -118,23 +118,26 @@ ReminderLightbox.prototype = {
     },
 
     templateVars: function() {
-        var url = location.href + 'zones/' + self.zone + '/pickupdays.ics';
+        var url = location.href + 'zones/' + this.zone + '/pickupdays.ics';
         return {
             calendars: [
                 {
                     name: 'Google Calendar',
                     url: 'http://www.google.com/calendar/render?cid=' + url,
-                    icon: 'google.png'
+                    icon: 'google.png',
+                    id: 'cal-google'
                 },
                 {
                     name: 'iCal',
                     url: url.replace('http:', 'webcal:'),
-                    icon: 'ical.png'
+                    icon: 'ical.png',
+                    id: 'cal-ical'
                 },
                 {
                     name: 'Microsoft Outlook',
                     url: url,
-                    icon: 'outlook.png'
+                    icon: 'outlook.png',
+                    id: 'cal-outlook'
                 }
             ]
         };
@@ -195,6 +198,7 @@ ReminderLightbox.prototype = {
         var buttons = [];
         if (opts.next) {
             buttons.push({
+                className: 'next',
                 text: 'Next',
                 click: function() {
                     if ($cur.find('form').valid()) opts.next($cur);
@@ -203,6 +207,7 @@ ReminderLightbox.prototype = {
         }
         if (opts.submit) {
             buttons.push({
+                className: 'submit',
                 text: 'Submit',
                 click: function() {
                     $cur.find('.globalError').remove();
@@ -212,6 +217,7 @@ ReminderLightbox.prototype = {
         }
         if (opts.back) {
             buttons.push({
+                className: 'back',
                 text: 'Back',
                 click: function() {
                     opts.back($cur);
