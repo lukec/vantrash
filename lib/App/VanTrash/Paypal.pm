@@ -123,5 +123,18 @@ sub cancel_subscription {
         unless $resp{ACK} eq 'Success';
 }
 
+sub process_ipn {
+    my $self = shift;
+    my $req  = shift;
+
+    if (App::VanTrash::Config->Value('paypal_branch') eq 'test') {
+        $Business::PayPal::IPN::GTW = 
+            'https://www.sandbox.paypal.com/cgi-bin/webscr';
+    }
+
+    return Business::PayPal::IPN->new(query => $req)
+        or die Business::PayPal::IPN->error;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
