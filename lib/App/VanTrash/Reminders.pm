@@ -21,6 +21,10 @@ sub add {
     $rem->{last_notified} = time;
     $rem->{confirm_hash}  = _build_uuid('vantrash-confirm', $rem);
     $rem->{expiry}        ||= 0; # no expiry
+    if (my $pp = $rem->{payment_period}) {
+        die "Invalid payment_period - must be 'month' or 'year'"
+            unless $pp eq 'month' or $pp eq 'year';
+    }
 
     my $robj = $self->_rs->create($rem) or die "Could not create a reminder!";
     return $robj;
