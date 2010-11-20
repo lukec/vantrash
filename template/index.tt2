@@ -19,7 +19,7 @@
 
     <div class="mapSection">
         <div id="mapCanvas"></div>
-        <div class="ad">
+        <div class="cityimage">
             <a href="http://vancouver.ca/projects/foodWaste/noplastic.htm"
                 alt="Don't trash your food!">
                 <img src="/images/vantrash-ad-no-plastic-borderless.jpg"/>

@@ -194,7 +194,7 @@ footer {
 }
 
 /* Map and Ad */
-.mapSection, #mapCanvas, .ad img {
+.mapSection, #mapCanvas, .cityimage img {
     height: 450px;
 }
 #mapCanvas {
@@ -207,7 +207,7 @@ footer {
     position: relative;
     border-top: 1px solid #36533a;
 }
-.ad {
+.cityimage {
     position: absolute;
     left: 0;
     top: 0;
