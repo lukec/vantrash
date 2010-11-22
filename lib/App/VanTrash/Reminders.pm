@@ -23,7 +23,7 @@ sub add {
     $rem->{expiry}        ||= 0; # no expiry
     if (my $pp = $rem->{payment_period}) {
         die "Invalid payment_period - must be 'month' or 'year'"
-            unless $pp eq 'month' or $pp eq 'year';
+            unless $pp =~ m/^(?:year|month|day)$/;
     }
 
     my $robj = $self->_rs->create($rem) or die "Could not create a reminder!";
