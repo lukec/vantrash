@@ -39,8 +39,7 @@ sub Is_valid_target {
 sub _build_uuid { 
     my $namespace = shift;
     my $hash = shift;
-    my $name = join '-', grep { defined } values %$hash;
-    return Data::UUID->new->create_from_name_str($namespace, $name);
+    return Data::UUID->new->create_str;
 }
 
 __PACKAGE__->meta->make_immutable;
