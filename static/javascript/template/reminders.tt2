@@ -141,7 +141,7 @@
     <div class="field">
         <div class="name">Payment Period:</div>
         <select class="border paymentPeriod">
-            <option value="month">$15 / Year</option>
+            <option value="year">$15 / Year</option>
             <option value="month">$1.50 / Month</option>
         </select>
     </div>
