@@ -11,6 +11,7 @@ use Email::Valid;
 use Plack::Request;
 use Plack::Response;
 use Business::PayPal::IPN;
+use feature "switch";
 use namespace::clean -except => 'meta';
 
 with 'App::VanTrash::ControllerBase';
@@ -545,47 +546,115 @@ sub handle_paypal_ipn {
     my $req = $self->request;
 
     my $ipn = $self->paypal->process_ipn($req);
-    use Data::Dumper;
-    warn Dumper { $ipn->vars };
 
-    my $reminder_id = $ipn->custom;
+    my $reminder_id = $ipn->rp_invoice_id;
     $self->log("PAYMENT_IPN - $reminder_id");
 
     my $rem = $self->model->reminders->by_id($reminder_id);
-    if ( $ipn->completed() ) {
-        # means the funds are already in our paypal account.
-        my $gross = $ipn->mc_gross_1;
-        $self->log("PAYMENT_COMPLETED - $reminder_id - \$$gross");
-
-        # Calculate the next expiry, giving an extra week of grace.
-        my $new_expiry = DateTime->today + $rem->duration 
-                                         + DateTime::Duration->new(weeks => 1);
-        if ($new_expiry > $rem->expiry_datetime) {
-            $rem->expiry( $new_expiry->epoch );
-            $rem->update;
-            $self->log("EXPIRY_ADVANCE - $reminder_id - " . $new_expiry->ymd);
+    given ($ipn->txn_type) {
+        when ('recurring_payment_profile_created') {
+            $self->_handle_created_ipn($ipn, $rem);
         }
-    } elsif ( $ipn->pending ) {
-        # the payment was made to your account, but its status is still pending
-        # $ipn->pending() also returns the reason why it is so.
-        $self->log("PAYMENT_PENDING - $reminder_id - " . $ipn->pending);
-    } elsif ( $ipn->denied ) {
-        # the payment denied, it should try again.
-        $self->log("PAYMENT_DENIED - $reminder_id");
-    } elsif ( $ipn->failed ) {
-        # the payment failed. We should delete this reminder?
-        $self->log("PAYMENT_FAILED - $reminder_id");
-
-        $self->mailer->send_email(
-            to => $rem->email,
-            subject => 'VanTrash reminder has expired',
-            template => 'reminder-expiry.html',
-            template_args => {
-            },
-        );
+        when ('recurring_payment_profile_cancel') {
+            $self->_handle_cancel_ipn($ipn, $rem);
+        }
+        default {
+            # Not sure how to handle this IPN
+            $self->_log_unknown_ipn($ipn, $reminder_id);
+        }
     }
 
-    return Plack::Response->new(200, [], '')->finalize;
+    return Plack::Response->new(200, ['Content-Type' => 'text/plain'],
+            'KTHXBYE')->finalize;
+}
+
+sub _log_unknown_ipn {
+    my $self = shift;
+    my $ipn = shift;
+    my $reminder_id = shift;
+
+    $self->log("UNKNOWN_IPN - $reminder_id");
+    $self->mailer->send_email(
+        to => 'paypal-problem@vantrash.ca', # XXX TODO
+        to => 'luke@5thplane.com',
+        subject => "Paypal IPN problem",
+        template => 'paypal-problem.html',
+        template_args => {
+            error_msg => "Unknown paypal txn_type: $_",
+            dump => json_encode({$ipn->vars}),
+        },
+    );
+}
+
+sub _handle_cancel_ipn {
+    my $self = shift;
+    my $ipn  = shift;
+    my $rem  = shift;
+    my $reminder_id = $rem->id;
+
+    if ($ipn->profile_status eq 'Cancelled') {
+        $self->_cancel_paid_reminder($reminder_id, $rem);
+    }
+    else {
+        $self->_log_unknown_ipn($ipn, $reminder_id);
+    }
+
+}
+
+sub _handle_created_ipn {
+    my $self = shift;
+    my $ipn  = shift;
+    my $rem  = shift;
+    my $reminder_id = $rem->id;
+
+    given ($ipn->initial_payment_status || $ipn->payment_status) {
+        when ("Completed") {
+            # means the funds are already in our paypal account.
+            my $gross = $ipn->amount || '?.??';
+            $self->log("PAYMENT_COMPLETED - $reminder_id - \$$gross");
+
+            # Calculate the next expiry, giving an extra week of grace.
+            my $new_expiry = DateTime->today + $rem->duration 
+                                         + DateTime::Duration->new(weeks => 1);
+            if ($new_expiry > $rem->expiry_datetime) {
+                $rem->expiry( $new_expiry->epoch );
+                $rem->update;
+                $self->log("EXPIRY_ADVANCE - $reminder_id - ".$new_expiry->ymd);
+            }
+        }
+        when("Pending") {
+            # the payment was made to account, but its status is still pending
+            # $ipn->pending() also returns the reason why it is so.
+            $self->log("PAYMENT_PENDING - $reminder_id - " . $ipn->pending);
+        }
+        when("Denied") {
+            # the payment denied, it should try again.
+            $self->log("PAYMENT_DENIED - $reminder_id");
+        }
+        when("Failed") {
+            # the payment failed. We should delete this reminder?
+            $self->_cancel_paid_reminder($reminder_id, $rem);
+        }
+        default {
+            $self->_log_unknown_ipn($ipn, $reminder_id);
+        }
+    }
+}
+
+sub _cancel_paid_reminder {
+    my $self = shift;
+    my $rem = shift;
+
+    $self->log("PAYMENT_FAILED - " . $rem->id);
+    $self->model->delete_reminder($rem->id);
+    $self->log("DELETE " . $rem->zone . " " . $rem->id);
+
+    $self->mailer->send_email(
+        to => $rem->email,
+        subject => 'VanTrash reminder has expired',
+        template => 'reminder-expiry.html',
+        template_args => { },
+    );
 }
 
 sub _build_paypal { App::VanTrash::Paypal->new( model => shift->model ) }
