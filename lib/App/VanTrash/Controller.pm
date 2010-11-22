@@ -436,7 +436,7 @@ sub post_reminder {
     };
     return $self->_400_bad_request($@) if $@;
 
-    $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email );
+    $self->log(join ' ', 'ADD', $zone, $reminder->id, $reminder->email, $reminder->target );
     my @headers;
     push @headers, Location => "/zones/$zone/reminders/" . $reminder->id;
     push @headers, 'Content-Type' => 'application/json';
