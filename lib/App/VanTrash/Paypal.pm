@@ -34,12 +34,13 @@ sub set_up_subscription {
     my $self = shift;
     my %opts = @_;
 
-    die "Invalid period - '$opts{period}'" unless $opts{period} =~ m/^(?:month|year)$/;
+    die "Invalid period - '$opts{period}'" unless $opts{period} =~ m/^(?:month|year|day)$/;
     die "Custom is required" unless $opts{custom};
-    
+
     # SetExpressCheckout - https://www.x.com/docs/DOC-1208
     my $base_url = App::VanTrash::Config->base_url;
     my $p = $self->_subscription_opts($opts{period}, $opts{coupon});
+
     my %resp = $self->api->SetExpressCheckout(
         AMT => $p->{amount},
         CURRENCYCODE => 'CAD',
@@ -69,15 +70,18 @@ sub _subscription_opts {
     my $period = shift;
     my $coupon = shift;
 
+    my $config = App::VanTrash::Config->instance;
     if ($period eq 'month') {
+        my $value = $config->Value('price_per_month')
+            || die "No price_per_month defined!";
         return {
-            amount => '1.50',
+            amount => $value,
             name => 'Monthly VanTrash Subscription',
-            desc => '$1.50 per month for VanTrash notifications',
+            desc => "\$$value per month for VanTrash notifications",
         };
     }
     elsif ($period eq 'year') {
-        my $coupons = App::VanTrash::Config->Value('coupons') || {};
+        my $coupons = $config->Value('coupons') || {};
         if ($coupon and $coupons->{$coupon}) {
             my $price = $coupons->{$coupon};
             return {
@@ -86,10 +90,21 @@ sub _subscription_opts {
                 desc => "$price per year for VanTrash notifications ($coupon)",
             };
         }
+
+        # No coupon
+        my $value = $config->Value('price_per_year')
+            || die "No price_per_month defined!";
         return {
-            amount => '15.00',
+            amount => $value,
             name => 'Annual VanTrash Subscription',
-            desc => '$15.00 per year for VanTrash notifications',
+            desc => "\$$value per year for VanTrash notifications",
+        };
+    }
+    elsif ($period eq 'day') {
+        return {
+            amount => '0.01',
+            name => 'VanTrash Test Subscription',
+            desc => 'VanTrash test subscription',
         };
     }
     die "Unknown payment period: $period";
@@ -101,12 +116,13 @@ sub create_subscription {
 
     my %resp = $self->api->GetExpressCheckoutDetails(TOKEN => $token);
     die $resp{L_SHORTMESSAGE0} unless $resp{ACK} eq 'Success';
-    die "Paypal billing agreement has not yet been accepted." 
+    die "Paypal billing agreement has not yet been accepted."
         unless $resp{BILLINGAGREEMENTACCEPTEDSTATUS};
     my $rem = $self->model->reminders->by_id($resp{CUSTOM});
     die "Could not find reminder for '$resp{CUSTOM}'" unless $rem;
-    
+
     my $p = $self->_subscription_opts($rem->payment_period, $rem->coupon);
+    # Docs: https://www.x.com/docs/DOC-1168
     %resp = $self->api->CreateRecurringPaymentsProfile(
         TOKEN => $token,
         PROFILESTARTDATE => DateTime->now->iso8601,
@@ -145,7 +161,7 @@ sub process_ipn {
     my $req  = shift;
 
     if (App::VanTrash::Config->Value('paypal_branch') eq 'test') {
-        $Business::PayPal::IPN::GTW = 
+        $Business::PayPal::IPN::GTW =
             'https://www.sandbox.paypal.com/cgi-bin/webscr';
     }
 
