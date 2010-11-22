@@ -17,10 +17,15 @@ sub _build_api {
     my $branch = $config->Value('paypal_branch') or die "No paypal branch defined!";
     return Business::PayPal::NVP->new(
         branch => $branch,
-        $branch => {
-            user => $config->Value('paypal_user'),
-            pwd => $config->Value('paypal_pwd'),
-            sig => $config->Value('paypal_sig'),
+        test => {
+            user => $config->Value('paypal_test_user'),
+            pwd => $config->Value('paypal_test_pwd'),
+            sig => $config->Value('paypal_test_sig'),
+        },
+        live => {
+            user => $config->Value('paypal_live_user'),
+            pwd => $config->Value('paypal_live_pwd'),
+            sig => $config->Value('paypal_live_sig'),
         },
     );
 }
