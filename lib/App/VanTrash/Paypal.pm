@@ -133,6 +133,7 @@ sub create_subscription {
         INITAMT => $p->{amount},
         AMT => $p->{amount},
         CURRENCYCODE => 'CAD',
+        PROFILEREFERENCE => $resp{CUSTOM},
     );
     die "Could not create recurring payment: $resp{L_SHORTMESSAGE0}"
         unless $resp{ACK} eq 'Success';
