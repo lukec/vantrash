@@ -130,6 +130,7 @@ sub create_subscription {
         MAXFAILEDPAYMENTS => 1,
         BILLINGPERIOD => ucfirst($rem->payment_period),
         BILLINGFREQUENCY => 1,
+        INITAMT => $p->{amount},
         AMT => $p->{amount},
         CURRENCYCODE => 'CAD',
     );
