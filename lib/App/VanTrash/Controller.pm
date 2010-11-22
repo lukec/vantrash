@@ -88,7 +88,7 @@ sub run {
         }
     }
 
-    return Plack::Response->new(404, [], '')->finalize;
+    return Plack::Response->new(404, ['Content-Type' => 'text/plain'], '')->finalize;
 }
 
 sub is_mobile {
@@ -456,6 +456,7 @@ sub delete_reminder_html {
         my $resp = $self->process_template(
             'zones/reminders/bad_delete.html'
         );
+        $resp->header('Content-Type' => 'text/html; charset=utf8');
         $resp->status(404);
         return $resp->finalize;
     }
