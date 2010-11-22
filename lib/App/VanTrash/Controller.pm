@@ -314,6 +314,15 @@ sub zone_next_dow_change_json {
     return $self->response('application/json' => $body);
 }
 
+sub payment_cancel {
+    my $self = shift;
+    my $req  = shift;
+
+    my $res = Plack::Response->new;
+    $res->redirect("/");
+    return $res->finalize;
+}
+
 sub payment_proceed {
     my $self = shift;
     my $req  = shift;
