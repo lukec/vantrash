@@ -1,0 +1,8 @@
+BEGIN TRANSACTION;
+
+ALTER TABLE reminder ADD COLUMN payment_period TEXT;
+ALTER TABLE reminder ADD COLUMN expiry INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE reminder ADD COLUMN coupon TEXT;
+ALTER TABLE reminder ADD COLUMN subscription_profile_id TEXT;
+
+COMMIT;
