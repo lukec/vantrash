@@ -11,6 +11,7 @@ use Email::Valid;
 use Plack::Request;
 use Plack::Response;
 use Business::PayPal::IPN;
+use Data::Dumper;
 use feature "switch";
 use namespace::clean -except => 'meta';
 
@@ -547,23 +548,54 @@ sub handle_paypal_ipn {
 
     my $ipn = $self->paypal->process_ipn($req);
 
-    my $reminder_id = $ipn->rp_invoice_id;
-    $self->log("PAYMENT_IPN - $reminder_id");
+    if (my $reminder_id = $ipn->rp_invoice_id) {
+        my $rem = $self->model->reminders->by_id($reminder_id);
+        unless ($rem) {
+            $self->log("PAYMENT_IPN for invalid reminder: $reminder_id");
+            return $self->_quick_200;
+        }
+        $self->log("PAYMENT_IPN - $reminder_id");
 
-    my $rem = $self->model->reminders->by_id($reminder_id);
-    given ($ipn->txn_type) {
-        when ('recurring_payment_profile_created') {
-            $self->_handle_created_ipn($ipn, $rem);
-        }
-        when ('recurring_payment_profile_cancel') {
-            $self->_handle_cancel_ipn($ipn, $rem);
-        }
-        default {
-            # Not sure how to handle this IPN
-            $self->_log_unknown_ipn($ipn, $reminder_id);
+        given ($ipn->txn_type) {
+            when ('recurring_payment_profile_created') {
+                $self->_handle_created_ipn($ipn, $rem);
+            }
+            when ('recurring_payment') {
+                $self->log("PAYMENT_RECURRING - $reminder_id - \$"
+                            . $ipn->amount);
+                $self->_advance_expiry($rem);
+            }
+            when ('recurring_payment_profile_cancel') {
+                $self->_handle_cancel_ipn($ipn, $rem);
+            }
+            when ('recurring_payment_expired') {
+                $self->log("PAYMENT_EXPIRED - $reminder_id - payment_cycle:"
+                    . $ipn->payment_cycle);
+            }
+            default {
+                my $ps = $ipn->payment_status;
+                if ($ps and $ps eq 'Refunded') {
+                    $self->log("PAYMENT_REFUND - $reminder_id - \$"
+                                . $ipn->mc_gross);
+                }
+                else {
+                    # Not sure how to handle this IPN
+                    $self->log("UNKNOWN_IPN - IPN unknown type - $reminder_id");
+                    $self->_log_unknown_ipn($ipn, $reminder_id, "unknown ipn type");
+                }
+            }
         }
     }
+    else {
+        # Probably a stray reminder from before they were set up properly, so
+        # just log it.
+        $self->log("Payment without a rp_invoice_id, ignoring");
+    }
 
+    return $self->_quick_200;
+}
+
+sub _quick_200 {
     return Plack::Response->new(200, ['Content-Type' => 'text/plain'],
             'KTHXBYE')->finalize;
 }
@@ -572,18 +604,25 @@ sub _log_unknown_ipn {
     my $self = shift;
     my $ipn = shift;
     my $reminder_id = shift;
-
-    $self->log("UNKNOWN_IPN - $reminder_id");
-    $self->mailer->send_email(
-        to => 'paypal-problem@vantrash.ca', # XXX TODO
-        to => 'luke@5thplane.com',
-        subject => "Paypal IPN problem",
-        template => 'paypal-problem.html',
-        template_args => {
-            error_msg => "Unknown paypal txn_type: $_",
-            dump => json_encode({$ipn->vars}),
-        },
-    );
+    my $msg = shift || 'unknown error';
+    
+    my $dump_str = Dumper $ipn->dump(undef, 2);
+    eval {
+        my $addr = App::VanTrash::Config->Value('errors_to_email')
+                    || 'paypal-problem@vantrash.ca';
+        $self->model->mailer->send_email(
+            to => $addr,
+            subject => "Paypal IPN problem",
+            template => 'paypal-problem.html',
+            template_args => {
+                error_msg => "Unknown paypal txn_type: $msg",
+                dump => $dump_str,
+            },
+        );
+    };
+    if ($@) {
+        $self->log("Error sending UNKNOWN_IPN email ($@) : " . $dump_str);
+    }
 }
 
 sub _handle_cancel_ipn {
@@ -596,9 +635,24 @@ sub _handle_cancel_ipn {
         $self->_cancel_paid_reminder($reminder_id, $rem);
     }
     else {
-        $self->_log_unknown_ipn($ipn, $reminder_id);
+        $self->log("UNKNOWN_IPN - IPN cancel - $reminder_id");
+        $self->_log_unknown_ipn($ipn, $reminder_id, "unknown cancel IPN");
     }
 
+}
+
+sub _advance_expiry {
+    my $self = shift;
+    my $rem  = shift;
+
+    # Calculate the next expiry, giving an extra week of grace.
+    my $new_expiry = DateTime->today + $rem->duration 
+                                 + DateTime::Duration->new(weeks => 1);
+    if ($new_expiry > $rem->expiry_datetime) {
+        $rem->expiry( $new_expiry->epoch );
+        $rem->update;
+        $self->log("EXPIRY_ADVANCE - " . $rem->id . " - " . $new_expiry->ymd);
+    }
 }
 
 sub _handle_created_ipn {
@@ -611,16 +665,8 @@ sub _handle_created_ipn {
         when ("Completed") {
             # means the funds are already in our paypal account.
             my $gross = $ipn->amount || '?.??';
-            $self->log("PAYMENT_COMPLETED - $reminder_id - \$$gross");
-
-            # Calculate the next expiry, giving an extra week of grace.
-            my $new_expiry = DateTime->today + $rem->duration 
-                                         + DateTime::Duration->new(weeks => 1);
-            if ($new_expiry > $rem->expiry_datetime) {
-                $rem->expiry( $new_expiry->epoch );
-                $rem->update;
-                $self->log("EXPIRY_ADVANCE - $reminder_id - ".$new_expiry->ymd);
-            }
+            $self->log("PAYMENT_PROFILE_CREATED - $reminder_id - \$$gross");
+            $self->_advance_expiry($rem);
         }
         when("Pending") {
             # the payment was made to account, but its status is still pending
@@ -636,7 +682,8 @@ sub _handle_created_ipn {
             $self->_cancel_paid_reminder($reminder_id, $rem);
         }
         default {
-            $self->_log_unknown_ipn($ipn, $reminder_id);
+            $self->log("UNKNOWN_IPN - IPN create - $reminder_id");
+            $self->_log_unknown_ipn($ipn, $reminder_id, "unknown created ipn");
         }
     }
 }
