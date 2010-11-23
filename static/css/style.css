@@ -397,6 +397,20 @@ input.text {
     text-decoration: underline;
 }
 
+/* fieldset */
+.ui-dialog fieldset {
+    padding: 10px 10px 20px 10px;
+    border: 1px solid #666;
+    /* rounded corners */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.ui-dialog fieldset legend {
+    padding: 0 8px;
+    margin: 0;
+}
+
 /* Dialog Button layout*/
 .ui-dialog .ui-dialog-buttonset {
     width: 100%;
