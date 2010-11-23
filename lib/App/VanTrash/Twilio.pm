@@ -60,7 +60,7 @@ sub sms_from_number {
 
 sub voice_from_number {
     App::VanTrash::Config->Value('twilio_from_number_voice')
-        || die "twilio_from_number_sms must be set in the config file!";
+        || die "twilio_from_number_voice must be set in the config file!";
 }
 
 __PACKAGE__->meta->make_immutable;
