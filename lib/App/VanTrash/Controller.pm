@@ -690,6 +690,7 @@ sub _handle_created_ipn {
 
 sub _cancel_paid_reminder {
     my $self = shift;
+    my $reminder_id = shift;
     my $rem = shift;
 
     $self->log("PAYMENT_FAILED - " . $rem->id);
