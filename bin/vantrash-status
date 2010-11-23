@@ -44,6 +44,7 @@ print "Unconfirmed reminders: ($un_count)\n";
 unless ($summary) {
     for my $r (@unconfirmed) {
         my $date = DateTime->from_epoch(epoch => $r->{created_at});
+        $date->set_time_zone('America/Vancouver');
         print "  $r->{id} $r->{zone}\t- $r->{email} ($r->{target}) created: " 
             . $date->ymd . " " . $date->hms . "\n";
     }
@@ -54,8 +55,10 @@ print "\nConfirmed reminders: ($count)\n";
 unless ($summary) {
     for my $r (@confirmed) {
         my $last = DateTime->from_epoch(epoch => $r->{last_notified});
+        $last->set_time_zone('America/Vancouver');
         $last = join(' ', $last->ymd, $last->hms);
         my $next = DateTime->from_epoch(epoch => $r->{next_pickup});
+        $next->set_time_zone('America/Vancouver');
         $next = join(' ', $next->ymd, $next->hms);
         print " $r->{zone}\t- $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
             . "\n";
