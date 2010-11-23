@@ -47,6 +47,8 @@ sub to_hash {
 
 sub email_target { shift->target =~ m/^email:/ }
 sub twitter_target { shift->target =~ m/^twitter:/ }
+sub voice_target { shift->target =~ m/^voice:/ }
+sub sms_target { shift->target =~ m/^sms:/ }
 
 
 sub is_expired {

@@ -262,7 +262,20 @@ sub validate_and_enter_email_ok {
         $self->wait_for_text_present_ok('Please enter a valid email');
     }
 
-    $self->type_ok($el, $email);
+    $self->type_ok($el, $email) if $email;
+}
+
+sub validate_and_enter_phone_ok {
+    my ($self, $el, $phone) = @_;
+    my @invalid = ('');
+
+    ok !$self->is_text_present('Please enter your telephone number');
+
+    $self->type_ok($el, '');
+    $self->click_ok('css=.ui-dialog-buttonset .submit');
+    $self->wait_for_text_present_ok('Please enter your telephone number');
+
+    $self->type_ok($el, $phone) if $phone;
 }
 
 sub reminder_confirm_email_ok {
@@ -303,12 +316,40 @@ sub reminder_success_email_ok {
         like $self->{email_body}, qr{http://twitter\.com/vantrash},
             "twitter success email links to vantrash's twitter";
     }
-    else {
+    elsif ($target eq 'email') {
         like $self->{email_body}, qr{You will now receive email reminders},
+            'you will now receive email reminders';
+    }
+    elsif ($target eq 'sms') {
+        like $self->{email_body},
+            qr{You will now receive Text message reminders},
+            'you will now receive email reminders';
+    }
+    elsif ($target eq 'phone') {
+        like $self->{email_body}, qr{You will now receive Phone call reminders},
             'you will now receive email reminders';
     }
 
     unlike $self->{email_body}, qr{donate\.html}, "don't link to donate.html";
+}
+
+sub login_paypal_dev_ok {
+    my $self = shift;
+    $self->open_ok('http://developer.paypal.com');
+    $self->wait_for_text_present_ok('Member Log In');
+    $self->type_ok('login_email', $self->config->Value('paypal_dev_user'));
+    $self->type_ok('login_password', $self->config->Value('paypal_dev_pwd'));
+    $self->click_ok('css=form[name=login_form] *[type=submit]');
+    $self->wait_for_text_present_ok('Log Out');
+}
+
+sub login_paypal_ok {
+    my $self = shift;
+    $self->is_text_present_ok('Create a PayPal Account or Log In');
+    $self->type_ok('login_email', $self->config->Value('paypal_cust_user'));
+    $self->type_ok('login_password', $self->config->Value('paypal_cust_pwd'));
+    $self->click_ok('login.x');
+    $self->wait_for_text_present_ok('Review your information');
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

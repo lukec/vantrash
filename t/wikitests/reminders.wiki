@@ -30,6 +30,130 @@
 | is-text-present-ok       | Please contact help@vantrash.ca if you think there was a problem.       |
 
 ##
+# Premium Services
+
+# We need to be logged in to paypal for the test accounts to work - this is silly IMO, since the test accounts are well authenticated... meh
+| login-paypal-dev-ok |
+
+##
+# Voice Reminders
+#
+
+# Open the reminder lightbox
+| open-reminder-lightbox-ok | vancouver-south-red |
+
+# Choose phone
+| click-ok                 | phone-reminder                      |
+| click-ok                 | css=.ui-dialog-buttonset .next      |
+| wait-for-text-present-ok | Schedule a Telephone Call Reminder: |
+
+# Email validation
+| type-ok                     | css=#premium_phone .phone | 604-800-9811 |
+| validate-and-enter-email-ok | css=#premium_phone .email |              |
+
+# Phone number validation
+| type-ok                     | css=#premium_phone .email | %%email_address%% |
+| validate-and-enter-phone-ok | css=#premium_phone .phone |                   |
+
+| type-ok   | css=#premium_phone .email         | %%email_address%% |
+| type-ok   | css=#premium_phone .phone         | 000-000-0000      |
+| select-ok | css=#premium_phone .paymentPeriod | $15.00 / Year        |
+| click-ok  | css=.ui-dialog-buttonset .submit  |                   |
+
+# Redirect to PayPal
+| wait-for-page-to-load-ok | 30000                                      |
+| login-paypal-ok          |                                            |
+| wait-for-text-present-ok | $15.00 per year for VanTrash notifications |
+
+########################################################
+| *comment* | CANCEL, go back and choose $1.50 / Month |
+
+| open-reminder-lightbox-ok | vancouver-south-red                        |                   |
+| click-ok                  | phone-reminder                             |                   |
+| click-ok                  | css=.ui-dialog-buttonset .next             |                   |
+| wait-for-text-present-ok  | Schedule a Telephone Call Reminder:        |                   |
+| type-ok                   | css=#premium_phone .email                  | %%email_address%% |
+| type-ok                   | css=#premium_phone .phone                  | 000-000-0000      |
+| select-ok                 | css=#premium_phone .paymentPeriod          | $1.50 / Month     |
+| click-ok                  | css=.ui-dialog-buttonset .submit           |                   |
+| wait-for-page-to-load-ok  | 30000                                      |                   |
+| login-paypal-ok           |                                            |                   |
+| wait-for-text-present-ok  | $1.50 per month for VanTrash notifications |                   |
+
+| click-ok                 | continue                                                                      |
+| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.                     |
+| is-text-present-ok       | You will soon receive a confirmation email. We hope you find VanTrash useful! |
+
+# Wait for the welcome email 
+| reminder-success-email-ok | %%email_address%% | phone |
+
+# Remove the reminder
+| open-ok                     | %%delete_url%%                                                                              |
+| click-ok                    | css=.button.yes                                                                             |
+| wait-for-text-present-ok    | The following garbage reminder has been deleted:                                            |
+| is-text-present-ok          | Zone:vancouver-south-red                                                                    |
+| is-text-present-ok          | Email:%%email_address%%                                                                     |
+
+##
+# SMS Reminders
+#
+
+# Open the reminder lightbox
+| open-reminder-lightbox-ok | vancouver-south-red |
+
+# Choose sms
+| click-ok                 | sms-reminder                      |
+| click-ok                 | css=.ui-dialog-buttonset .next    |
+| wait-for-text-present-ok | Schedule a Text Message Reminder: |
+
+# Email validation
+| type-ok                     | css=#premium_sms .phone | 000-000-0000 |
+| validate-and-enter-email-ok | css=#premium_sms .email |              |
+
+# Phone number validation
+| type-ok                     | css=#premium_sms .email | %%email_address%% |
+| validate-and-enter-phone-ok | css=#premium_sms .phone |                   |
+
+| type-ok   | css=#premium_sms .email          | %%email_address%% |
+| type-ok   | css=#premium_sms .phone          | 000-000-0000      |
+| select-ok | css=#premium_sms .paymentPeriod  | $1.50 / Month     |
+| click-ok  | css=.ui-dialog-buttonset .submit |                   |
+
+# Redirect to PayPal
+| wait-for-page-to-load-ok | 30000                                      |
+| login-paypal-ok          |                                            |
+| wait-for-text-present-ok | $1.50 per month for VanTrash notifications |
+
+#####################################################
+| *comment* | CANCEL, go back and choose $15 / Year |
+
+| open-reminder-lightbox-ok | vancouver-south-red                        |                   |
+| click-ok                  | sms-reminder                               |                   |
+| click-ok                  | css=.ui-dialog-buttonset .next             |                   |
+| wait-for-text-present-ok  | Schedule a Text Message Reminder:          |                   |
+| type-ok                   | css=#premium_sms .email                    | %%email_address%% |
+| type-ok                   | css=#premium_sms .phone                    | 000-000-0000      |
+| select-ok                 | css=#premium_sms .paymentPeriod            | $15.00 / Year     |
+| click-ok                  | css=.ui-dialog-buttonset .submit           |                   |
+| wait-for-page-to-load-ok  | 30000                                      |                   |
+| login-paypal-ok           |                                            |                   |
+| wait-for-text-present-ok  | $15.00 per year for VanTrash notifications |                   |
+
+| click-ok                 | continue                                                                      |
+| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.                     |
+| is-text-present-ok       | You will soon receive a confirmation email. We hope you find VanTrash useful! |
+
+# Wait for the welcome email 
+| reminder-success-email-ok | %%email_address%% | sms |
+
+# Remove the reminder
+| open-ok                  | %%delete_url%%                                   |
+| click-ok                 | css=.button.yes                                  |
+| wait-for-text-present-ok | The following garbage reminder has been deleted: |
+| is-text-present-ok       | Zone:vancouver-south-red                         |
+| is-text-present-ok       | Email:%%email_address%%                          |
+
+##
 # E-Mail Reminders
 #
 
@@ -109,4 +233,3 @@
 | wait-for-text-present-ok    | The following garbage reminder has been deleted:                                        |
 | is-text-present-ok          | Zone:vancouver-south-red                                                                |
 | is-text-present-ok          | Email:%%email_address%%                                                                 |
-

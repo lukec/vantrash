@@ -21,6 +21,8 @@ sub send_sms {
     my $number  = shift;
     my $message = shift;
 
+    return if $number eq '000-000-0000'; # testing number - invalid
+
     my $response = $self->api->POST(
         'SMS/Messages',
         From => $self->sms_from_number,
@@ -38,6 +40,8 @@ sub voice_call {
     my $self    = shift;
     my $number  = shift;
     my $path = shift;
+
+    return if $number eq '000-000-0000'; # testing number - invalid
 
     my $url = App::VanTrash::Config->base_url . $path;
     my $response = $self->api->POST(

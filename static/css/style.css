@@ -289,9 +289,6 @@ input.text {
 .ui-dialog .error {
     color: red;
     font-style: italic;
-    white-space: nowrap;
-    display: block;
-    text-align: center;
 }
 
 .ui-dialog .wizard .page {
@@ -303,7 +300,8 @@ input.text {
 
 .ui-dialog label.error {
     font-size: 90%;
-    margin-left: 10px;
+    margin-left: 130px;
+    white-space: nowrap;
 }
 
 .ui-dialog .help {

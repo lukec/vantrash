@@ -4,6 +4,10 @@ Congratulations! You will now receive email reminders for garbage pick up dates 
 Congratulations! You will now receive twitter reminders for garbage pick up dates for your neighbourhood!
 
 Make sure you are following VanTrash user on twitter to receive the messages: http://twitter.com/vantrash
+[% ELSIF reminder.voice_target %]
+Congratulations! You will now receive Phone call reminders for garbage pick up dates for your neighbourhood!
+[% ELSIF reminder.sms_target %]
+Congratulations! You will now receive Text message reminders for garbage pick up dates for your neighbourhood!
 [% END %]
 
 To delete this reminder, click on the link below or copy and paste it into your browser:

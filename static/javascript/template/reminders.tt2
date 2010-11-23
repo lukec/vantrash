@@ -46,7 +46,7 @@
             <div class="price">
                 $1.50 / month
                 <div class="or">or</div>
-                $15 / year
+                $15.00 / year
             </div>
         </div>
         <div class="basic payclass">
@@ -141,8 +141,8 @@
     <div class="field">
         <div class="name">Payment Period:</div>
         <select class="border paymentPeriod">
-            <option value="year">$15 / Year</option>
-            <option value="month">$1.50 / Month</option>
+            <option id="payment-yearly" value="year">$15.00 / Year</option>
+            <option id="payment-monthly" value="month">$1.50 / Month</option>
         </select>
     </div>
 [% END %]
