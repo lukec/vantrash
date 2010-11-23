@@ -33,7 +33,7 @@ CREATE TABLE reminder (
     last_notified INTEGER NOT NULL,
     confirm_hash TEXT NOT NULL,
     payment_period TEXT,
-    expiry INTEGER NOT NULL,
+    expiry INTEGER NOT NULL DEFAULT 0,
     coupon TEXT,
     subscription_profile_id TEXT
 );
