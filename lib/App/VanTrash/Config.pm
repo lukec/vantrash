@@ -37,7 +37,6 @@ sub Value {
     my $key = shift;
 
     if ($self->_config_timestamp > $self->timestamp) {
-        warn "Detected the config changed - reloading ...\n";
         $self->config_hash( $self->_load_config );
     }
 
