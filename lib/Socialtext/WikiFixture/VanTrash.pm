@@ -8,6 +8,8 @@ use Date::Parse qw(str2time);
 use POSIX qw(strftime);
 use DateTime;
 use DateTime::Format::Strptime;
+use App::VanTrash::Config;
+use App::VanTrash::Template;
 use namespace::clean -except => 'meta';
 
 extends 'Socialtext::WikiFixture::Selenese';
@@ -46,34 +48,33 @@ sub set_scheme {
     diag "Set $var to $self->{$var}";
 }
 
-has 'tester' => (
-    is => 'ro', isa => 'HashRef', lazy_build => 1,
+has 'config' => (
+    is => 'ro', isa => 'App::VanTrash::Config', lazy_build => 1,
 );
 
-sub _build_tester {
-    my $self = shift;
-    my $config = YAML::LoadFile('etc/vantrash_mail.yaml');
-    return $config->{tester} || die 'tester required';
+sub _build_config {
+    App::VanTrash::Config->new(config_file => './etc/vantrash.yaml');
 }
 
 sub wait_for_email_ok {
     my ($self, $email_address) = @_;
     require Mail::POP3Client;
 
-    my $tester = $self->tester;
-
     my $pop = new Mail::POP3Client(
-        USER     => $tester->{username},
-        PASSWORD => $tester->{password},
+        USER     => $self->config->Value('tester_username'),
+        PASSWORD => $self->config->Value('tester_password'),
         HOST     => "pop.gmail.com",
         USESSL   => 1,
     );
+
+    $self->{email_body} = undef;
 
     for (0 .. 10) {
         $pop->Connect() >= 0 || die $pop->Message();
         for my $i (1 .. $pop->Count()) {
             for ($pop->Head($i)) {
                 if (/^To:\s+(.*)/i and $1 eq $email_address) {
+                    die "Multiple emails found!" if $self->{email_body};
                     $self->{email_body} = scalar $pop->Body($i);
                 }
             }
@@ -83,6 +84,8 @@ sub wait_for_email_ok {
         diag "Waiting for email...";
         sleep 1;
     }
+
+    $self->{email_body} =~ s{\r}{}g;
 
     ok $self->{email_body}, 'wait_for_email_ok';
 }
@@ -119,7 +122,7 @@ sub exec_regex {
 
 sub wait_for_kml {
     my $self = shift;
-    $self->wait_for_condition('window.map.zones.length', 5000);
+    $self->wait_for_condition('window.map && window.map.zones.length', 5000);
 }
 
 has 'zones' => (
@@ -233,6 +236,79 @@ sub calendar_ok {
                 "$num is NOT marked for yard trimmings pickup";
         }
     }
+}
+
+sub open_reminder_lightbox_ok {
+    my ($self, $zone) = @_;
+    $self->comment("Open reminder lightbox for $zone");
+    $self->open_ok('/');
+    $self->wait_for_page_to_load_ok(5000);
+    $self->wait_for_kml;
+    $self->click_zone_ok($zone);
+    $self->wait_for_element_present_ok('css=.remind_me');
+    $self->click_ok('css=.remind_me');
+    $self->wait_for_text_present_ok('Schedule a weekly reminder:');
+}
+
+sub validate_and_enter_email_ok {
+    my ($self, $el, $email) = @_;
+    my @invalid = ('', 'nodomain', 'no@tld');
+
+    ok !$self->is_text_present('Please enter a valid email');
+
+    for (@invalid) {
+        $self->type_ok($el, $_);
+        $self->click_ok('css=.ui-dialog-buttonset .submit');
+        $self->wait_for_text_present_ok('Please enter a valid email');
+    }
+
+    $self->type_ok($el, $email);
+}
+
+sub reminder_confirm_email_ok {
+    my ($self, $email) = @_;
+
+    $self->comment("Verifying confirmation email");
+
+    $self->wait_for_email_ok($email);
+
+    ($self->{confirm_url}) = $self->{email_body}
+        =~ m!($self->{browser_url}/zones/[^/]+/reminders/[^/]+/confirm)!;
+    ($self->{delete_url}) = $self->{email_body}
+        =~ m!($self->{browser_url}/zones/[^/]+/reminders/[^/]+/delete)!;
+
+    ok $self->{delete_url}, 'confirmation email has delete url';
+    ok $self->{confirm_url}, 'confirmation email has confirm url';
+
+    like $self->{email_body},
+        qr{Thank you for signing up to the Vancouver Garbage Reminder service},
+        'Thank you message';
+}
+
+sub reminder_success_email_ok {
+    my ($self, $email, $target) = @_;
+
+    $self->comment("Verifying success email");
+
+    $self->wait_for_email_ok($email);
+
+    ($self->{delete_url}) = $self->{email_body}
+        =~ m!($self->{browser_url}/zones/[^/]+/reminders/[^/]+/delete)!;
+
+    ok $self->{delete_url}, 'success email has delete url';
+
+    if ($target eq 'twitter') {
+        like $self->{email_body}, qr{You will now receive twitter reminders},
+            'you will now receive twitter reminders';
+        like $self->{email_body}, qr{http://twitter\.com/vantrash},
+            "twitter success email links to vantrash's twitter";
+    }
+    else {
+        like $self->{email_body}, qr{You will now receive email reminders},
+            'you will now receive email reminders';
+    }
+
+    unlike $self->{email_body}, qr{donate\.html}, "don't link to donate.html";
 }
 
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

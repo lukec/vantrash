@@ -3,16 +3,8 @@
 
 | set | email_address | test+%%start_time%%@vantrash.ca |
 
-| open                  | /    |
-| wait-for-page-to-load | 5000 |
-| wait-for-kml          |      |
-
-| click-zone-ok            | vancouver-south-red |
-| wait-for-text-present-ok | Vancouver Red South |
-| click-ok                 | css=.remind_me      |
-
-# Wait for the lightbox to appear
-| wait-for-text-present | Schedule a weekly reminder: |
+# Open the reminder lightbox
+| open-reminder-lightbox-ok | vancouver-south-red |
 
 # SMS is the default selected value
 | is-checked-ok | sms-reminder |
@@ -32,83 +24,89 @@
 | set-scheme   | ics           | webcal:// |
 | attribute-is | cal-ical@href | %%ics%%   |
 
+# try to confirm an unknown reminder
+| open-ok                  | %%browser_url%%/zones/vancouver-south-red/reminders/abracadabra/confirm |
+| wait-for-text-present-ok | Sorry, we could not find a valid reminder at this address.              |
+| is-text-present-ok       | Please contact help@vantrash.ca if you think there was a problem.       |
 
 ##
-# Email Reminders
+# E-Mail Reminders
 #
 
+# Open the reminder lightbox
+| open-reminder-lightbox-ok | vancouver-south-red |
+
+# Choose email
 | click-ok                 | email-reminder                 |
 | click-ok                 | css=.ui-dialog-buttonset .next |
 | wait-for-text-present-ok | Schedule an E-Mail Reminder:   |
 
 # Email validation
-| click-ok                 | css=.ui-dialog-buttonset .submit |                   |
-| wait-for-text-present-ok | Please enter a valid email       |                   |
-| type-ok                  | css=#basic_email .email          | nodomain          |
-| click-ok                 | css=.ui-dialog-buttonset .submit |                   |
-| wait-for-text-present-ok | Please enter a valid email       |                   |
-| type-ok                  | css=#basic_email .email          | notld@hi          |
-| click-ok                 | css=.ui-dialog-buttonset .submit |                   |
-| wait-for-text-present-ok | Please enter a valid email       |                   |
-| type-ok                  | css=#basic_email .email          | %%email_address%% |
-| click-ok                 | css=.ui-dialog-buttonset .submit |                   |
-| wait-for-text-present-ok | Wait! You're not done yet!       |                   |
+| validate-and-enter-email-ok | css=#basic_email .email          | %%email_address%% |
+| click_ok                    | css=.ui-dialog-buttonset .submit |                   |
+| wait-for-text-present-ok    | Wait! You're not done yet!       |                   |
 
 # Verify the confirmation email
-| wait-for-email-ok | %%email_address%% |
-
-# get the UUID
-| exec-regex | uuid | %%email_body%% | qr/reminders\/(.*)\/confirm/ |
-
-# Verify lines of the confirmation email
-| text_like | %%email_body%% | Thank you for signing up to the Vancouver Garbage Reminder service.                                                     |
-| text_like | %%email_body%% | To confirm this email address, please click the link below or copy and paste it into your web browser:                  |
-# FAIL | text_like | %%email_body%% | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/confirm                                                    |
-| text_like | %%email_body%% | If this was a mistake and you don't want this reminder, click on the link below or copy and paste it into your browser: |
-# FAIL | text_like | %%email_body%% | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/delete                                                     |
-
-# try to confirm an unknown reminder
-| open-ok               | %%browser_url%%/zones/vancouver-south-red/reminders/abracadabra/confirm |
-| wait-for-page-to-load | 5000                                                                    |
-| is-text-present-ok    | Sorry, we could not find a valid reminder at this address.              |
-| is-text-present-ok    | Please contact help@vantrash.ca if you think there was a problem.       |
+| reminder-confirm-email-ok | %%email_address%% |
 
 # Confirm the reminder
-| open-ok               | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/confirm |
-| wait-for-page-to-load | 5000                                                                 |
-| is-text-present-ok    | Thank you for confirming your email, %%email_address%%               |
-| is-text-present-ok    | You will soon receive an email with all the details.                 |
+| open-ok                  | %%confirm_url%%                                        |
+| wait-for-text-present-ok | Thank you for confirming your email, %%email_address%% |
+| is-text-present-ok       | You will soon receive an email with all the details.   |
 
 # Wait for the welcome email 
-| wait-for-email-ok | %%email_address%% |                                                                                                                  |
-
-# get the UUID
-| exec-regex | uuid | %%email_body%% | qr/reminders\/(.*)\/delete/ |
-
-# Verify the welcome email 
-| text_like         | %%email_body%%    | Congratulations! You will now receive email reminders for garbage pick up dates for your neighbourhood!          |
-| text_like         | %%email_body%%    | To delete this reminder, click on the link below or copy and paste it into your browser:                         |
-# FAIL | text_like         | %%email_body%%    | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/delete                                              |
-| text_like         | %%email_body%%    | If you're excited about the garbage pick-up reminder service (and we hope you are!)                              |
-| text_like         | %%email_body%%    | please tell your friends about us by clicking the link below:                                                    |
-# FAIL | text_like         | %%email_body%%    | %%browser_url%%/tell-a-friend.html                                                                               |
-
-# FAIL | text_unlike       | %%email_body%%    | Finally, if you think this service useful, please do consider supporting us: http://vantrash.ca:5001/donate.html |
-
-# XXX verify the reminder actually exists somehow
+| reminder-success-email-ok | %%email_address%% | email |
 
 # Remove the reminder
-| open-ok               | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/delete                                        |
-| wait-for-page-to-load | 5000                                                                                                       |
-| is-text-present-ok    | Are you sure you want to unsubscribe email:test+1289360815@vantrash.ca from vancouver-south-red reminders? |
-| click-ok              | css=.button.no                                                                                             |
-| wait-for-page-to-load | 5000                                                                                                       |
-| is-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively.                            |
-| open-ok               | %%browser_url%%/zones/vancouver-south-red/reminders/%%uuid%%/delete                                        |
-| wait-for-page-to-load | 5000                                                                                                       |
-| click-ok              | css=.button.yes                                                                                            |
-| wait-for-page-to-load | 5000                                                                                                       |
-| is-text-present-ok    | The following garbage reminder has been deleted: |
-| is-text-present-ok    | Zone:vancouver-south-red |
-| is-text-present-ok    | Email:%%email_address%% |
+| open-ok                     | %%delete_url%%                                                                                   |
+| wait-for-text-present-ok    | Are you sure you want to unsubscribe email:%%email_address%% from vancouver-south-red reminders? |
+| click-ok                    | css=.button.no                                                                                   |
+| wait-for-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively.                  |
+| open-ok                     | %%delete_url%%                                                                                   |
+| wait-for-element-present-ok | css=.button.yes                                                                                  |
+| click-ok                    | css=.button.yes                                                                                  |
+| wait-for-text-present-ok    | The following garbage reminder has been deleted:                                                 |
+| is-text-present-ok          | Zone:vancouver-south-red                                                                         |
+| is-text-present-ok          | Email:%%email_address%%                                                                          |
+
+##
+# Twitter Reminders
+#
+
+# Open the reminder lightbox
+| open-reminder-lightbox-ok | vancouver-south-red |
+
+# Choose twitter
+| click-ok                 | twitter-reminder               |
+| click-ok                 | css=.ui-dialog-buttonset .next |
+| wait-for-text-present-ok | Schedule a Twitter Reminder:   |
+
+# Email validation
+| type-ok                     | css=#basic_twitter .twitter      | kevinj            |
+| validate-and-enter-email-ok | css=#basic_twitter .email        | %%email_address%% |
+| click_ok                    | css=.ui-dialog-buttonset .submit |                   |
+| wait-for-text-present-ok    | Wait! You're not done yet!       |                   |
+
+# Verify the confirmation email
+| reminder-confirm-email-ok | %%email_address%% |
+
+# Confirm the reminder
+| open-ok                  | %%confirm_url%%                                        |
+| wait-for-text-present-ok | Thank you for confirming your email, %%email_address%% |
+| is-text-present-ok       | You will soon receive an email with all the details.   |
+
+# Wait for the welcome email 
+| reminder-success-email-ok | %%email_address%% | twitter |
+
+# Remove the reminder
+| open-ok                     | %%delete_url%%                                                                          |
+| wait-for-text-present-ok    | Are you sure you want to unsubscribe twitter:kevinj from vancouver-south-red reminders? |
+| click-ok                    | css=.button.no                                                                          |
+| wait-for-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively.         |
+| open-ok                     | %%delete_url%%                                                                          |
+| wait-for-element-present-ok | css=.button.yes                                                                         |
+| click-ok                    | css=.button.yes                                                                         |
+| wait-for-text-present-ok    | The following garbage reminder has been deleted:                                        |
+| is-text-present-ok          | Zone:vancouver-south-red                                                                |
+| is-text-present-ok          | Email:%%email_address%%                                                                 |
 

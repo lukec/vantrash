@@ -192,3 +192,10 @@
         You have successfully added your reminder. We just need to confirm that the email you entered is your email. If you don't get the email in the next 10 minutes, check your spam folder.
     </div>
 [% END %]
+
+[% BLOCK error %]
+<div class="pageError reminderMessage ui-state-error ui-corner-all"> 
+    <span class="ui-icon ui-icon-alert"></span> 
+    <strong>Error:</strong> [% error %]
+</div>
+[% END %]

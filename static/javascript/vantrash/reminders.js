@@ -264,18 +264,20 @@ ReminderLightbox.prototype = {
         var data = {
             offset: opts.offset,
             email: opts.email,
-            payment_period: opts.payment_period,
             name: "reminder" + (new Date).getTime(),
             target: opts.target
         };
+        if (opts.payment_period) data.payment_period = opts.payment_period;
         $.ajax({
             type: 'POST',
             url: '/zones/' + opts.zone + '/reminders',
             data: $.toJSON(data, true),
             error: function(xhr, textStatus, errorThrown) {
-                $('<div class="error globalError"></div>')
-                    .html('Error: ' + xhr.responseText)
-                    .insertAfter('.page:visible .title');
+                var error = xhr.responseText;
+                if (error.match(/^</)) error = errorThrown;
+                $('#loading').replaceWith(
+                    Jemplate.process('error', { error: error })
+                );
             },
             success: opts.success
         });
