@@ -9,7 +9,6 @@ sub new {
     my $class = shift;
     my %p = @_;
     
-    die unless $p{branch} eq 'test';
     die unless $p{test};
     die unless $p{test}{user};
     die unless $p{test}{pwd};

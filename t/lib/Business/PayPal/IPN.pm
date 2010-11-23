@@ -1,6 +1,7 @@
 package Business::PayPal::IPN;
 use strict;
 use warnings;
+use unmocked 'Data::Dumper';
 
 our %TEST_DATA;
 
@@ -21,6 +22,9 @@ sub AUTOLOAD {
 
 sub vars { %TEST_DATA }
 
+sub dump {
+    return Dumper $_[0];
+}
 
 
 1;
