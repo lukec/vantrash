@@ -237,6 +237,9 @@ sub parse_logfile {
         elsif ($comment =~ m/Send Twitter fail email/) {
             $data{twitter_dm_fails}++;
         }
+        elsif ($comment =~ m/^(PAYMENT_\w+)/) {
+            $data{lc $1}++;
+        }
         else {
             warn "Unknown: $comment";
         }
