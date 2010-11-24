@@ -108,6 +108,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	rm -rf $(INSTALL_DIR)/root/images
 	rm -rf $(INSTALL_DIR)/root/javascript
 	if [ ! -d $(INSTALL_DIR)/root/reports ]; then mkdir $(INSTALL_DIR)/root/reports; fi
+	if [ ! -d $(INSTALL_DIR)/backup ]; then mkdir $(INSTALL_DIR)/backup; fi
 	cp -R $(SOURCE_FILES) $(INSTALL_DIR)/root
 	cp -R $(LIB) $(TEMPLATE_DIR) $(INSTALL_DIR)
 	rm -f $(INSTALL_DIR)/root/*.html
@@ -127,6 +128,7 @@ install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
 	ln -sf /etc/nginx/sites-available/vantrash.ca /etc/nginx/sites-enabled/vantrash.ca
 	cd $(INSTALL_DIR) && bin/setup-env
 	chown -R vantrash:www-data $(INSTALL_DIR)/data/ $(INSTALL_DIR)/root
+	chown -R vantrash:www-data $(INSTALL_DIR)/backup/
 	/etc/init.d/nginx reload
 
 test: $(TESTS)
