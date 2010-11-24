@@ -11,7 +11,8 @@ my $emailer = App::VanTrash::Email->new(
     base_path => "$FindBin::Bin/..",
 );
 
-my ($subject, $body, @recipients);
+my ($subject, $body, @recipients) = @_;
+die unless $subject and $body and @recipients;
 for my $recip (@recipients) {
     warn "Sending email to $recip\n";
     my %headers = (
