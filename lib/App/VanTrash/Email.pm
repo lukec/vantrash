@@ -3,7 +3,6 @@ use Moose;
 use Email::Send;
 use Email::MIME;
 use Email::MIME::Creator;
-use Email::Send::Gmail;
 use Email::Send::IO;
 use Net::SMTP::SSL;
 use App::VanTrash::Template;
@@ -53,13 +52,7 @@ sub _build_mailer {
     }
 
     my $config = App::VanTrash::Config->instance;
-    my $mailer = Email::Send->new({
-        mailer => 'Gmail',
-        mailer_args => [
-            username => $config->Value('gmail_username'),
-            password => $config->Value('gmail_password'),
-        ]
-    });
+    my $mailer = Email::Send->new({ mailer => 'Sendmail' });
     return $mailer;
 }
 
