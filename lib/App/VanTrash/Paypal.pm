@@ -154,7 +154,7 @@ sub cancel_subscription {
         ACTION => 'Cancel',
         NOTE => "Subscription cancelled at user's request.",
     );
-    die "Could not cancel reminder using profile_id: $profile_id"
+    warn "Could not cancel reminder using profile_id: $profile_id"
         unless $resp{ACK} eq 'Success';
 }
 
