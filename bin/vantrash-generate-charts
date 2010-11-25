@@ -78,6 +78,8 @@ sub create_images {
 sub create_png {
     my $series = shift;
     my $filename = shift;
+    return unless @$series > 1;
+
     my $ds = Chart::Clicker::Data::DataSet->new(series => $series);
 
     my $cc = Chart::Clicker->new(width => 500, height => 400);
@@ -89,7 +91,7 @@ sub create_png {
     $defctx->range_axis->hidden(1);
     $cc->plot->grid->visible(0);
     eval { $cc->write_output($filename) };
-    warn $@ if $@;
+    warn "Error creating $filename: $@" if $@;
 }
 
 sub create_detailed_stats {
