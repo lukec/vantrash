@@ -164,7 +164,20 @@ exit;
 sub parse_logfile {
     my $filename = shift;
     open(my $fh, $filename);
-    my %data;
+    my %data = (
+        reminders => {
+            added => 0,
+            confirmed => 0,
+            deleted => 0,
+        },
+        hits => {
+            zones => {
+                HTML => 0,
+                TXT => 0,
+                JSON => 0,
+            },
+        },
+    );
     while (my $line = <$fh>) {
         unless (
             $line =~ m/^(\w+)\s+(\w+)\s+(\d+)\s+([\d:]+)\s+(\d+):\s+(.+)$/) {
