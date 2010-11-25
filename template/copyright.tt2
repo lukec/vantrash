@@ -5,6 +5,9 @@
 All of the trash pickup data is scraped from the City of Vancouver's website:
 <ul>
     <li>
+        <a href="http://data.vancouver.ca/">http://data.vancouver.ca</a>
+    </li>
+    <li>
         <a href="http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm">
             http://vancouver.ca/ENGSVCS/solidwaste/garbage/northSched.htm
         </a>
@@ -16,23 +19,24 @@ All of the trash pickup data is scraped from the City of Vancouver's website:
     </li>
 </ul>
 
-<h1>Perl Code</h1>
+<h1>Licensing Intent</h1>
+Our intent in releasing this code as open source is to enable other citizens to learn and use the code and tools we have created for non-commercial purposes.
+
+<h1>VanTrash Perl Code License</h1>
 <p>The scraping codes and the reminder system codes are licensed under the folowing terms:</p>
 
-<p>Copyright &copy; 2009 by Luke Closs and Kevin Jones</p>
+<p>Copyright &copy; 2009,2010 by Luke Closs and Kevin Jones</p>
 
 <p>This package is free software; you can redistribute it and/or modify it under the following terms:</p>
 
 <ol>
     <li>The GNU General Public License as published by the Free Software Foundation; either version 1, or (at your option) any later version</li>
-    <li>The original Artistic License, as published by Larry Wall.</li>
-    <li><a href="http://www.perlfoundation.org/legal/licenses/artistic-2_0.html">The Artistic License Version 2.0</a> or at your option any later version of it.</li>
 </ol>
 
-<h1>JavaScript</h1>
+<h1>JavaScript Licenses</h1>
 
 <h2>VanTrash JavaScript</h2>
-<p>Copyright (C) 2009 by Luke Closs and Kevin Jones</p>
+<p>Copyright &copy; 2009,2010 by Luke Closs and Kevin Jones</p>
 
 <h2>Libraries</h2>
 
