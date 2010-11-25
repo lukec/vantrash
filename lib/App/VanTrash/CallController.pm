@@ -152,7 +152,7 @@ sub voice_notify {
     my $zone_desc = $zone->desc;
     return <<EOT;
 <Pause length="1"/>
-<Say voice="woman">Hello, this is Vanessa Van Trash. I hope you are feeling dirty, because garbage day is almost here!  Your garbage will be removed on $day_name.  $extra</Say>
+<Say voice="woman">Hello, this is Van Trash. I hope you are feeling dirty, because garbage day is almost here!  Your garbage will be removed on $day_name.  $extra</Say>
 <Hangup/>
 EOT
 }
@@ -241,7 +241,7 @@ sub new_user_welcome {
 
     my %action = ( sms => 'text', voice => 'call' );
 
-    return "<Say voice=\"woman\">Hello, this is Vanessa Van Trash.  We have created your new reminder and we will $action{$type} you each week.  If you need to look up the garbage day from your phone, call me back and I can help you.  We appreciate your support and hope that you find this service useful. If you have any problems or suggestions phone me and leave a message, tweet us, or send us an email at help at van trash dot C A.</Say><Pause length=\"1\"/><Say voice=\"woman\">Goodbye.</Say><Hangup/>"
+    return "<Say voice=\"woman\">Hello, this is Van Trash.  We have created your new reminder and we will $action{$type} you each week.  If you need to look up the garbage day from your phone, call me back and I can help you.  My number is 778-785-1357, and you can also find it on our web site.  We appreciate your support, and hope that you find this service useful. If you have any problems or suggestions phone me and leave a message, tweet us, or send us an email at help at van trash dot C A.</Say><Pause length=\"1\"/><Say voice=\"woman\">Goodbye.</Say><Hangup/>"
 }
 
 __PACKAGE__->meta->make_immutable;
