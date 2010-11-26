@@ -338,7 +338,8 @@ sub payment_proceed {
 
     my $rem = eval {$self->paypal->create_subscription($token)};
     if ($@) {
-        return $self->_400_bad_request("Could not create subscription: $@");
+        $self->log("PAYMENT_PROCEED_FAIL $@");
+        return $self->_400_bad_request("Sorry, we had some trouble.");
     }
 
     $self->model->confirm_reminder($rem);
