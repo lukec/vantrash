@@ -344,11 +344,6 @@ sub payment_proceed {
 
     $self->model->confirm_reminder($rem);
 
-    if ($rem->target =~ m/^(\w+):(.+)/) {
-        my ($type, $target) = ($1, $2);
-        $self->model->notifier->twilio->voice_call($target, "/call/new-user-welcome/$type");
-    }
-
     my %param = (reminder => $rem);
     return $self->process_template('zones/reminders/payment.html', \%param)->finalize;
 }
