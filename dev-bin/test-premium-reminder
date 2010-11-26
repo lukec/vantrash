@@ -3,7 +3,17 @@ use strict;
 use lib 'lib';
 use App::VanTrash::Twilio;
 
+my $type   = shift;
 my $number = shift;
-my $url    = shift;
+my $body   = shift;
 my $t = App::VanTrash::Twilio->new;
-$t->voice_call($number, $url);
+
+if ($type eq 'sms') {
+    $body ||= <<EOT;
+VanTrash Reminder confirmed. Call us at 778-785-1357 for our phone menu.
+EOT
+    $t->send_sms($number, $body);
+}
+else {
+    $t->voice_call($number, $body);
+}
