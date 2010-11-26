@@ -28,7 +28,7 @@ sub run {
         [ qr{^/show/message_prompt$} => \&show_message_prompt ],
         [ qr{^/receive/message$}     => \&receive_message ],
         [ qr{^/goodbye$}             => \&goodbye ],
-        [ qr{^/new-user-welcome/(\w+)$}    => \&new_user_welcome ],
+        [ qr{^/new-user-welcome$}    => \&new_user_welcome ],
     );
 
     my $response = '';
@@ -238,11 +238,19 @@ sub new_user_welcome {
     my $self = shift;
     my $req  = shift;
 
+    my $extra = '<Pause length="1" />';
+    unless ($req->parameters->{again}) {
+        $extra = <<EOT;
+<Say voice="woman">To hear this number again, press any number.</Say>
+<Gather action="/call/new-user-welcome?again=1" method="GET" numDigits="1" />
+EOT
+    }
+
     return <<EOT;
 <Say voice="woman">
-Hello, this is Van Trash calling to confirm your reminder.  Call us back if you have any questions.  Our number is 778-785-1357.  To hear this number again, press any number.
+Hello, this is Van Trash calling to confirm your reminder.  Call us back if you have any questions.  Our number is 778-785-1357.
 </Say>
-<Gather action="/call/new-user-welcome" method="POST" numDigits="1" timeout="4" />
+$extra
 <Say voice="woman">Goodbye!</Say>
 <Hangup />
 EOT
