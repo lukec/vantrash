@@ -1,6 +1,10 @@
 [% WRAPPER wrapper.tt2 %]
 <div class="reminderMessage">
+    <p>
     Thank you for subscribing to VanTrash, <i>[% reminder.email %]</i>.<br />
-    You will soon receive a confirmation email. We hope you find VanTrash useful!
+    You will soon receive a confirmation email and phone [% IF reminder.voice_target %]call[% ELSE %]message[% END %].
+    </p>
+    <p>Please feel welcome to make use of our dial-in garbage day lookups by calling 778-785-1357.</p>
+    <p>We hope you find VanTrash useful!</p>
 </div>
 [% END %]
