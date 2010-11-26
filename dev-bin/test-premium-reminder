@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+use strict;
+use lib 'lib';
+use App::VanTrash::Twilio;
+
+my $number = shift;
+my $url    = shift;
+my $t = App::VanTrash::Twilio->new;
+$t->voice_call($number, $url);
