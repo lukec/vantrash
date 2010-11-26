@@ -63,7 +63,7 @@ unless ($summary) {
         print " $r->{zone}\t- $r->{email} ($r->{target}) last_notified: $last - next_pickup: $next"
             . "\n";
         if ($verbose) {
-            print "   $r->{id}\n";
+            print "   offset=$r->{offset} id=$r->{id}\n";
         }
     }
 }
