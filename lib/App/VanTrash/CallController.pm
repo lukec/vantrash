@@ -237,11 +237,15 @@ sub goodbye { "<Say voice=\"woman\">Goodbye.</Say><Hangup/>" }
 sub new_user_welcome { 
     my $self = shift;
     my $req  = shift;
-    my $type = shift;
 
-    my %action = ( sms => 'text', voice => 'call' );
-
-    return "<Say voice=\"woman\">Hello, this is Van Trash.  We have created your new reminder and we will $action{$type} you each week.  If you need to look up the garbage day from your phone, call me back and I can help you.  My number is 778-785-1357, and you can also find it on our web site.  We appreciate your support, and hope that you find this service useful. If you have any problems or suggestions phone me and leave a message, tweet us, or send us an email at help at van trash dot C A.</Say><Pause length=\"1\"/><Say voice=\"woman\">Goodbye.</Say><Hangup/>"
+    return <<EOT;
+<Say voice="woman">
+Hello, this is Van Trash calling to confirm your reminder.  Call us back if you have any questions.  Our number is 778-785-1357.  To hear this number again, press any number.
+</Say>
+<Gather action="/call/new-user-welcome" method="POST" numDigits="1" timeout="4" />
+<Say voice="woman">Goodbye!</Say>
+<Hangup />
+EOT
 }
 
 __PACKAGE__->meta->make_immutable;
