@@ -61,7 +61,7 @@ sub confirm {
     }
     elsif ($number = $self->sms_target) {
         $self->twilio->send_sms($number, <<EOT);
-VanTrash Reminder confirmed. Call us at 778-785-1357 for our phone menu.
+VanTrash Reminder is confirmed. Call us at 778-785-1357 for our dial-in pickup service.
 EOT
     }
 }
