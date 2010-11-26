@@ -6,6 +6,7 @@ use WWW::Shorten::isgd;
 use Data::UUID;
 use App::VanTrash::Config;
 use App::VanTrash::Paypal;
+use App::VanTrash::Twilio;
 use DateTime;
 use DateTime::Duration;
 use namespace::clean -except => 'meta';
@@ -45,11 +46,25 @@ sub to_hash {
     };
 }
 
-sub email_target { shift->target =~ m/^email:/ }
-sub twitter_target { shift->target =~ m/^twitter:/ }
-sub voice_target { shift->target =~ m/^voice:/ }
-sub sms_target { shift->target =~ m/^sms:/ }
+sub email_target { shift->target =~ m/^email:(.+)/; return $1}
+sub twitter_target { shift->target =~ m/^twitter:(.+)/; return $1}
+sub voice_target { shift->target =~ m/^voice:(.+)/; return $1}
+sub sms_target { shift->target =~ m/^sms:(.+)/; return $1}
 
+sub confirm {
+    my $self = shift;
+    $self->confirmed(1);
+    $self->update;
+
+    if (my $number = $self->voice_target) {
+        $self->twilio->voice_call($number, "/call/new-user-welcome");
+    }
+    elsif ($number = $self->sms_target) {
+        $self->twilio->send_sms($number, <<EOT);
+VanTrash Reminder confirmed. Call us at 778-785-1357 for our phone menu.
+EOT
+    }
+}
 
 sub is_expired {
     my $self = shift;
@@ -111,6 +126,8 @@ sub _build_payment_url {
         coupon => $self->coupon,
     );
 }
+
+sub _build_twilio { App::VanTrash::Twilio->new }
 
 __PACKAGE__->load_components(qw/Core/);
 __PACKAGE__->table('reminder');

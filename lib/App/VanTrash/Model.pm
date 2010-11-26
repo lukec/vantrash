@@ -180,9 +180,6 @@ sub confirm_reminder {
     my $self = shift;
     my $rem = shift or croak 'A reminder is mandatory!';
 
-    $rem->confirmed(1);
-    $rem->update;
-
     $self->mailer->send_email(
         to => $rem->email,
         subject => 'Your VanTrash reminder is created',
@@ -191,6 +188,8 @@ sub confirm_reminder {
             reminder => $rem,
         },
     );
+
+    $rem->confirm;
 }
 
 sub delete_reminder {
