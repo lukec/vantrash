@@ -2,6 +2,6 @@
 #  This sends out vantrash reminders.
 MAILTO=lukecloss@gmail.com
 
-1 * * * *  vantrash /var/www/vantrash/bin/vantrash-send-reminders >> /var/log/vantrash-email.log
+1 * * * *  vantrash /var/www/vantrash/bin/vantrash-send-reminders >> /var/log/vantrash-email.log 2>&1
 50 * * * * vantrash cd /var/www/vantrash && ./bin/vantrash-backup >> /var/log/vantrash-backup.log
 20 * * * * vantrash /var/www/vantrash/bin/vantrash-generate-charts
