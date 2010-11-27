@@ -148,6 +148,15 @@ header {
 #headerLinks img, #headerLinks iframe, #headerLinks a {
     vertical-align: middle;
     color: #000;
+}
+
+#shareButtons {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+}
+#shareButtons img, #shareButtons iframe, #shareButtons a {
+    vertical-align: middle;
     margin: 0 3px;
 }
 
@@ -178,19 +187,41 @@ footer {
 }
 
 /* Initial help text */
+.searchSection {
+    position: relative;
+    min-height: 80px;
+}
 .searchSection .description {
     padding: 10px;
     font-size: 110%;
+    margin-right: 420px;
+}
+.searchSection .searchBox {
+    position: absolute;
+    right: 110px;
+    top: 0;
+    padding: 25px 15px;
+}
+.searchSection .shareButtons {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.searchSection .shareButtons iframe, /* Stupid facebook */
+.searchSection .shareButtons a,
+.searchSection .shareButtons a:hover {
+    display: block;
+    margin-top: 5px;
+}
+.searchSection input.text {
+    width: 170px;
 }
 .searchSection .description p {
     padding: 4px 0;
 }
 .searchSection h1 {
     font-size: 120%;
-}
-.searchSection .searchBox {
-    float: right;
-    padding: 25px 15px;
 }
 
 /* Map and Ad */

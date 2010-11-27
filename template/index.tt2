@@ -4,16 +4,25 @@
     ]
 %]
     <div class="searchSection">
-        <div class="searchBox">
-            <form id="address">
-                <input class="text ui-corner-all initial" type="text"/>
-                <input class="button" type="submit" value="Find my zone!"/>
-            </form>
-        </div>
         <div class="description">
             <p>VanTrash helps you manage your neighbourhood garbage schedule more effectively.</p>
             <p>To start, simply click on the zone in which you live or search for your address, then click "Remind me".</p>
         </div>
+        <div class="searchBox">
+            <form id="address">
+                <input class="text ui-corner-all initial" type="text"/>
+                <input class="button" type="submit" value="Search"/>
+            </form>
+        </div>
+        <div class="shareButtons">
+            <!-- Tweet button -->
+            <a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="vantrash">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+            <!-- buzz -->
+            <a title="Post to Google Buzz" class="google-buzz-button" href="http://www.google.com/buzz/post" data-button-style="small-count"></a><script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>
+            <!-- facebook like -->
+            <fb:like href="http://www.vantrash.ca" layout="button_count" width="50"></fb:like>
+        </div>
+        <div class="clearfix"></div>
     </div>
 
 
@@ -37,7 +46,7 @@
         map.render($('#mapCanvas').get(0));
 
         $('#address .initial')
-            .val('149 West 4th')
+            .val('Type your address here')
             .one('click', function() {
                 $(this).removeClass('initial').val('');
             });
