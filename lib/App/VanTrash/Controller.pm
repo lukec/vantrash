@@ -19,7 +19,7 @@ with 'App::VanTrash::ControllerBase';
 
 has 'paypal' => (is => 'ro', isa => 'App::VanTrash::Paypal', lazy_build => 1);
 
-use constant Version => 1.6;
+use constant Version => 1.7;
 
 sub run {
     my $self = shift;
