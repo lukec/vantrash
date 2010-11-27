@@ -181,6 +181,7 @@ sub parse_logfile {
         },
     );
     while (my $line = <$fh>) {
+        next unless $line =~ m/^\w+$/;
         unless (
             $line =~ m/^(\w+)\s+(\w+)\s+(\d+)\s+([\d:]+)\s+(\d+):\s+(.+)$/) {
             warn "Ignoring: $line";
