@@ -212,7 +212,8 @@ footer {
 .searchSection .shareButtons a,
 .searchSection .shareButtons a:hover {
     display: block;
-    margin-top: 5px;
+    margin-top: 6px;
+    vertical-align: middle;
 }
 .searchSection input.text {
     width: 170px;
