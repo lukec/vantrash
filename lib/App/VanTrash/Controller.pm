@@ -657,13 +657,14 @@ sub _handle_created_ipn {
     my $rem  = shift;
     my $reminder_id = $rem->id;
 
-    given ($ipn->initial_payment_status || $ipn->payment_status) {
-        when ("Completed") {
-            # means the funds are already in our paypal account.
-            my $gross = $ipn->amount || '?.??';
-            $self->log("PAYMENT_PROFILE_CREATED - $reminder_id - \$$gross");
-            $self->_advance_expiry($rem);
-        }
+    if ($ipn->profile_status eq 'Active' or 
+            $ipn->payment_status eq 'Completed') {
+        my $gross = $ipn->amount || '?.??';
+        $self->log("PAYMENT_PROFILE_CREATED - $reminder_id - \$$gross");
+        $self->_advance_expiry($rem);
+        return;
+    }
+    given ($ipn->payment_status) {
         when("Pending") {
             # the payment was made to account, but its status is still pending
             # $ipn->pending() also returns the reason why it is so.
