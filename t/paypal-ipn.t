@@ -34,6 +34,12 @@ test_psgi $app, sub {
 };
 
 
+# Important note about these tests.
+#
+# They _JUST_ test you get a 200. They DON'T test that our paypal logic does
+# the right thing. This is a weakness.
+
+
 my @ipns = (
     {
         name => 'recurring payment expired',
