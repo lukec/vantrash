@@ -1,7 +1,6 @@
 package Socialtext::WikiFixture::VanTrash;
 use Moose;
 use Test::More;
-use Test::HTTP;
 use JSON::XS qw(decode_json);
 use YAML;
 use Date::Parse qw(str2time);
@@ -12,111 +11,10 @@ use App::VanTrash::Config;
 use App::VanTrash::Template;
 use namespace::clean -except => 'meta';
 
-extends 'Socialtext::WikiFixture::Selenese';
-
-has 'http' => (
-    is => 'ro', isa => 'Test::HTTP', lazy_build => 1
+extends qw(
+    Socialtext::WikiFixture::Selenese
+    Socialtext::WikiFixture::VanTrashRest
 );
-
-sub _build_http {
-    my $self = shift;
-    return Test::HTTP->new('vantrash');
-};
-
-sub get {
-    my ($self, $uri, $accept) = @_;
-    $accept ||= 'text/html';
-    $uri = "$self->{browser_url}$uri" if $uri =~ m#^/#;
-    $self->http->get($uri, [Accept => $accept]);
-}
-
-sub _api_get_next_pickup_date {
-    my ($self, $zone) = @_;
-    $self->get("/zones/$zone/nextpickup.json");
-    my $data = decode_json($self->http->response->content);
-    (my $date = $data->{'next'}[0]) =~ s{ Y$}{};
-    my ($y, $m, $d) = split '-', $date;
-    my $dt = DateTime->new(year => $y, month => $m, day=> $d);
-    return sprintf(
-        "%s %s %d %d", $dt->day_abbr, $dt->month_abbr, $dt->day, $dt->year
-    );
-}
-
-sub set_scheme {
-    my ($self, $var, $scheme) = @_;
-    $self->{$var} =~ s{http://}{$scheme};
-    diag "Set $var to $self->{$var}";
-}
-
-has 'config' => (
-    is => 'ro', isa => 'App::VanTrash::Config', lazy_build => 1,
-);
-
-sub _build_config {
-    App::VanTrash::Config->new(config_file => './etc/vantrash.yaml');
-}
-
-sub wait_for_email_ok {
-    my ($self, $email_address) = @_;
-    require Mail::POP3Client;
-
-    my $pop = new Mail::POP3Client(
-        USER     => $self->config->Value('tester_username'),
-        PASSWORD => $self->config->Value('tester_password'),
-        HOST     => "pop.gmail.com",
-        USESSL   => 1,
-    );
-
-    $self->{email_body} = undef;
-
-    for (0 .. 10) {
-        $pop->Connect() >= 0 || die $pop->Message();
-        for my $i (1 .. $pop->Count()) {
-            for ($pop->Head($i)) {
-                if (/^To:\s+(.*)/i and $1 eq $email_address) {
-                    die "Multiple emails found!" if $self->{email_body};
-                    $self->{email_body} = scalar $pop->Body($i);
-                }
-            }
-        }
-        $pop->Close();
-        last if $self->{email_body};
-        diag "Waiting for email...";
-        sleep 1;
-    }
-
-    $self->{email_body} =~ s{\r}{}g;
-
-    ok $self->{email_body}, 'wait_for_email_ok';
-}
-
-sub text_like {
-    my $self = shift;
-    my $text = shift;
-    my $regex = shift;
-    like $text, $regex, 'text_like';
-}
-
-sub text_unlike {
-    my $self = shift;
-    my $text = shift;
-    my $regex = shift;
-    unlike $text, $regex, 'text_like';
-}
-
-sub exec_regex {
-    my $self = shift;
-    my $name = shift;
-    my $content = shift;
-    my $regex = $self->quote_as_regex(shift || '');
-    if ($content =~ $regex and $1) {
-        $self->{$name} = $1;
-        diag "Set $name to '$1'";
-    }
-    else {
-        die "Could not set exec '$regex' on '$content'";
-    }
-}
 
 # Vantrash stuff
 
