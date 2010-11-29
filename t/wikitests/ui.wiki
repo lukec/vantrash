@@ -4,7 +4,7 @@
 | open                  | /    |
 | wait-for-page-to-load | 5000 |
 
-| is-text-present-ok | VanTrash helps you manage your neighbourhood garbage schedule more effectively.                         |
+| is-text-present-ok | VanTrash helps you manage your household garbage schedule more effectively.                             |
 | is-text-present-ok | To start, simply click on the zone in which you live or search for your address, then click "Remind me" |
 
 | click-ok              | link=Frequently asked questions |
