@@ -80,9 +80,9 @@
 | login-paypal-ok           |                                            |                   |
 | wait-for-text-present-ok  | $1.50 per month for VanTrash notifications |                   |
 
-| click-ok                 | continue                                                                      |
-| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.                     |
-| is-text-present-ok       | You will soon receive a confirmation email. We hope you find VanTrash useful! |
+| click-ok                 | continue                                                   |
+| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.  |
+| is-text-present-ok       | You will soon receive a confirmation email and phone call. |
 
 # Wait for the welcome email 
 | reminder-success-email-ok | %%email_address%% | phone |
@@ -139,9 +139,9 @@
 | login-paypal-ok           |                                            |                   |
 | wait-for-text-present-ok  | $15.00 per year for VanTrash notifications |                   |
 
-| click-ok                 | continue                                                                      |
-| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.                     |
-| is-text-present-ok       | You will soon receive a confirmation email. We hope you find VanTrash useful! |
+| click-ok                 | continue                                                      |
+| wait-for-text-present-ok | Thank you for subscribing to VanTrash, %%email_address%%.     |
+| is-text-present-ok       | You will soon receive a confirmation email and phone message. |
 
 # Wait for the welcome email 
 | reminder-success-email-ok | %%email_address%% | sms |
