@@ -3,7 +3,7 @@ use MooseX::Singleton;
 use File::Temp qw/tempdir/;
 use File::Copy qw/copy/;
 use FindBin;
-use Fatal qw/mkdir symlink/;
+use Fatal qw/mkdir symlink copy/;
 use Test::More;
 use File::Slurp;
 use mocked 'Net::Twitter';
@@ -22,7 +22,10 @@ BEGIN {
     $App::VanTrash::Log::VERBOSE = 1;
 }
 
-END { unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL} }
+END { 
+    unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL};
+    warn qx(cat $ENV{VT_LOG_FILE}) if $ENV{VT_LOG_FILE};
+}
 
 has 'base_path' => (is => 'ro', lazy_build => 1);
 
@@ -41,7 +44,7 @@ sub _build_base_path {
     copy "$FindBin::Bin/../data/trash-zone-times.yaml",
         "$tmp_dir/data/trash-zone-times.yaml";
     mkdir "$tmp_dir/etc";
-    copy "$FindBin::Bin/../etc/vantrash.yaml" => "$tmp_dir/etc/vantrash.yaml";
+    copy "$FindBin::Bin/../etc/vantrash.yaml.DEFAULT" => "$tmp_dir/etc/vantrash.yaml";
 
     $ENV{VT_LOG_FILE} = "$tmp_dir/vantrash.log";
     
