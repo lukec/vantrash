@@ -49,17 +49,17 @@ PSGI=production.psgi
 TESTS=$(wildcard t/*.t)
 WIKITESTS=$(wildcard t/wikitests/*.t)
 
-all: \
-    $(VANTRASH_GZ) $(VANTRASH_MINIFIED) \
-    $(VANTRASH_MOBILE_GZ) $(VANTRASH_MOBILE_MINIFIED) \
-    $(VANTRASH_MAP_GZ) $(VANTRASH_MAP_MINIFIED) \
+BUILT_JS=\
+    $(VANTRASH) $(VANTRASH_GZ) $(VANTRASH_MINIFIED) \
+    $(VANTRASH_MOBILE) $(VANTRASH_MOBILE_GZ) $(VANTRASH_MOBILE_MINIFIED) \
+    $(VANTRASH_MAP) $(VANTRASH_MAP_GZ) $(VANTRASH_MAP_MINIFIED) \
+
+all: javascript
+
+javascript: $(BUILT_JS)
 
 clean:
-	rm -f \
-	    $(JEMPLATE) \
-	    $(VANTRASH) $(VANTRASH_MINIFIED) $(VANTRASH_GZ) \
-	    $(VANTRASH_MAP) $(VANTRASH_MAP_MINIFIED) $(VANTRASH_MAP_GZ) \
-	    $(VANTRASH_MOBILE) $(VANTRASH_MOBILE_MINIFIED) $(VANTRASH_MOBILE_GZ) \
+	rm -f  $(JEMPLATE) $(BUILT_JS)
 
 .SUFFIXES: .js -mini.js .js.gz
 
@@ -102,7 +102,7 @@ $(INSTALL_DIR)/%:
 	chown -R vantrash:www-data $(INSTALL_DIR)
 
 
-install: $(INSTALL_DIR)/* $(JS_MINI) $(JS_MAP_MINI) $(SOURCE_FILES) $(LIB) \
+install: javascript $(INSTALL_DIR)/* $(SOURCE_FILES) $(LIB) \
 	$(TEMPLATES) $(EXEC) $(TEMPLATE_DIR) $(CRONJOB) $(PSGI)
 	rm -rf $(INSTALL_DIR)/root/css
 	rm -rf $(INSTALL_DIR)/root/images
