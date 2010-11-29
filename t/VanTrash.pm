@@ -24,7 +24,8 @@ BEGIN {
 
 END { 
     unlink $ENV{VT_EMAIL} if $ENV{VT_EMAIL};
-    warn qx(cat $ENV{VT_LOG_FILE}) if $ENV{VT_LOG_FILE};
+    # Uncomment this for debugging
+    # warn qx(cat $ENV{VT_LOG_FILE}) if -e $ENV{VT_LOG_FILE};
 }
 
 has 'base_path' => (is => 'ro', lazy_build => 1);
