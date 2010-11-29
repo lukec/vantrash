@@ -185,7 +185,7 @@
 | open-ok                     | %%delete_url%%                                                                                   |
 | wait-for-text-present-ok    | Are you sure you want to unsubscribe email:%%email_address%% from vancouver-south-red reminders? |
 | click-ok                    | css=.button.no                                                                                   |
-| wait-for-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively.                  |
+| wait-for-text-present-ok    | VanTrash helps you manage your household garbage schedule more effectively.                  |
 | open-ok                     | %%delete_url%%                                                                                   |
 | wait-for-element-present-ok | css=.button.yes                                                                                  |
 | click-ok                    | css=.button.yes                                                                                  |
@@ -226,7 +226,7 @@
 | open-ok                     | %%delete_url%%                                                                          |
 | wait-for-text-present-ok    | Are you sure you want to unsubscribe twitter:kevinj from vancouver-south-red reminders? |
 | click-ok                    | css=.button.no                                                                          |
-| wait-for-text-present-ok    | VanTrash helps you manage your neighbourhood garbage schedule more effectively.         |
+| wait-for-text-present-ok    | VanTrash helps you manage your household garbage schedule more effectively.         |
 | open-ok                     | %%delete_url%%                                                                          |
 | wait-for-element-present-ok | css=.button.yes                                                                         |
 | click-ok                    | css=.button.yes                                                                         |
