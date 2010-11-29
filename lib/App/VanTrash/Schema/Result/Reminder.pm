@@ -46,10 +46,10 @@ sub to_hash {
     };
 }
 
-sub email_target { shift->target =~ m/^email:(.+)/; return $1}
-sub twitter_target { shift->target =~ m/^twitter:(.+)/; return $1}
-sub voice_target { shift->target =~ m/^voice:(.+)/; return $1}
-sub sms_target { shift->target =~ m/^sms:(.+)/; return $1}
+sub email_target { shift->target =~ m/^email:(.+)/ and return $1}
+sub twitter_target { shift->target =~ m/^twitter:(.+)/ and return $1}
+sub voice_target { shift->target =~ m/^voice:(.+)/ and return $1}
+sub sms_target { shift->target =~ m/^sms:(.+)/ and return $1}
 
 sub confirm {
     my $self = shift;
