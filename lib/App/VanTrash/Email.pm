@@ -52,7 +52,26 @@ sub _build_mailer {
     }
 
     my $config = App::VanTrash::Config->instance;
-    my $mailer = Email::Send->new({ mailer => 'Sendmail' });
+    my $mailer_config = $config->Value('mailer') || 'Sendmail';
+
+    my $mailer;
+    if ($mailer_config eq 'Sendmail') {
+        $mailer = Email::Send->new({ mailer => 'Sendmail' });
+    }
+    elsif ($mailer_config eq 'Gmail') {
+        require Email::Send::Gmail;
+        $mailer = Email::Send->new({
+            mailer => 'Gmail',
+            mailer_args => [
+                username => $config->Value('gmail_username'),
+                password => $config->Value('gmail_password'),
+            ]
+        });
+    }
+    else {
+        die "Unknown mailer: $mailer_config";
+    }
+
     return $mailer;
 }
 
