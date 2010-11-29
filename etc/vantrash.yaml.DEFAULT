@@ -1,15 +1,25 @@
 ---
-  base_url: "http://vantrash.ca:5000"
-  twitter_username: ""
-  twitter_password: ""
-  twilio_AccountSid: ""
-  twilio_AuthToken: ""
-  twilio_from_number_sms: ""
-  twilio_from_number_voice: ""
+  base_url: "http://localhost"
+  twitter_username: ''
+  twitter_password: ''
+  twitter_consumer_key: ''
+  twitter_consumer_secret: ''
+  twitter_oauth_token: ''
+  twitter_oauth_token_secret: ''
+  twilio_AccountSid: ''
+  twilio_AuthToken: ''
+  twilio_from_number_sms: ''
+  twilio_from_number_voice: ''
   paypal_branch: "test"
-  paypal_user: ""
-  paypal_pwd: ""
-  paypal_sig: ""
-  gmail_username: ""
-  gmail_password: ""
+  paypal_test_user: "paypal_1289279423_biz_api1.5thplane.com"
+  paypal_test_pwd: "1289279434"
+  paypal_test_sig: "BFcWxV21C7fd0v3bYYYRCpSSRl31Ae.RMZMxOD8meqMD7jz3f4vmNNoL"
+  paypal_live_user: ""
+  paypal_live_pwd: ""
+  paypal_live_sig: ""
+  price_per_month: "1.50"
+  price_per_year: "15.00"
+  errors_to_email: 'vantrash-errors@localhost'
+  coupons:
+    test: "5.00"
 
