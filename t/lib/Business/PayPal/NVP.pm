@@ -9,10 +9,11 @@ sub new {
     my $class = shift;
     my %p = @_;
     
-    die unless $p{test};
-    die unless $p{test}{user};
-    die unless $p{test}{pwd};
-    die unless $p{test}{sig};
+    require Data::Dumper;
+    die Data::Dumper::Dumper(\%p) unless $p{test};
+    die Data::Dumper::Dumper(\%p) unless $p{test}{user};
+    die Data::Dumper::Dumper(\%p) unless $p{test}{pwd};
+    die Data::Dumper::Dumper(\%p) unless $p{test}{sig};
 
     my $self = { %p };
     bless $self, $class;
