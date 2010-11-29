@@ -127,6 +127,9 @@ sub _build_payment_url {
     );
 }
 
+has 'twilio' => (
+    is => 'ro', isa => 'App::VanTrash::Twilio', lazy_build => 1
+);
 sub _build_twilio { App::VanTrash::Twilio->new }
 
 __PACKAGE__->load_components(qw/Core/);
