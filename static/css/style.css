@@ -267,6 +267,10 @@ body#mobile .ui-datepicker {
     padding: 20px;
 }
 
+.reminderMessage p {
+    margin-bottom: 10px;
+}
+
 input.initial {
     font-style: italic;
     color: #666;
