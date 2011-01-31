@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use lib 'lib';
+use FindBin;
+use YAML qw/DumpFile/;
+
+use App::VanTrash::Model;
+
+my $base_path = "$FindBin::Bin/..";
+my $model   = App::VanTrash::Model->new(base_path => $base_path);
+
+my $all_reminders = $model->reminders->all;
+my @reminders;
+for my $rem (@$all_reminders) {
+    next unless $rem->{confirmed};
+    push @reminders, $rem;
+}
+
+my $filename = 'active-reminders.yaml';
+DumpFile($filename, @reminders);
+print "Dumped active reminders to $filename\n";
+
+exit;
+
