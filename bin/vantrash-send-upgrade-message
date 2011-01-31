@@ -1,0 +1,95 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use lib 'lib';
+use FindBin;
+use Email::MIME;
+
+use App::VanTrash::Email;
+use App::VanTrash::Model;
+use App::VanTrash::Config;
+
+my $base_path = "$FindBin::Bin/..";
+my $emailer = App::VanTrash::Email->new(base_path => $base_path);
+my $model   = App::VanTrash::Model->new(base_path => $base_path);
+
+my $reminders = $model->reminders->all;
+my %seen_email;
+my $subject = 'Changes to VanTrash - your action is required!';
+for my $rem (@$reminders) {
+    next unless $rem->{confirmed};
+    next if $seen_email{$rem->{email}}++;
+
+    my %headers = (
+        From => '"VanTrash" <noreply@vantrash.ca>',
+        To => $rem->{email},
+        Subject => $subject,
+    );
+    (my $cur_target = $rem->{target}) =~ s/:.+//;
+    my $do_nothing_message;
+    if ($cur_target eq 'twitter') {
+        $do_nothing_message = <<EOT;
+If you take no action, we will migrate your twitter reminder over to
+recollect.net at the end of February 2011.  However, you will need to follow
+the \@recollectnet twitter user, who will send you twitter messages.
+
+Follow \@recollectnet now to avoid any interruption:
+
+  http://twitter.com/recollectnet
+EOT
+    }
+    else {
+        $do_nothing_message = <<EOT;
+If you take no action, we will migrate your email reminder over to
+recollect.net at the end of February 2011.
+EOT
+    }
+
+    my $migrate_url = App::VanTrash::Config->base_url . '/migrate/' . $rem->{id};
+    my $email = Email::MIME->create(
+        attributes => {
+            content_type => 'text/plain',
+            disposition => 'inline',
+            charset => 'utf8',
+        },
+        body => <<EOT,
+About 20 months ago we started to build VanTrash to help citizens of Vancouver
+remember to take their garbage and recycling out with less stress.  Since then
+we have watched as almost 3000 citizens have made use of this service (that we
+know of), and we have sent almost 20,000 garbage day notifications.
+
+Today we are proud to announce that we have rebuilt VanTrash as a new service
+called Recollect.net.  In addition to the features VanTrash had, Recollect can 
+notify you via your mobile phone or your home phone with text messages or
+voice calls.
+
+Recollect will also allow us to expand to other cities, making life just a
+little bit easier for even more citizens.
+
+If you would prefer to receive a text message or phone call notification, or
+if you would like to change the details of your current reminder, then click
+this link migrate to Recollect:
+
+  Click here: $migrate_url
+
+$do_nothing_message
+
+We hope that Recollect continues to be a useful service to you.  Please tell
+your friends and family about Recollect.net!
+
+If you have any feedback for us please send it to feedback\@recollect.net.
+
+Thanks,
+The VanTrash / Recollect Team - Kevin, David and Luke.
+
+http://recollect.net
+
+EOT
+    );
+    $email->header_set( $_ => $headers{$_}) for keys %headers;
+    print "Sending email to $rem->{email}\n";
+    $emailer->mailer->send($email);
+}
+
+exit;
+
