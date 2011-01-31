@@ -68,6 +68,7 @@ sub handle_request {
                     \&delete_reminder_html ],
             [ qr{^/reports/(.+)$} => \&show_report ],
             [ qr{^/call(.*)$} => \&handle_call ],
+            [ qr{^/migrate/([\w\d-]+)$} => \&migrate_to_recollect ],
         ],
 
         POST => [
@@ -369,6 +370,30 @@ sub confirm_reminder {
             ? 'm/reminder_good_confirm.tt2'
             : 'zones/reminders/good_confirm.html',
         \%param,
+    );
+}
+
+sub migrate_to_recollect {
+    my $self = shift;
+    my $req  = shift;
+    my $id   = shift;
+
+    my $rem = $self->model->reminders->by_id($id);
+    unless ($rem) {
+        my $resp = $self->process_template('bad_migrate.html');
+        $resp->status(404);
+        $self->log("MIGRATE_FAIL $id");
+        return $resp;
+    }
+
+    my $rem_hash = $rem->to_hash;
+    $self->model->delete_reminder($id);
+    $self->log("DELETE $id");
+    $self->log("MIGRATE $id to recollect.net");
+    return HTTP::Engine::Response->new(
+        headers => [ Location =>
+         "http://recollect.net/#!/Vancouver/$rem_hash->{zone}/subscribe" ],
+        status => 302,
     );
 }
 
