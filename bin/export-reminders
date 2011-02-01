@@ -7,7 +7,7 @@ use YAML qw/DumpFile/;
 
 use App::VanTrash::Model;
 
-my $base_path = "$FindBin::Bin/..";
+my $base_path = shift || "$FindBin::Bin/..";
 my $model   = App::VanTrash::Model->new(base_path => $base_path);
 
 my $all_reminders = $model->reminders->all;
@@ -18,7 +18,7 @@ for my $rem (@$all_reminders) {
 }
 
 my $filename = 'active-reminders.yaml';
-DumpFile($filename, @reminders);
+DumpFile($filename, \@reminders);
 print "Dumped active reminders to $filename\n";
 
 exit;
