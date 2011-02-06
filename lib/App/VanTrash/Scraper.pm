@@ -113,6 +113,7 @@ sub scrape_zone {
 
 sub _month_to_num {
     my $name = shift;
+    $name =~ s/\s*(\S+)\s*/$1/;
     return {
         january => 1,
         february => 2,
