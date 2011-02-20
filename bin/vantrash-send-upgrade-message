@@ -21,7 +21,7 @@ for my $rem (@$reminders) {
     next if $seen_email{$rem->{email}}++;
 
     my %headers = (
-        From => '"VanTrash" <noreply@vantrash.ca>',
+        From => '"VanTrash" <help@vantrash.ca>',
         To => $rem->{email},
         Subject => $subject,
     );
@@ -29,62 +29,53 @@ for my $rem (@$reminders) {
     my $do_nothing_message;
     if ($cur_target eq 'twitter') {
         $do_nothing_message = <<EOT;
-If you take no action, we will migrate your twitter reminder over to
-recollect.net at the end of February 2011 when the new Garbage Schedule takes
-effect.  However, you will need to follow the \@recollectnet twitter user, who
-will be the one reminding you with direct messages.
+<p>If you take no action, we will migrate your twitter reminder over to recollect.net at the end of February 2011 when the new Garbage Schedule takes effect.  However, you will need to follow the \@recollectnet twitter user, who will be the one reminding you with direct messages.</p>
 
-Follow \@recollectnet now to avoid any interruption:
-
-  http://twitter.com/recollectnet
+<p><a href="http://twitter.com/recollectnet">Follow \@recollectnet now</a> to avoid any interruption.</p>
 EOT
     }
     else {
         $do_nothing_message = <<EOT;
-If you take no action, we will migrate your email reminder over to
-recollect.net at the end of February 2011 when the new Garbage Schedule takes
-effect.
+<p>If you take no action, we will migrate your email reminder over to recollect.net at the end of February 2011 when the new Garbage Schedule takes effect.</p>
 EOT
     }
 
     my $migrate_url = App::VanTrash::Config->base_url . '/migrate/' . $rem->{id};
     my $email = Email::MIME->create(
         attributes => {
-            content_type => 'text/plain',
+            content_type => 'text/html',
             disposition => 'inline',
             charset => 'utf8',
         },
         body => <<EOT,
-Dear Vantrash User,
+<p>Dear VanTrash User,</p>
 
-20 months ago we launched VanTrash to help Vancouver's citizens remember to take their garbage and recycling out. Since then we've watched our user base grow to over 3000 citizens (that we know of!). Thank you for making Vantrash a huge success and a ton of fun.
+<p>20 months ago we launched VanTrash to help Vancouver's citizens remember to take their garbage and recycling out. Since then we've watched our user base grow to over 3000 citizens (that we know of!). Thank you for making Vantrash a huge success and a ton of fun.</p>
 
-We're emailing you because we have 3 quick messages:
+<p>We're emailing you because we have 3 quick messages:</p>
 
-<b>1. Today, we're proud to introduce VanTrash's successor: Recollect.net.</b>
+<p><strong>1. Today, we're proud to introduce VanTrash's successor: <a href="http://recollect.net">Recollect.net</a>.</strong></p>
 
-Recollect has the same reminders as VanTrash but has been re-built to work in many cities and - for a small fee - features Text Message and Phone Call notifications! (Email and iCal remain free)
+<p>Recollect has the same reminders as VanTrash but works in many cities and features Text Message and Phone Call notifications available for a low cost. (Email and iCal remain free).</p>
 
-To migrate your VanTrash reminder to Recollect click the following link:
+<p>To migrate your VanTrash reminder to Recollect <a href="$migrate_url">click here</a>.</p>
 
-http://vantrash.ca:2009/migrate/4C2CEB91-B8D8-359F-BE45-481A285BF7EC
+$do_nothing_message
 
-If you take no action, we will migrate your email reminder over to recollect.net at the end of February 2011 when the new Garbage Schedule takes effect.
+<p><strong>2. More Cities</strong></p>
 
-<b>2. More Cities</b>
+<p><a href=http://recollect.net/>Recollect</a> is expanding to other cities, making life just a little bit easier for even more citizens. So far we have added North Vancouver and Victoria (including Oak Bay and Esquimalt) with more (Edmonton, Toronto) to come.</p>
 
-Still more exciting, <a href=http://recollect.net/>Recollect</a> will also be expanding to other cities, making life just a little bit easier for even more citizens. So far we have added North Vancouver and Victoria (including Oak Bay and Esquimalt) with more (Edmonton, Toronto) to come.
+<p><strong>3. Let a Friend Know</strong></p>
 
-<b>3. Let a Friend Know</b>
+<p>We hope that you've found our service so helpful that you'll be willing to tell your friends and family about <a href="http://recollect.net">Recollect</a>. Please try our <a href="http://recollect.net/tell-a-friend">Tell a Friend Service</a>, or even buy a parent or grandparent a text message or phone call subscription! You can also <a href="http://twitter.com/#%21/recollectnet">follow us on Twitter</a> and <a href="http://www.facebook.com/pages/recollectnet/194196287264770">join our Facebook page</a>.</p>
 
-We hope that you've found our service so helpful that you'll be willing to tell your friends and family about Recollect.net. Please try our <a href=http://recollect.net/tell-a-friend>Tell a Friend Service</a>, or even buy a parent or grandparent a Text Message subscription! You can also <a href=http://twitter.com/#%21/recollectnet>follow us on Twitter</a> and <a href=http://www.facebook.com/pages/recollectnet/194196287264770>join our Facebook page</a>.
+<p>If you have any feedback for us please send it to <a href="mailto:feedback\@recollect.net">feedback\@recollect.net</a>.</p>
 
-If you have any feedback for us please send it to feedback@recollect.net.
+<p>Thanks,<br />
+The VanTrash / Recollect Team - Kevin, David and Luke.</p>
 
-Thanks,
-The VanTrash / Recollect Team - Kevin, David and Luke.
-
-http://recollect.net
+<p><a href="http://recollect.net">http://recollect.net</a></p>
 EOT
     );
     $email->header_set( $_ => $headers{$_}) for keys %headers;
