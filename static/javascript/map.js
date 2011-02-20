@@ -62,16 +62,12 @@ TrashMap.prototype = {
                 $('<input type="button" class="smallbtn"/>')
                     .val("Add to calendar")
                     .click(function() {
-                        location = "webcal://"
-                                 + location.host
-                                 + '/zones/' + name + '/pickupdays.ics';
+                        location = 'http://recollect.net/#!/Vancouver/' + name;
                     }),
                 $('<input type="button" class="smallbtn"/>')
                     .val('Remind me')
                     .click(function() {
-                        var reminders = new TrashReminders({zone: name});
-                        reminders.showLightbox();
-                        return false;
+                        location = 'http://recollect.net/#!/Vancouver/' + name;
                     })
             )
         );
