@@ -392,7 +392,7 @@ sub migrate_to_recollect {
     $self->log("MIGRATE $id to recollect.net");
     return HTTP::Engine::Response->new(
         headers => [ Location =>
-         "http://recollect.net/#!/Vancouver/$rem_hash->{zone}/subscribe" ],
+         "http://recollect.net/#!/Vancouver/$rem_hash->{zone}" ],
         status => 302,
     );
 }
