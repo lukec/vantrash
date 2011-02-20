@@ -88,7 +88,7 @@ http://recollect.net
 EOT
     );
     $email->header_set( $_ => $headers{$_}) for keys %headers;
-    print "Sending email to $rem->{email}\n";
+    print "Sending email to $rem->{email} about $rem->{id}\n";
     $emailer->mailer->send($email);
     sleep 2;
 }
