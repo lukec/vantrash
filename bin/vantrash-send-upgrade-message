@@ -32,7 +32,7 @@ for my $rem (@$reminders) {
 If you take no action, we will migrate your twitter reminder over to
 recollect.net at the end of February 2011 when the new Garbage Schedule takes
 effect.  However, you will need to follow the \@recollectnet twitter user, who
-will send you twitter messages.
+will be the one reminding you with direct messages.
 
 Follow \@recollectnet now to avoid any interruption:
 
@@ -65,16 +65,16 @@ upcoming garbage day via an SMS to your mobile phone or a voice call to your
 home phone. We will, of course, still be offering email reminders, calendar
 subscriptions and twitter notifications for free.
 
-If you would like to receive a text message or phone call notification, or if
-you would like to change the details of your current reminder, then click this
-link to migrate to Recollect:
+To migrate your VanTrash reminder to Recollect click the following link:
 
-  Click here: $migrate_url
+  $migrate_url
 
 $do_nothing_message
 
 Still more exciting, Recollect will also be expanding to other cities,
-making life just a little bit easier for even more citizens.
+making life just a little bit easier for even more citizens.  So far we have
+added North Vancouver and Victoria (including Oak Bay and Esquimalt), and
+there are more to come.
 
 We hope that Recollect continues to be a useful service to you and that
 you'll continue to tell your friends and family about Recollect.net!
@@ -85,12 +85,12 @@ Thanks,
 The VanTrash / Recollect Team - Kevin, David and Luke.
 
 http://recollect.net
-
 EOT
     );
     $email->header_set( $_ => $headers{$_}) for keys %headers;
     print "Sending email to $rem->{email}\n";
     $emailer->mailer->send($email);
+    sleep 2;
 }
 
 exit;
